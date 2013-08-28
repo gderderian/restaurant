@@ -41,6 +41,7 @@ public class RestaurantPanel extends JPanel {
         initRestLabel();
         add(restLabel);
         add(group);
+        
     }
 
     /**

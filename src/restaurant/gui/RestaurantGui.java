@@ -2,9 +2,13 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 
+//import javax.swing.Image;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 /**
  * Main GUI class.
  * Contains the main frame and subsequent panels
@@ -27,6 +31,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel infoPanel;
     private JLabel infoLabel; //part of infoPanel
     private JCheckBox stateCB;//part of infoLabel
+    
+    // Added as part of lab
+    private JPanel demoPanel;
+    private JLabel demoLabel;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -36,8 +44,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 450;
-        int WINDOWY = 350;
+        int WINDOWX = 550;
+        int WINDOWY = 550;
 
         animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
@@ -46,8 +54,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
     	
     	setBounds(50, 50, WINDOWX, WINDOWY);
 
-        setLayout(new BoxLayout((Container) getContentPane(), 
-        		BoxLayout.Y_AXIS));
+        //setLayout(new BoxLayout((Container) getContentPane(), 
+        //		BoxLayout.Y_AXIS));
+    	setLayout(new GridLayout(4, 1));
 
         Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
         restPanel.setPreferredSize(restDim);
@@ -74,6 +83,39 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
         add(infoPanel);
+        
+        
+        // Add new demo panel for lab
+        Dimension demoDim = new Dimension(WINDOWX, (int) (WINDOWY * .10));
+        demoPanel = new JPanel();
+        demoPanel.setPreferredSize(demoDim);
+        demoPanel.setMinimumSize(demoDim);
+        demoPanel.setMaximumSize(demoDim);
+        demoPanel.setBorder(BorderFactory.createTitledBorder("Welcome Message from Grant"));
+        
+        demoPanel.setLayout(new GridLayout(1, 2, 30, 0));
+        
+        demoLabel = new JLabel(); 
+        demoLabel.setText("<html><pre><i>Hello world, my name is Grant!</i></pre></html>");
+        
+        // Add image too (as JButton)
+        JButton shieldButton = new JButton();
+        Image uscShield = null;
+		try {
+			uscShield = ImageIO.read(getClass().getResource("small_shield.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        shieldButton.setIcon(new ImageIcon(uscShield));
+        shieldButton.setPreferredSize(new Dimension(64, 64));
+        shieldButton.setMinimumSize(new Dimension(64, 64));
+        shieldButton.setMaximumSize(new Dimension(64, 64));
+        
+        demoPanel.add(shieldButton);
+       
+        demoPanel.add(demoLabel);
+        add(demoPanel);
+        
     }
     /**
      * updateInfoPanel() takes the given customer (or, for v3, Host) object and
@@ -88,7 +130,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         if (person instanceof CustomerAgent) {
             CustomerAgent customer = (CustomerAgent) person;
             stateCB.setText("Hungry?");
-          //Should checkmark be there? 
+          //Should checkmark be there?
             stateCB.setSelected(customer.getGui().isHungry());
           //Is customer hungry? Hack. Should ask customerGui
             stateCB.setEnabled(!customer.getGui().isHungry());
