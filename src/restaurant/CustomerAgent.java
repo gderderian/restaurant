@@ -19,6 +19,9 @@ public class CustomerAgent extends Agent {
 	private int hungerLevel = DEFAULT_HUNGER_LEVEL;     // determines length of meal
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
+	
+	int destinationX = 0;
+	int destinationY = 0;
 
 	// agent correspondents
 	private HostAgent host;
@@ -61,10 +64,12 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSitAtTable() {
+	public void msgSitAtTable(int table_x, int table_y) {
 		print("Received msgSitAtTable");
 		event = AgentEvent.followHost;
 		stateChanged();
+		destinationX = table_x;
+		destinationY = table_y;
 	}
 
 	public void msgAnimationFinishedGoToSeat() {
@@ -122,7 +127,7 @@ public class CustomerAgent extends Agent {
 
 	private void SitDown() {
 		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(1);//hack; only one table
+		customerGui.DoGoToSeat(1, destinationX, destinationY); //hack; only one table
 	}
 
 	private void EatFood() {

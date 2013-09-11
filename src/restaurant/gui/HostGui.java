@@ -3,6 +3,7 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.HostAgent;
+import restaurant.CustomerAgent.AgentState;
 
 import java.awt.*;
 
@@ -11,7 +12,7 @@ public class HostGui implements Gui {
     private HostAgent agent = null;
 
     private int xPos = -20, yPos = -20;//default waiter position
-    private int xDestination = -20, yDestination = -20;//default start position
+    public int xDestination = -20, yDestination = -20, host_tableX, host_tableY;//default start position
 
     public static final int xTable = 200;
     public static final int yTable = 250;
@@ -20,6 +21,8 @@ public class HostGui implements Gui {
     private static final int HOST_SIZE_X = 20;
     private static final int HOST_SIZE_Y = 20;
 
+    private boolean atDesk = false;
+    
     public HostGui(HostAgent agent) {
         this.agent = agent;
     }
@@ -34,11 +37,18 @@ public class HostGui implements Gui {
             yPos++;
         else if (yPos > yDestination)
             yPos--;
-
-        if (xPos == xDestination && yPos == yDestination
-        		& (xDestination == xTable + 20) & (yDestination == yTable - 20)) {
+        else if (xPos == -20 && yPos == -20 && atDesk == false) {
+        	agent.msgAtDesk();
+        	atDesk = true;
+        	System.out.println("Sarah: At desk!!!!!!" + xPos + " - " + yPos);
+        } else if (xPos == xDestination && yPos == yDestination
+        		& (xDestination == host_tableX + 20) & (yDestination == host_tableY - 20)) {
            agent.msgAtTable();
         }
+        
+        if (xPos != -20 && yPos != -20) {
+        	atDesk = false;
+    	}
     }
 
     public void draw(Graphics2D g) {
@@ -52,9 +62,11 @@ public class HostGui implements Gui {
         return true;
     }
 
-    public void DoBringToTable(CustomerAgent customer) {
-        xDestination = xTable + 20;
-        yDestination = yTable - 20;
+    public void DoBringToTable(CustomerAgent customer, int tableX, int tableY) {
+        xDestination = tableX + 20;
+        yDestination = tableY - 20;
+        host_tableX = tableX;
+        host_tableY = tableY;
     }
 
     public void DoLeaveCustomer() {

@@ -87,9 +87,9 @@ public class CustomerGui implements Gui{
 		isPresent = p;
 	}
 
-	public void DoGoToSeat(int seatnumber) {//later you will map seatnumber to table coordinates.
-		xDestination = xTable;
-		yDestination = yTable;
+	public void DoGoToSeat(int seatnumber, int tableX, int tableY) { //later you will map seatnumber to table coordinates.
+		xDestination = tableX;
+		yDestination = tableY;
 		command = Command.GoToSeat;
 	}
 

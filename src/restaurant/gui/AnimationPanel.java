@@ -67,9 +67,12 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.setColor(Color.ORANGE);
         g2.fillRect(TABLE_X_COORD, TABLE_Y_COORD, TABLE_X, TABLE_Y); //200 and 250 need to be table params
 
+        // Table 2
         g2.setColor(Color.RED);
         g2.fillRect(250, 200, TABLE_X, TABLE_Y);
         
+        
+        // Table 3
         g2.setColor(Color.BLACK);
         g2.fillRect(300, 150, TABLE_X, TABLE_Y);
         
