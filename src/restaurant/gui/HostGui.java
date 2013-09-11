@@ -15,6 +15,10 @@ public class HostGui implements Gui {
 
     public static final int xTable = 200;
     public static final int yTable = 250;
+    
+    // Lab 2
+    private static final int HOST_SIZE_X = 20;
+    private static final int HOST_SIZE_Y = 20;
 
     public HostGui(HostAgent agent) {
         this.agent = agent;
@@ -38,8 +42,10 @@ public class HostGui implements Gui {
     }
 
     public void draw(Graphics2D g) {
-        g.setColor(Color.MAGENTA);
-        g.fillRect(xPos, yPos, 20, 20);
+        //g.setColor(Color.MAGENTA);
+        //g.fillRect(xPos, yPos, HOST_SIZE_X, HOST_SIZE_Y);
+		Image hostImg = Toolkit.getDefaultToolkit().getImage("stickfig.png");
+	    g.drawImage(hostImg, xPos, yPos, HOST_SIZE_X, HOST_SIZE_Y, null);
     }
 
     public boolean isPresent() {

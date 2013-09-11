@@ -11,8 +11,12 @@ import java.util.TimerTask;
  * Restaurant customer agent.
  */
 public class CustomerAgent extends Agent {
+	
+	static final int DEFAULT_HUNGER_LEVEL = 5;
+	static final int DEFAULT_SIT_TIME = 5000;
+	
 	private String name;
-	private int hungerLevel = 5;        // determines length of meal
+	private int hungerLevel = DEFAULT_HUNGER_LEVEL;     // determines length of meal
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 
@@ -140,7 +144,7 @@ public class CustomerAgent extends Agent {
 				stateChanged();
 			}
 		},
-		5000);//getHungerLevel() * 1000);//how long to wait before running task
+		DEFAULT_SIT_TIME);//getHungerLevel() * 1000);//how long to wait before running task
 	}
 
 	private void leaveTable() {

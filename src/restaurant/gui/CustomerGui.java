@@ -5,6 +5,8 @@ import restaurant.HostAgent;
 
 import java.awt.*;
 
+import javax.swing.ImageIcon;
+
 public class CustomerGui implements Gui{
 
 	private CustomerAgent agent = null;
@@ -21,13 +23,20 @@ public class CustomerGui implements Gui{
 
 	public static final int xTable = 200;
 	public static final int yTable = 250;
+	
+	// Lab 2
+	private static final int HIDDEN_X = -40;
+	private static final int HIDDEN_Y = -40;
+	private static final int CUST_SIZE_X = 20;
+	private static final int CUST_SIZE_Y = 20;
+	private Image custImg;
 
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){ //HostAgent m) {
 		agent = c;
-		xPos = -40;
-		yPos = -40;
-		xDestination = -40;
-		yDestination = -40;
+		xPos = HIDDEN_X;
+		yPos = HIDDEN_Y;
+		xDestination = HIDDEN_X;
+		yDestination = HIDDEN_Y;
 		//maitreD = m;
 		this.gui = gui;
 	}
@@ -57,7 +66,9 @@ public class CustomerGui implements Gui{
 
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
-		g.fillRect(xPos, yPos, 20, 20);
+		g.fillRect(xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y);
+		Image custImg = Toolkit.getDefaultToolkit().getImage("happy.jpg");
+	    g.drawImage(custImg, xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y, null);
 	}
 
 	public boolean isPresent() {
@@ -83,8 +94,8 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoExitRestaurant() {
-		xDestination = -40;
-		yDestination = -40;
+		xDestination = HIDDEN_X;
+		yDestination = HIDDEN_Y;
 		command = Command.LeaveRestaurant;
 	}
 }

@@ -25,6 +25,12 @@ public class RestaurantPanel extends JPanel {
     private JPanel group = new JPanel();
 
     private RestaurantGui gui; //reference to main gui
+    
+    // Lab 2
+    private static final int REST_PANEL_ROWS = 1;
+    private static final int REST_PANEL_COLS = 2;
+    private static final int REST_PANEL_SPACE = 20;
+    private static final int REST_PANEL_GROUP_SPACE = 10;
 
     public RestaurantPanel(RestaurantGui gui) {
         this.gui = gui;
@@ -33,8 +39,8 @@ public class RestaurantPanel extends JPanel {
         gui.animationPanel.addGui(hostGui);
         host.startThread();
 
-        setLayout(new GridLayout(1, 2, 20, 20));
-        group.setLayout(new GridLayout(1, 2, 10, 10));
+        setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
+        group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
 
         group.add(customerPanel);
 
@@ -42,6 +48,10 @@ public class RestaurantPanel extends JPanel {
         add(restLabel);
         add(group);
         
+    }
+    
+    public void toggleTimer(){
+    	gui.animationPanel.toggleTimer();
     }
 
     /**
@@ -87,17 +97,25 @@ public class RestaurantPanel extends JPanel {
      * @param type indicates whether the person is a customer or waiter (later)
      * @param name name of person
      */
-    public void addPerson(String type, String name) {
+    public void addPerson(String type, String name, boolean isHungry) {
 
+    	System.out.println(isHungry);
+    	
     	if (type.equals("Customers")) {
     		CustomerAgent c = new CustomerAgent(name);	
     		CustomerGui g = new CustomerGui(c, gui);
 
     		gui.animationPanel.addGui(g);// dw
     		c.setHost(host);
+    		
     		c.setGui(g);
     		customers.add(c);
     		c.startThread();
+    		
+    		if (isHungry == true) {
+    			c.getGui().setHungry();
+    		}
+    			
     	}
     }
 

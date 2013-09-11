@@ -35,6 +35,21 @@ public class RestaurantGui extends JFrame implements ActionListener {
     // Added as part of lab
     private JPanel demoPanel;
     private JLabel demoLabel;
+    
+    // Lab 2
+    private static final int DEMO_IMAGE_X = 64;
+    private static final int DEMO_IMAGE_Y = 64;
+    private static final int WINDOW_BOUND = 50;
+    private static final int REST_GRID_COLS = 1;
+    private static final int REST_GRID_ROWS = 2;
+    private static final int INFO_PANEL_ROWS = 1;
+    private static final int INFO_PANEL_COLS = 2;
+    private static final int INFO_PANEL_X_PADDING = 30;
+    private static final int INFO_PANEL_Y_PADDING = 0;
+    private static final int DEMO_PANEL_ROWS = 1;
+    private static final int DEMO_PANEL_COLS = 2;
+    private static final int DEMO_PANEL_X_PADDING = 30;
+    private static final int DEMO_PANEL_Y_PADDING = 0;
 
     private Object currentPerson;/* Holds the agent that the info is about.
     								Seems like a hack */
@@ -52,11 +67,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         animationFrame.setVisible(true);
     	animationFrame.add(animationPanel); 
     	
-    	setBounds(50, 50, WINDOWX, WINDOWY);
+    	setBounds(WINDOW_BOUND, WINDOW_BOUND, WINDOWX, WINDOWY);
 
         //setLayout(new BoxLayout((Container) getContentPane(), 
         //		BoxLayout.Y_AXIS));
-    	setLayout(new GridLayout(4, 1));
+    	setLayout(new GridLayout(REST_GRID_ROWS, REST_GRID_COLS));
 
         Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
         restPanel.setPreferredSize(restDim);
@@ -76,7 +91,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         stateCB.setVisible(false);
         stateCB.addActionListener(this);
 
-        infoPanel.setLayout(new GridLayout(1, 2, 30, 0));
+        infoPanel.setLayout(new GridLayout(INFO_PANEL_ROWS, INFO_PANEL_COLS, INFO_PANEL_X_PADDING, INFO_PANEL_Y_PADDING));
         
         infoLabel = new JLabel(); 
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
@@ -92,9 +107,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         demoPanel.setMinimumSize(demoDim);
         demoPanel.setMaximumSize(demoDim);
         demoPanel.setBorder(BorderFactory.createTitledBorder("Welcome Message from Grant"));
-        
-        demoPanel.setLayout(new GridLayout(1, 2, 30, 0));
-        
+        demoPanel.setLayout(new GridLayout(DEMO_PANEL_ROWS, DEMO_PANEL_COLS, DEMO_PANEL_X_PADDING, DEMO_PANEL_Y_PADDING));
         demoLabel = new JLabel(); 
         demoLabel.setText("<html><pre><i>Hello world, my name is Grant!</i></pre></html>");
         
@@ -107,14 +120,15 @@ public class RestaurantGui extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
         shieldButton.setIcon(new ImageIcon(uscShield));
-        shieldButton.setPreferredSize(new Dimension(64, 64));
-        shieldButton.setMinimumSize(new Dimension(64, 64));
-        shieldButton.setMaximumSize(new Dimension(64, 64));
+        shieldButton.setPreferredSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
+        shieldButton.setMinimumSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
+        shieldButton.setMaximumSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
         
         demoPanel.add(shieldButton);
        
         demoPanel.add(demoLabel);
-        add(demoPanel);
+        
+        // add(demoPanel);
         
     }
     /**
