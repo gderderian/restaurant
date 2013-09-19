@@ -21,7 +21,13 @@ public class HostAgent extends Agent {
 	//with List semantics.
 	public List<CustomerAgent> waitingCustomers
 	= new ArrayList<CustomerAgent>();
+	
 	public Collection<Table> tables;
+	 
+	// v2 prototyping
+	public List<Waiters> myWaiters
+	= new ArrayList<WaiterAgent>();
+	
 	//note that tables is typed with Collection semantics.
 	//Later we will see how it is implemented
 
@@ -31,8 +37,12 @@ public class HostAgent extends Agent {
 	public HostGui hostGui = null;
 
 	public enum AgentState
-	{DoingNothing, Working, GoingToDesk, AtDesk};
+	{DoingNothing, Working, GoingToDesk, AtDesk, seatingCustomer};
 	private AgentState state = AgentState.DoingNothing; // The start state
+	
+	public enum AgentEvent
+	{doingNothing, seatedCustomer, WaitingToSeat};
+	private AgentEvent event = AgentEvent.doingNothing; // The start state 
 	
 	//public enum AgentEvent 
 	//{none, GoingToDesk};
@@ -127,7 +137,6 @@ public class HostAgent extends Agent {
 			hostGui.DoLeaveCustomer();
 			return true;
 			
-			
 		} else if (state == AgentState.AtDesk) {
 			
 			System.out.println("at desk in scheduler");
@@ -144,6 +153,10 @@ public class HostAgent extends Agent {
 
 	// Actions
 
+	private void givetoWaiter(CustomerAgent c, Table t){
+		// Stub - find the least busy waiter in the restaurant and assign this customer (and their table) to it
+	}
+	
 	private void seatCustomer(CustomerAgent customer, Table table) {
 		customer.msgSitAtTable(table.tableX, table.tableY);
 		DoSeatCustomer(customer, table);

@@ -25,7 +25,7 @@ public class RestaurantPanel extends JPanel {
     private JPanel group = new JPanel();
 
     private RestaurantGui gui; //reference to main gui
-    
+
     // Lab 2
     private static final int REST_PANEL_ROWS = 1;
     private static final int REST_PANEL_COLS = 2;

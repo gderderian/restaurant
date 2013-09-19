@@ -26,14 +26,18 @@ public class CustomerAgent extends Agent {
 	// agent correspondents
 	private HostAgent host;
 
-	//    private boolean isHungry = false; //hack for gui
+	//    private boolean isHungry = false; //hack for gui - more events and states added in for v2
 	public enum AgentState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving};
+	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Following, Choosing};
 	private AgentState state = AgentState.DoingNothing;//The start state
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, doneLeaving};
+	{none, gotHungry, followHost, seated, doneEating, doneLeaving, doneChoosing};
 	AgentEvent event = AgentEvent.none;
+	
+	// For v2
+	private WaiterAgent assignedWaiter;
+	private choice chosenFood;
 
 	/**
 	 * Constructor for CustomerAgent class
@@ -100,8 +104,9 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
-			state = AgentState.Eating;
-			EatFood();
+			//state = AgentState.Eating;
+			//EatFood();
+			orderFood();
 			return true;
 		}
 
@@ -128,6 +133,12 @@ public class CustomerAgent extends Agent {
 	private void SitDown() {
 		Do("Being seated. Going to table");
 		customerGui.DoGoToSeat(1, destinationX, destinationY); //hack; only one table
+	}
+	
+	private void orderFood(){ // New for v2 - Choice needs to be generated though!
+		
+		assignedWaiter.IWantFood(choice); // Stub because we need to find a way for customers to generate the specific item they want
+		
 	}
 
 	private void EatFood() {
