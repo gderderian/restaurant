@@ -76,18 +76,17 @@ public class CookAgent extends Agent {
 	
 	// Misc. Utilities
 
-	// Order and food classes
-	private class Order {
-		CustomerAgent orderer;
-		Food foodChoice;
-		int forTable;
-		public enum orderStatus {Pending, Cooking, Done};
-	}
-	
-	private class Food {
-		string foodName;
-		int cookingTime;
-	}
+} // end of cook class
 
+// Order and food classes
+class Order {
+	CustomerAgent orderer;
+	Food foodChoice;
+	int forTable;
+	public enum orderStatus {Pending, Cooking, Done};
 }
 
+class Food {
+	String foodName;
+	int cookingTime;
+}
