@@ -3,8 +3,8 @@ package restaurant;
 public class Table {
 	
 	int tableNumber;
-	int tableX;
-	int tableY;
+	public int tableX;
+	public int tableY;
 	CustomerAgent occupiedBy;
 	
 	Table(int tableNumber) {

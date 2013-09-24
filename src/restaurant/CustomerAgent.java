@@ -1,11 +1,13 @@
 package restaurant;
 
 import restaurant.gui.CustomerGui;
+
 import restaurant.gui.RestaurantGui;
 import agent.Agent;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Random;
 
 /**
  * Restaurant customer agent.
@@ -16,17 +18,17 @@ public class CustomerAgent extends Agent {
 	static final int DEFAULT_SIT_TIME = 5000;
 	
 	private String name;
-	private int hungerLevel = DEFAULT_HUNGER_LEVEL;	// determines length of meal
+	private int hungerLevel = DEFAULT_HUNGER_LEVEL;
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 	
 	int destinationX = 0;
 	int destinationY = 0;
 
-	// agent correspondents
+	private WaiterAgent assignedWaiter;
+	private Menu myMenu;
 	private HostAgent host;
 
-	//    private boolean isHungry = false; //hack for gui - more events and states added in for v2
 	public enum AgentState
 	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Following, Choosing};
 	private AgentState state = AgentState.DoingNothing;//The start state
@@ -34,9 +36,6 @@ public class CustomerAgent extends Agent {
 	public enum AgentEvent 
 	{none, gotHungry, followHost, seated, doneEating, doneLeaving, doneChoosing};
 	AgentEvent event = AgentEvent.none;
-	
-	// For v2
-	private WaiterAgent assignedWaiter;
 
 	public CustomerAgent(String name){
 		super();
@@ -51,20 +50,22 @@ public class CustomerAgent extends Agent {
 		return name;
 	}
 	
-	
 	// Messages
-	public void gotHungry() {//from animation
+	public void gotHungry() { //from animation
 		print("I'm hungry");
 		event = AgentEvent.gotHungry;
 		stateChanged();
 	}
 
-	public void msgSitAtTable(int table_x, int table_y) {
+	public void msgSitAtTable(Table t, Menu m, WaiterAgent w) {
 		print("Received msgSitAtTable");
 		event = AgentEvent.followHost;
+		destinationX = t.tableX;
+		destinationY = t.tableY;
+		assignedWaiter = w;
+		myMenu = m;
+		state = AgentState.Choosing;
 		stateChanged();
-		destinationX = table_x;
-		destinationY = table_y;
 	}
 
 	public void msgAnimationFinishedGoToSeat() {
@@ -72,35 +73,41 @@ public class CustomerAgent extends Agent {
 		event = AgentEvent.seated;
 		stateChanged();
 	}
+	
 	public void msgAnimationFinishedLeaveRestaurant() {
 		//from animation
 		event = AgentEvent.doneLeaving;
 		stateChanged();
 	}
+	
+	public void msgWhatDoYouWant() {
+		sendChoiceToWaiter();
+		stateChanged();
+	}
+	
+	public void hereIsOrder(Order o) {
+		EatFood();
+		stateChanged();
+	}
+	
 
-	/**
-	 * Scheduler.  Determine what action is called for, and do it.
-	 */
+	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		//	CustomerAgent is a finite state machine
-
-		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry ){
+		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingInRestaurant;
 			goToRestaurant();
 			return true;
 		}
-		if (state == AgentState.WaitingInRestaurant && event == AgentEvent.followHost ){
+		if (state == AgentState.WaitingInRestaurant && event == AgentEvent.followHost){
 			state = AgentState.BeingSeated;
 			SitDown();
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
-			//state = AgentState.Eating;
-			//EatFood();
-			orderFood();
+			// state = AgentState.Eating;
+			// EatFood();
 			return true;
 		}
-
 		if (state == AgentState.Eating && event == AgentEvent.doneEating){
 			state = AgentState.Leaving;
 			leaveTable();
@@ -108,14 +115,18 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
 			state = AgentState.DoingNothing;
-			//no action
 			return true;
 		}
+		if (state == AgentState.)
 		return false;
 	}
 
 	// Actions
-
+	private void sendChoiceToWaiter(){
+		String itemChoice = pickRandomItem();
+		assignedWaiter.hereIsMyChoice(itemChoice);
+	}
+	
 	private void goToRestaurant() {
 		Do("Going to restaurant");
 		host.msgIWantFood(this);//send our instance, so he can respond to us
@@ -126,42 +137,27 @@ public class CustomerAgent extends Agent {
 		customerGui.DoGoToSeat(1, destinationX, destinationY); //hack; only one table
 	}
 	
-	private void orderFood(){ // New for v2 - Choice needs to be generated though!
-		
-		assignedWaiter.IWantFood(choice); // Stub because we need to find a way for customers to generate the specific item they want
-		
-	}
-
 	private void EatFood() {
 		Do("Eating Food");
-		//This next complicated line creates and starts a timer thread.
-		//We schedule a deadline of getHungerLevel()*1000 milliseconds.
-		//When that time elapses, it will call back to the run routine
-		//located in the anonymous class created right there inline:
-		//TimerTask is an interface that we implement right there inline.
-		//Since Java does not all us to pass functions, only objects.
-		//So, we use Java syntactic mechanism to create an
-		//anonymous inner class that has the public method run() in it.
 		timer.schedule(new TimerTask() {
 			Object cookie = 1;
 			public void run() {
 				print("Done eating, cookie=" + cookie);
 				event = AgentEvent.doneEating;
-				//isHungry = false;
 				stateChanged();
 			}
 		},
-		DEFAULT_SIT_TIME);//getHungerLevel() * 1000);//how long to wait before running task
+		DEFAULT_SIT_TIME);
 	}
 
 	private void leaveTable() {
 		Do("Leaving.");
 		host.msgLeavingTable(this);
 		customerGui.DoExitRestaurant();
+		assignedWaiter.ImDone(this);
 	}
 
-	// Accessors, etc.
-
+	// Accessors
 	public String getName() {
 		return name;
 	}
@@ -172,8 +168,6 @@ public class CustomerAgent extends Agent {
 
 	public void setHungerLevel(int hungerLevel) {
 		this.hungerLevel = hungerLevel;
-		//could be a state change. Maybe you don't
-		//need to eat until hunger lever is > 5?
 	}
 
 	public String toString() {
@@ -187,5 +181,13 @@ public class CustomerAgent extends Agent {
 	public CustomerGui getGui() {
 		return customerGui;
 	}
+
+	public String pickRandomItem() {
+		Random randNum = new Random();
+		int itemPickNum = randNum.nextInt(myMenu.itemList.size()) + 1;
+		return myMenu.getAt(itemPickNum);
+	}
+
 }
+
 

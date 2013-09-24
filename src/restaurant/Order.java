@@ -48,7 +48,7 @@ public class Order {
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
 		          status = orderStatus.ready;
 		      }
-		  	});
+		});
 		foodTimer.start();
 	}
 	

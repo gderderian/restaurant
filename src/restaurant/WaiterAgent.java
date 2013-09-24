@@ -72,6 +72,14 @@ public class WaiterAgent extends Agent {
 		state = AgentState.AtDesk;
 		stateChanged();
 	}
+	
+	public void hereIsMyChoice(String choice) {
+		
+	}
+	
+	public void ImDone(CustomerAgent c) {
+		
+	}
 
 	/**
 	 * Scheduler.  Determine what action is called for, and do it.

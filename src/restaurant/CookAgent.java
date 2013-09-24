@@ -17,21 +17,20 @@ import restaurant.Table;
 /**
  * Restaurant Cook Agent
  */
-
 public class CookAgent extends Agent {
 	
 	// Variable Declarations
 	private String name;
 	private List<Order> currentOrders;
 	Hashtable<String, Integer> timerList;
-	
+
 	// Accessors
 	public CookAgent(String name) {
-		
+
 		super();
 		this.name = name;
 		currentOrders = new ArrayList<Order>();
-				
+
 		timerList = new Hashtable<String, Integer>();
 		timerList.put("Lemonade", 1500);
 		timerList.put("Water", 1000);
@@ -58,13 +57,15 @@ public class CookAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		for (Order order : currentOrders) {
-			if (order.getStatus() == orderStatus.ready) {
-				orderDone(order);
-				return true;
-			} else if (order.getStatus() == orderStatus.waiting){
-				prepareFood(order);
-				return true;
+		if (!currentOrders.isEmpty()) {
+			for (Order order : currentOrders) {
+				if (order.getStatus() == orderStatus.ready) {
+					orderDone(order);
+					return true;
+				} else if (order.getStatus() == orderStatus.waiting){
+					prepareFood(order);
+					return true;
+				}
 			}
 		}
 		return false;
