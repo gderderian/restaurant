@@ -45,12 +45,11 @@ public class Order {
 	
 	public void setCooking(int cookTime){
 		foodTimer = new Timer(cookTime,
-				new ActionListener() { public void actionPerformed(ActionEvent evt) {
+				new ActionListener() { public void actionPerformed(ActionEvent event) {
 		          status = orderStatus.ready;
 		      }
 		});
 		foodTimer.start();
 	}
-	
-	
+		
 }

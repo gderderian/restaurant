@@ -180,7 +180,7 @@ public class HostAgent extends Agent {
 
 	}
 
-	//utilities
+	// Misc. Utilities
 
 	public void setGui(HostGui gui) {
 		hostGui = gui;

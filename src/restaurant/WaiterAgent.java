@@ -11,18 +11,14 @@ import java.util.concurrent.Semaphore;
 /**
  * Restaurant Waiter Agent
  */
-
 public class WaiterAgent extends Agent {
 	
-	public List<CustomerAgent> myCustomers
-	= new ArrayList<CustomerAgent>();
-	
+	public List<CustomerAgent> myCustomers = new ArrayList<CustomerAgent>();
 	public Collection<Table> myTables;
-	
 	private String name;
 
 	public enum AgentState
-	{DoingNothing, waiting, deliveringOrder, acceptingOrder, goingToKitchen, comingToKitchen};
+	{DoingNothing, waiting, deliveringOrder, acceptingOrder, goingToKitchen, comingToKitchen, atDesk};
 	private AgentState state = AgentState.DoingNothing; // The start state
 	
 	public enum AgentEvent
@@ -31,7 +27,6 @@ public class WaiterAgent extends Agent {
 	
 	public WaiterAgent(String name) {
 		super();
-
 		this.name = name;
 	}
 
@@ -69,7 +64,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void msgAtDesk(){
-		state = AgentState.AtDesk;
+		state = AgentState.atDesk;
 		stateChanged();
 	}
 	
@@ -81,9 +76,7 @@ public class WaiterAgent extends Agent {
 		
 	}
 
-	/**
-	 * Scheduler.  Determine what action is called for, and do it.
-	 */
+	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		
 		if (state == AgentState.DoingNothing) {
@@ -98,7 +91,6 @@ public class WaiterAgent extends Agent {
 		
 		}
 		
-		
 		return true;
 	
 	}
@@ -108,50 +100,22 @@ public class WaiterAgent extends Agent {
 		// Stub - get a customer's order by calling whatDoYouWant() on them
 	}
 
-	private void sendToKitchen(Choice c, Order o){
+	private void sendToKitchen(String choice, Order o){
 		// Stub - takes the results of WhatDoYouWant() call on the customer and calls cookagent.HereIsOrder(Choice C, Order O)
 		//		  Essentially passes the customer's order onto the cook agent after their order has been taken by the waiter.
 	}
 	
 	// Misc. Utilities
-
-	// Table to be made as global class, as well as food/choice
-	private class Table {
-		CustomerAgent occupiedBy;
-		
-		int tableNumber;
-		int tableX;
-		int tableY;
-
-		Table(int tableNumber) {
-			this.tableNumber = tableNumber;
-		}
-		
-		Table(int tableNumber, int tableX, int tableY) {
-			this.tableNumber = tableNumber;
-			this.tableX = tableX;
-			this.tableY = tableY;
-		}
-
-		void setOccupant(CustomerAgent cust) {
-			occupiedBy = cust;
-		}
-
-		void setUnoccupied() {
-			occupiedBy = null;
-		}
-
-		CustomerAgent getOccupant() {
-			return occupiedBy;
-		}
-
-		boolean isOccupied() {
-			return occupiedBy != null;
-		}
-
-		public String toString() {
-			return "table " + tableNumber;
-		}
+	
+	public enum CustomerState // Goes along with MyCustomer
+	{ReadyToOrder, Ordered, Eating, Done};
+	
+	class MyCustomer {
+		CustomerAgent customer;
+		Table t;
+		Order o;
+		CustomerState state;
 	}
+	
+	
 }
-

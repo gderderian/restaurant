@@ -19,7 +19,8 @@ public class CustomerAgent extends Agent {
 	
 	private String name;
 	private int hungerLevel = DEFAULT_HUNGER_LEVEL;
-	Timer timer = new Timer();
+	Timer eatingTimer = new Timer();
+	Timer choosingTimer = new Timer();
 	private CustomerGui customerGui;
 	
 	int destinationX = 0;
@@ -31,7 +32,7 @@ public class CustomerAgent extends Agent {
 
 	public enum AgentState
 	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Following, Choosing};
-	private AgentState state = AgentState.DoingNothing;//The start state
+	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
 	{none, gotHungry, followHost, seated, doneEating, doneLeaving, doneChoosing};
@@ -51,7 +52,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	// Messages
-	public void gotHungry() { //from animation
+	public void gotHungry() {
 		print("I'm hungry");
 		event = AgentEvent.gotHungry;
 		stateChanged();
@@ -69,13 +70,11 @@ public class CustomerAgent extends Agent {
 	}
 
 	public void msgAnimationFinishedGoToSeat() {
-		//from animation
 		event = AgentEvent.seated;
 		stateChanged();
 	}
 	
 	public void msgAnimationFinishedLeaveRestaurant() {
-		//from animation
 		event = AgentEvent.doneLeaving;
 		stateChanged();
 	}
@@ -117,7 +116,7 @@ public class CustomerAgent extends Agent {
 			state = AgentState.DoingNothing;
 			return true;
 		}
-		if (state == AgentState.)
+		
 		return false;
 	}
 
@@ -129,17 +128,17 @@ public class CustomerAgent extends Agent {
 	
 	private void goToRestaurant() {
 		Do("Going to restaurant");
-		host.msgIWantFood(this);//send our instance, so he can respond to us
+		host.msgIWantFood(this);
 	}
 
 	private void SitDown() {
 		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(1, destinationX, destinationY); //hack; only one table
+		customerGui.DoGoToSeat(1, destinationX, destinationY);
 	}
 	
 	private void EatFood() {
 		Do("Eating Food");
-		timer.schedule(new TimerTask() {
+		eatingTimer.schedule(new TimerTask() {
 			Object cookie = 1;
 			public void run() {
 				print("Done eating, cookie=" + cookie);
