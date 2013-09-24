@@ -106,7 +106,6 @@ public class WaiterAgent extends Agent {
 	}
 	
 	// Misc. Utilities
-	
 	public enum CustomerState // Goes along with MyCustomer
 	{ReadyToOrder, Ordered, Eating, Done};
 	

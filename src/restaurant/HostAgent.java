@@ -11,16 +11,12 @@ import java.util.concurrent.Semaphore;
 /**
  * Restaurant Host Agent
  */
-//We only have 2 types of agents in this prototype. A customer and an agent that
-//does all the rest. Rather than calling the other agent a waiter, we called him
-//the HostAgent. A Host is the manager of a restaurant who sees that all
-//is proceeded as he wishes.
 public class HostAgent extends Agent {
-	static final int NTABLES = 3;//a global for the number of tables.
-	//Notice that we implement waitingCustomers using ArrayList, but type it
-	//with List semantics.
-	public List<CustomerAgent> waitingCustomers
-	= new ArrayList<CustomerAgent>();
+	
+	// Variable Declarations
+	static final int NTABLES = 3;
+	
+	public List<CustomerAgent> waitingCustomers = new ArrayList<CustomerAgent>();
 	
 	public Collection<Table> tables;
 	 
@@ -108,9 +104,7 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 
-	/**
-	 * Scheduler.  Determine what action is called for, and do it.
-	 */
+	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		
 		if (state == AgentState.DoingNothing) {
@@ -152,7 +146,6 @@ public class HostAgent extends Agent {
 	}
 
 	// Actions
-
 	private void givetoWaiter(CustomerAgent c, Table t){
 		// Stub - find the least busy waiter in the restaurant and assign this customer (and their table) to it
 	}
@@ -181,7 +174,6 @@ public class HostAgent extends Agent {
 	}
 
 	// Misc. Utilities
-
 	public void setGui(HostGui gui) {
 		hostGui = gui;
 	}

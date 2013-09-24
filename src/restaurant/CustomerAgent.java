@@ -16,6 +16,7 @@ public class CustomerAgent extends Agent {
 	
 	static final int DEFAULT_HUNGER_LEVEL = 5;
 	static final int DEFAULT_SIT_TIME = 5000;
+	static final int DEFAULT_CHOOSE_TIME = 5000;
 	
 	private String name;
 	private int hungerLevel = DEFAULT_HUNGER_LEVEL;
@@ -31,7 +32,7 @@ public class CustomerAgent extends Agent {
 	private HostAgent host;
 
 	public enum AgentState
-	{DoingNothing, WaitingInRestaurant, BeingSeated, Seated, Eating, DoneEating, Leaving, Following, Choosing};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, WaitingForFood, Eating, DoneEating, Leaving, Choosing};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
@@ -43,14 +44,6 @@ public class CustomerAgent extends Agent {
 		this.name = name;
 	}
 
-	public void setHost(HostAgent host) {
-		this.host = host;
-	}
-
-	public String getCustomerName() {
-		return name;
-	}
-	
 	// Messages
 	public void gotHungry() {
 		print("I'm hungry");
@@ -68,7 +61,17 @@ public class CustomerAgent extends Agent {
 		state = AgentState.Choosing;
 		stateChanged();
 	}
-
+	
+	public void msgWhatDoYouWant() {
+		decideOnFood();
+		stateChanged();
+	}
+	
+	public void hereIsOrder(Order o) {
+		EatFood();
+		stateChanged();
+	}
+	
 	public void msgAnimationFinishedGoToSeat() {
 		event = AgentEvent.seated;
 		stateChanged();
@@ -79,25 +82,14 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void msgWhatDoYouWant() {
-		sendChoiceToWaiter();
-		stateChanged();
-	}
-	
-	public void hereIsOrder(Order o) {
-		EatFood();
-		stateChanged();
-	}
-	
-
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
-			state = AgentState.WaitingInRestaurant;
+			state = AgentState.WaitingForSeat;
 			goToRestaurant();
 			return true;
 		}
-		if (state == AgentState.WaitingInRestaurant && event == AgentEvent.followHost){
+		if (state == AgentState.WaitingForSeat && event == AgentEvent.followHost){
 			state = AgentState.BeingSeated;
 			SitDown();
 			return true;
@@ -109,14 +101,13 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.Eating && event == AgentEvent.doneEating){
 			state = AgentState.Leaving;
-			leaveTable();
+			leaveRestaurant();
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
 			state = AgentState.DoingNothing;
 			return true;
 		}
-		
 		return false;
 	}
 
@@ -124,6 +115,8 @@ public class CustomerAgent extends Agent {
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
 		assignedWaiter.hereIsMyChoice(itemChoice);
+		state = AgentState.WaitingForFood;
+		stateChanged();
 	}
 	
 	private void goToRestaurant() {
@@ -138,6 +131,7 @@ public class CustomerAgent extends Agent {
 	
 	private void EatFood() {
 		Do("Eating Food");
+		state = AgentState.Eating;
 		eatingTimer.schedule(new TimerTask() {
 			Object cookie = 1;
 			public void run() {
@@ -149,11 +143,28 @@ public class CustomerAgent extends Agent {
 		DEFAULT_SIT_TIME);
 	}
 
-	private void leaveTable() {
+	private void leaveRestaurant() {
 		Do("Leaving.");
 		host.msgLeavingTable(this);
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
+		state = AgentState.Leaving;
+		stateChanged();
+	}
+	
+	private void decideOnFood(){
+		Do("Making menu choice");
+		state = AgentState.Choosing;
+		choosingTimer.schedule(new TimerTask() {
+			Object cookie = 1;
+			public void run() {
+				print("Done choosing, cookie=" + cookie);
+				sendChoiceToWaiter();
+				state = AgentState.WaitingForFood;
+				stateChanged();
+			}
+		},
+		DEFAULT_CHOOSE_TIME);
 	}
 
 	// Accessors
@@ -181,12 +192,19 @@ public class CustomerAgent extends Agent {
 		return customerGui;
 	}
 
+	// Misc. Utilities
 	public String pickRandomItem() {
 		Random randNum = new Random();
 		int itemPickNum = randNum.nextInt(myMenu.itemList.size()) + 1;
 		return myMenu.getAt(itemPickNum);
 	}
+	
+	public void setHost(HostAgent host) {
+		this.host = host;
+	}
+
+	public String getCustomerName() {
+		return name;
+	}
 
 }
-
-
