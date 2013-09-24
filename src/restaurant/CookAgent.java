@@ -1,12 +1,18 @@
 package restaurant;
 
 import agent.Agent;
+
 import restaurant.CustomerAgent.AgentEvent;
 import restaurant.CustomerAgent.AgentState;
+import restaurant.Order.orderStatus;
 import restaurant.gui.HostGui;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+
+import restaurant.Order;
+import restaurant.Table;
+
 
 /**
  * Restaurant Cook Agent
@@ -14,79 +20,69 @@ import java.util.concurrent.Semaphore;
 
 public class CookAgent extends Agent {
 	
-	public List<CustomerAgent> currentOrders
-	= new ArrayList<CustomerAgent>();
-	
-	public Collection<Order> myOrders;
-	
+	// Variable Declarations
 	private String name;
-
-	public enum AgentState
-	{DoingNothing, preparingOrder};
-	private AgentState state = AgentState.DoingNothing; // The start state
+	private List<Order> currentOrders;
+	Hashtable<String, Integer> timerList;
 	
+	// Accessors
 	public CookAgent(String name) {
+		
 		super();
-
 		this.name = name;
+		currentOrders = new ArrayList<Order>();
+				
+		timerList = new Hashtable<String, Integer>();
+		timerList.put("Lemonade", 1500);
+		timerList.put("Water", 1000);
+		timerList.put("French Fries", 4000);
+		timerList.put("Pizza", 7000);
+		timerList.put("Pasta", 6000);
+		timerList.put("Cobbler", 5000);
+		
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public List getOrders() {
+	public List<Order> getOrders() {
 		return currentOrders;
 	}
 	
 	// Messages
-	public void hereIsOrder(WaiterAgent w, String choice) {
-		// Accepts order and places it on this (cook) agent's waiting orders list
+	public void hereIsOrder(Order o) {
+		currentOrders.add(new Order(o));
+		stateChanged();
 	}
 
-	/**
-	 * Scheduler.  Determine what action is called for, and do it.
-	 */
+	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
-		if (state == AgentState.DoingNothing) {
-		
-			// Search through all orders and prepares orders by starting their timer on each one
-			// Only cooks one order at a time though.
-			
-			return false;
-		
-		} (state == AgentState.preparingOrder) {
-			// Check to see if order is done. If it is, call orderDone();
+		for (Order order : currentOrders) {
+			if (order.getStatus() == orderStatus.ready) {
+				orderDone(order);
+				return true;
+			} else if (order.getStatus() == orderStatus.waiting){
+				prepareFood(order);
+				return true;
+			}
 		}
-		
-		
-		return true;
-	
+		return false;
 	}
 
 	// Actions
-	private void hereIsOrder(Order o, CustomerAgent c){
-		// Begins cooking the specified order and starts a timer based on the food item class' set cooking time
+	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
+		// Animation
+		o.status = orderStatus.preparing;
+		o.setCooking(timerList.get(o.getFoodName()));
+		stateChanged();
 	}
 
-	private void orderDone(Order o){
-		// Tells the specific waiter that their order is done and removes that order from the cook's list of orders
+	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
+		o.getWaiter().hereIsFood(o);
+		currentOrders.remove(o);
+		stateChanged();
 	}
 	
-	// Misc. Utilities
 
 } // end of cook class
-
-// Order and food classes
-class Order {
-	CustomerAgent orderer;
-	Food foodChoice;
-	int forTable;
-	public enum orderStatus {Pending, Cooking, Done};
-}
-
-class Food {
-	String foodName;
-	int cookingTime;
-}

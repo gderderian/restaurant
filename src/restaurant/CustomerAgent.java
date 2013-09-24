@@ -16,7 +16,7 @@ public class CustomerAgent extends Agent {
 	static final int DEFAULT_SIT_TIME = 5000;
 	
 	private String name;
-	private int hungerLevel = DEFAULT_HUNGER_LEVEL;     // determines length of meal
+	private int hungerLevel = DEFAULT_HUNGER_LEVEL;	// determines length of meal
 	Timer timer = new Timer();
 	private CustomerGui customerGui;
 	
@@ -37,22 +37,12 @@ public class CustomerAgent extends Agent {
 	
 	// For v2
 	private WaiterAgent assignedWaiter;
-	private choice chosenFood;
 
-	/**
-	 * Constructor for CustomerAgent class
-	 *
-	 * @param name name of the customer
-	 * @param gui  reference to the customergui so the customer can send it messages
-	 */
 	public CustomerAgent(String name){
 		super();
 		this.name = name;
 	}
 
-	/**
-	 * hack to establish connection to Host agent.
-	 */
 	public void setHost(HostAgent host) {
 		this.host = host;
 	}
@@ -60,8 +50,9 @@ public class CustomerAgent extends Agent {
 	public String getCustomerName() {
 		return name;
 	}
+	
+	
 	// Messages
-
 	public void gotHungry() {//from animation
 		print("I'm hungry");
 		event = AgentEvent.gotHungry;

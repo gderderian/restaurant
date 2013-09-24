@@ -48,11 +48,11 @@ public class WaiterAgent extends Agent {
 	}
 	
 	// Messages
-	public void orderDone(Choice c, Table t) {
+	public void orderDone(Order o) {
 		// Change state, inform gui to deliver order, tell customer food is done
 	}
 
-	public void hereIsFood(CustomerAgent c, Choice ch) {
+	public void hereIsFood(Order o) {
 		// Tell customer food is done, change state to doingNothing until next task is sent
 	}
 
