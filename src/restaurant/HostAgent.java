@@ -17,19 +17,11 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 3;
 	
 	public List<CustomerAgent> waitingCustomers = new ArrayList<CustomerAgent>();
-	
+	public List<WaiterAgent> myWaiters = new ArrayList<WaiterAgent>();
 	public Collection<Table> tables;
-	 
-	// v2 prototyping
-	public List<Waiters> myWaiters
-	= new ArrayList<WaiterAgent>();
-	
-	//note that tables is typed with Collection semantics.
-	//Later we will see how it is implemented
 
 	private String name;
 	private Semaphore atTable = new Semaphore(0,true);
-
 	public HostGui hostGui = null;
 
 	public enum AgentState
@@ -40,16 +32,11 @@ public class HostAgent extends Agent {
 	{doingNothing, seatedCustomer, WaitingToSeat};
 	private AgentEvent event = AgentEvent.doingNothing; // The start state 
 	
-	//public enum AgentEvent 
-	//{none, GoingToDesk};
-	//AgentEvent event = AgentEvent.none;
-	
 	public HostAgent(String name) {
 		super();
 
 		this.name = name;
 		
-		// make some tables
 		int table_x_start = 200;
 		int table_y_start = 250;
 		
@@ -59,6 +46,7 @@ public class HostAgent extends Agent {
 			table_x_start = table_x_start + 50;
 			table_y_start = table_y_start - 50;
 		}
+		
 	}
 
 	public String getMaitreDName() {
@@ -76,8 +64,8 @@ public class HostAgent extends Agent {
 	public Collection getTables() {
 		return tables;
 	}
+	
 	// Messages
-
 	public void msgIWantFood(CustomerAgent cust) {
 		waitingCustomers.add(cust);
 		stateChanged();
@@ -93,9 +81,9 @@ public class HostAgent extends Agent {
 		}
 	}
 
-	public void msgAtTable() {//from animation
-		//print("msgAtTable() called");
-		atTable.release();// = true;
+	public void msgAtTable() {
+		print("msgAtTable() called");
+		atTable.release();
 		stateChanged();
 	}
 	
@@ -106,43 +94,26 @@ public class HostAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
 		if (state == AgentState.DoingNothing) {
-		/* Think of this next rule as:
-            Does there exist a table and customer,
-            so that table is unoccupied and customer is waiting.
-            If so seat him at the table.
-		 */
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
-					seatCustomer(waitingCustomers.get(0), table);//the action
+					seatCustomer(waitingCustomers.get(0), table);
 					state = AgentState.GoingToDesk;
-					return true;//return true to the abstract agent to reinvoke the scheduler.
+					return true;
 				}
 			}
 		}
-
-		return false;
-		
-		} else if (state == AgentState.GoingToDesk) {
-			
+		} else if (state == AgentState.GoingToDesk) {	
 			System.out.println("going to desk");
 			hostGui.DoLeaveCustomer();
 			return true;
-			
 		} else if (state == AgentState.AtDesk) {
-			
 			System.out.println("at desk in scheduler");
 			state = AgentState.DoingNothing;
 			return true;
-			
 		}
-		
-		return true;
-		//we have tried all our rules and found
-		//nothing to do. So return false to main loop of abstract agent
-		//and wait.
+		return false;
 	}
 
 	// Actions
@@ -156,7 +127,6 @@ public class HostAgent extends Agent {
 		try {
 			atTable.acquire();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		table.setOccupant(customer);
@@ -164,13 +134,9 @@ public class HostAgent extends Agent {
 		hostGui.DoLeaveCustomer();
 	}
 
-	// The animation DoXYZ() routines
 	private void DoSeatCustomer(CustomerAgent customer, Table table) {
-		//Notice how we print "customer" directly. It's toString method will do it.
-		//Same with "table"
 		print("Seating " + customer + " at " + table + "x and y of this table:" + table.tableX + " | " + table.tableY);
 		hostGui.DoBringToTable(customer, table.tableX, table.tableY);
-
 	}
 
 	// Misc. Utilities
