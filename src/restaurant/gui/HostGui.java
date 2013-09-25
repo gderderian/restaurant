@@ -38,12 +38,11 @@ public class HostGui implements Gui {
         else if (yPos > yDestination)
             yPos--;
         else if (xPos == -20 && yPos == -20 && atDesk == false) {
-        	agent.msgAtDesk();
+        	// agent.msgAtDesk();
         	atDesk = true;
-        	System.out.println("Sarah: At desk!!!!!!" + xPos + " - " + yPos);
         } else if (xPos == xDestination && yPos == yDestination
         		& (xDestination == host_tableX + 20) & (yDestination == host_tableY - 20)) {
-           agent.msgAtTable();
+           // agent.msgAtTable();
         }
         
         if (xPos != -20 && yPos != -20) {

@@ -19,7 +19,7 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 3;
 	
 	public List<CustomerAgent> waitingCustomers;
-	public List<MyWaiter> myWaiters;
+	public List<WaiterAgent> myWaiters;
 	public Collection<Table> tables;
 
 	private String name;
@@ -34,7 +34,7 @@ public class HostAgent extends Agent {
 		super();
 		this.name = name;
 		
-		myWaiters = new ArrayList<MyWaiter>();
+		myWaiters = new ArrayList<WaiterAgent>();
 		waitingCustomers = new ArrayList<CustomerAgent>();
 		
 		int table_x_start = 200;
@@ -69,6 +69,12 @@ public class HostAgent extends Agent {
 				stateChanged();
 			}
 		}
+		
+		for (WaiterAgent waiter : myWaiters) {
+			if (waiter.hasCustomer(cust) == true){
+				waiter.numCustomers--;
+			}
+		}
 	}
 
 	// Scheduler
@@ -88,10 +94,17 @@ public class HostAgent extends Agent {
 
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		
 		// Find waiter and notify them
-		
-		
+		int init_cust = myWaiters.get(0).numCustomers;
+		WaiterAgent w_selected = null;
+		for (WaiterAgent w : myWaiters){
+			if (w.numCustomers <= init_cust){
+				init_cust = w.numCustomers;
+				w_selected = w;
+			}
+		}
+		w_selected.seatCustomer(customer, table, this);
+		w_selected.numCustomers++;
 		table.setOccupant(customer);
 		waitingCustomers.remove(customer);
 	}
@@ -103,11 +116,6 @@ public class HostAgent extends Agent {
 
 	public HostGui getGui() {
 		return hostGui;
-	}
-
-	class MyWaiter {
-		WaiterAgent waiter;
-		int customerLoad;
 	}
 	
 }

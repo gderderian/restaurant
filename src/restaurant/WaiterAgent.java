@@ -14,8 +14,10 @@ import java.util.concurrent.Semaphore;
 public class WaiterAgent extends Agent {
 	
 	public List<MyCustomer> myCustomers;
-	public Collection<Table> myTables;
+	public HostAgent myHost;
+	public CookAgent myCook;
 	private String name;
+	public int numCustomers;
 
 	public enum AgentState
 	{DoingNothing, waiting, deliveringOrder, acceptingOrder, goingToKitchen, comingToKitchen, atDesk};
@@ -29,20 +31,11 @@ public class WaiterAgent extends Agent {
 		super();
 		this.name = name;
 		myCustomers = new ArrayList<MyCustomer>();
-		myTables = new ArrayList<Table>();
 	}
 
 	// Accessors
 	public String getName() {
 		return name;
-	}
-
-	public List getCustomers() {
-		return myCustomers;
-	}
-
-	public Collection getTables() {
-		return myTables;
 	}
 	
 	// Messages
@@ -55,19 +48,14 @@ public class WaiterAgent extends Agent {
 		// Tell customer food is done, change state to doingNothing until next task is sent
 	}
 
-	public void seatCustomer(CustomerAgent c, Table t) {
+	public void seatCustomer(CustomerAgent c, Table t, HostAgent h) {
 		// Notify customer
 		// c.goToTable(myMenu, this);
-		
-		
+		myHost = h;
 	}
 	
 	public void readyToOrder(CustomerAgent c) {
 		// c.state = waiting;
-	}
-	
-	public void doneEating(CustomerAgent c) {
-		// Clear from lists as customer finishes and leaves restaurant
 	}
 	
 	public void msgAtDesk(){
@@ -80,13 +68,17 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void ImDone(CustomerAgent c) {
-		
+		myHost.msgLeavingTable(c);
+		myCustomers.remove(c);
 	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		
 		if (state == AgentState.DoingNothing) {
+			for (MyCustomer c : myCustomers) {
+				
+			}
 			return true;
 		
 		}
@@ -102,8 +94,19 @@ public class WaiterAgent extends Agent {
 
 	private void sendToKitchen(Order o){
 		
-		
-		
+	}
+	
+	public boolean hasCustomer(CustomerAgent c){
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void setCook(CookAgent cook){
+		myCook = cook;
 	}
 	
 	// Misc. Utilities
