@@ -1,13 +1,17 @@
 package restaurant;
 
+import restaurant.Order.orderStatus;
 import restaurant.gui.CustomerGui;
-
 import restaurant.gui.RestaurantGui;
 import agent.Agent;
 
-import java.util.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.TimerTask;
 import java.util.Random;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 
 /**
  * Restaurant customer agent.
@@ -19,9 +23,10 @@ public class CustomerAgent extends Agent {
 	static final int DEFAULT_CHOOSE_TIME = 5000;
 	
 	private String name;
+	private String choice;
 	private int hungerLevel = DEFAULT_HUNGER_LEVEL;
-	Timer eatingTimer = new Timer();
-	Timer choosingTimer = new Timer();
+	Timer eatingTimer;
+	Timer choosingTimer;
 	private CustomerGui customerGui;
 	
 	int destinationX = 0;
@@ -32,16 +37,28 @@ public class CustomerAgent extends Agent {
 	private HostAgent host;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, WaitingForFood, Eating, DoneEating, Leaving, Choosing};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, WaitingForFood, Eating, Leaving, Choosing};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, seated, doneEating, doneLeaving, doneChoosing};
+	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated};
 	AgentEvent event = AgentEvent.none;
 
 	public CustomerAgent(String name){
 		super();
 		this.name = name;
+		this.choice = "";
+		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
+				new ActionListener() { public void actionPerformed(ActionEvent evt) {
+					choice = pickRandomItem();
+					event = AgentEvent.doneChoosing;
+		      }
+		});
+		eatingTimer = new Timer(DEFAULT_HUNGER_LEVEL,
+				new ActionListener() { public void actionPerformed(ActionEvent evt) {
+					event = AgentEvent.doneEating;
+		      }
+		});
 	}
 
 	// Messages
@@ -51,29 +68,26 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSitAtTable(Table t, Menu m, WaiterAgent w) {
+	public void msgSitAtTable(Menu m) {
 		print("Received msgSitAtTable");
-		event = AgentEvent.followHost;
-		destinationX = t.tableX;
-		destinationY = t.tableY;
-		assignedWaiter = w;
 		myMenu = m;
-		state = AgentState.Choosing;
+		event = AgentEvent.followHost;
+		state = AgentState.BeingSeated;
 		stateChanged();
 	}
 	
 	public void msgWhatDoYouWant() {
-		decideOnFood();
+		assignedWaiter.hereIsMyChoice(choice);
 		stateChanged();
 	}
 	
 	public void hereIsOrder(Order o) {
-		EatFood();
+		state = AgentState.Eating;
+		beginEating();
 		stateChanged();
 	}
 	
 	public void msgAnimationFinishedGoToSeat() {
-		event = AgentEvent.seated;
 		stateChanged();
 	}
 	
@@ -95,8 +109,13 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
-			// state = AgentState.Eating;
-			// EatFood();
+			state = AgentState.Choosing;
+			beginChoosing();
+			return true;
+		}
+		if (state == AgentState.Seated && event == AgentEvent.doneChoosing){
+			sendChoiceToWaiter(); 
+			state = AgentState.WaitingForFood;
 			return true;
 		}
 		if (state == AgentState.Eating && event == AgentEvent.doneEating){
@@ -115,8 +134,12 @@ public class CustomerAgent extends Agent {
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
 		assignedWaiter.hereIsMyChoice(itemChoice);
-		state = AgentState.WaitingForFood;
 		stateChanged();
+	}
+	
+	private void beginChoosing(){
+		choosingTimer.restart();
+		choosingTimer.start();
 	}
 	
 	private void goToRestaurant() {
@@ -129,42 +152,18 @@ public class CustomerAgent extends Agent {
 		customerGui.DoGoToSeat(1, destinationX, destinationY);
 	}
 	
-	private void EatFood() {
+	private void beginEating() {
 		Do("Eating Food");
-		state = AgentState.Eating;
-		eatingTimer.schedule(new TimerTask() {
-			Object cookie = 1;
-			public void run() {
-				print("Done eating, cookie=" + cookie);
-				event = AgentEvent.doneEating;
-				stateChanged();
-			}
-		},
-		DEFAULT_SIT_TIME);
+		eatingTimer.restart();
+		eatingTimer.start();
 	}
 
 	private void leaveRestaurant() {
 		Do("Leaving.");
-		host.msgLeavingTable(this);
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
 		state = AgentState.Leaving;
 		stateChanged();
-	}
-	
-	private void decideOnFood(){
-		Do("Making menu choice");
-		state = AgentState.Choosing;
-		choosingTimer.schedule(new TimerTask() {
-			Object cookie = 1;
-			public void run() {
-				print("Done choosing, cookie=" + cookie);
-				sendChoiceToWaiter();
-				state = AgentState.WaitingForFood;
-				stateChanged();
-			}
-		},
-		DEFAULT_CHOOSE_TIME);
 	}
 
 	// Accessors

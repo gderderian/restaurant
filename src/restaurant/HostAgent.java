@@ -26,11 +26,11 @@ public class HostAgent extends Agent {
 
 	public enum AgentState
 	{DoingNothing, Working, GoingToDesk, AtDesk, seatingCustomer};
-	private AgentState state = AgentState.DoingNothing; // The start state
+	private AgentState state = AgentState.DoingNothing;
 	
 	public enum AgentEvent
 	{doingNothing, seatedCustomer, WaitingToSeat};
-	private AgentEvent event = AgentEvent.doingNothing; // The start state 
+	private AgentEvent event = AgentEvent.doingNothing;
 	
 	public HostAgent(String name) {
 		super();
@@ -42,7 +42,7 @@ public class HostAgent extends Agent {
 		
 		tables = new ArrayList<Table>(NTABLES);
 		for (int ix = 1; ix <= NTABLES; ix++) {
-			tables.add(new Table(ix, table_x_start, table_y_start)); //how you add to a collections
+			tables.add(new Table(ix, table_x_start, table_y_start));
 			table_x_start = table_x_start + 50;
 			table_y_start = table_y_start - 50;
 		}
@@ -94,16 +94,17 @@ public class HostAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
+		
 		if (state == AgentState.DoingNothing) {
-		for (Table table : tables) {
-			if (!table.isOccupied()) {
-				if (!waitingCustomers.isEmpty()) {
-					seatCustomer(waitingCustomers.get(0), table);
-					state = AgentState.GoingToDesk;
-					return true;
+			for (Table table : tables) {
+				if (!table.isOccupied()) {
+					if (!waitingCustomers.isEmpty()) {
+						seatCustomer(waitingCustomers.get(0), table);
+						state = AgentState.GoingToDesk;
+						return true;
+					}
 				}
 			}
-		}
 		} else if (state == AgentState.GoingToDesk) {	
 			System.out.println("going to desk");
 			hostGui.DoLeaveCustomer();
@@ -122,7 +123,7 @@ public class HostAgent extends Agent {
 	}
 	
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		customer.msgSitAtTable(table.tableX, table.tableY);
+		customer.msgSitAtTable(table, waiter, menu);
 		DoSeatCustomer(customer, table);
 		try {
 			atTable.acquire();
