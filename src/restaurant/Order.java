@@ -2,6 +2,7 @@ package restaurant;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
 
 public class Order {
@@ -15,16 +16,18 @@ public class Order {
 	orderStatus status;
 	
 	public Order(CustomerAgent c, WaiterAgent w){
+		System.out.println("Order alive! 1");
 		recipientCustomer = c;
 		requestingWaiter = w;
-		status = orderStatus.preparing;
+		status = orderStatus.waiting;
 	}
 	
 	public Order(CustomerAgent c, WaiterAgent w, String foodChoice){
+		System.out.println("Order alive! 2");
 		recipientCustomer = c;
 		requestingWaiter = w;
 		foodItem = foodChoice;
-		status = orderStatus.preparing;
+		status = orderStatus.waiting;
 	}
 	
 	public Order(Order o){
@@ -54,6 +57,8 @@ public class Order {
 		foodTimer = new Timer(cookTime,
 				new ActionListener() { public void actionPerformed(ActionEvent event) {
 		          status = orderStatus.ready;
+		          foodTimer.stop();
+		          System.out.println("Order has finished");
 		      }
 		});
 		foodTimer.start();

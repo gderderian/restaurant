@@ -52,11 +52,14 @@ public class CustomerAgent extends Agent {
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
 					choice = pickRandomItem();
 					event = AgentEvent.doneChoosing;
+					stateChanged();
 		      }
 		});
 		eatingTimer = new Timer(DEFAULT_HUNGER_LEVEL,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
+					state = AgentState.DoingNothing;
 					event = AgentEvent.doneEating;
+					stateChanged();
 		      }
 		});
 	}
@@ -68,10 +71,11 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSitAtTable(Menu m) {
+	public void msgSitAtTable(Menu m, WaiterAgent w) {
 		print("Received msgSitAtTable");
 		myMenu = m;
-		event = AgentEvent.followHost;
+		assignedWaiter = w;
+		event = AgentEvent.seated;
 		state = AgentState.BeingSeated;
 		stateChanged();
 	}
@@ -98,6 +102,9 @@ public class CustomerAgent extends Agent {
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
+		
+		print("State: " + state + " - Event: " + event);
+		
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingForSeat;
 			goToRestaurant();
@@ -109,22 +116,24 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
+			print("Beginning to choose");
 			state = AgentState.Choosing;
 			beginChoosing();
 			return true;
 		}
-		if (state == AgentState.Seated && event == AgentEvent.doneChoosing){
-			sendChoiceToWaiter(); 
+		if (state == AgentState.Choosing && event == AgentEvent.doneChoosing){
+			sendChoiceToWaiter();
 			state = AgentState.WaitingForFood;
 			return true;
 		}
-		if (state == AgentState.Eating && event == AgentEvent.doneEating){
-			state = AgentState.Leaving;
+		if (state == AgentState.DoingNothing && event == AgentEvent.doneEating){
+			//state = AgentState.Leaving;
 			leaveRestaurant();
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
 			state = AgentState.DoingNothing;
+			event = AgentEvent.none;
 			return true;
 		}
 		return false;
@@ -134,10 +143,11 @@ public class CustomerAgent extends Agent {
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
 		assignedWaiter.hereIsMyChoice(itemChoice, this);
-		stateChanged();
+		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName());
 	}
 	
 	private void beginChoosing(){
+		choosingTimer.setRepeats(false);
 		choosingTimer.restart();
 		choosingTimer.start();
 	}
@@ -154,16 +164,17 @@ public class CustomerAgent extends Agent {
 	
 	private void beginEating() {
 		Do("Eating Food");
+		eatingTimer.setRepeats(false);
 		eatingTimer.restart();
 		eatingTimer.start();
 	}
 
 	private void leaveRestaurant() {
 		Do("Leaving.");
-		customerGui.DoExitRestaurant();
+		//customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
-		state = AgentState.Leaving;
-		stateChanged();
+		state = AgentState.DoingNothing;
+		event = AgentEvent.none;
 	}
 
 	// Accessors
@@ -204,6 +215,10 @@ public class CustomerAgent extends Agent {
 
 	public String getCustomerName() {
 		return name;
+	}
+	
+	public void assignWaiter(WaiterAgent w) {
+		assignedWaiter = w;
 	}
 	
 }

@@ -49,11 +49,15 @@ public class HostAgent extends Agent {
 	public String getName() {
 		return name;
 	}
+	
+	public void addWaiter(WaiterAgent w){
+		myWaiters.add(w);
+	}
 
 	// Messages
 	public void msgIWantFood(CustomerAgent cust) {
+		Do(cust.getName() + " is here and wants food!!!");
 		waitingCustomers.add(cust);
-		// Select waiter
 		stateChanged();
 	}
 
@@ -97,7 +101,7 @@ public class HostAgent extends Agent {
 				w_selected = w;
 			}
 		}
-		w_selected.seatCustomer(customer, table, this);
+		w_selected.msgSeatCustomer(customer, table, this);
 		w_selected.numCustomers++;
 		table.setOccupant(customer);
 		waitingCustomers.remove(customer);

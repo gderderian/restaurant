@@ -51,19 +51,27 @@ public class CookAgent extends Agent {
 	
 	// Messages
 	public void hereIsOrder(Order o) {
-		currentOrders.add(new Order(o));
+		Do("I have order!");
+		currentOrders.add(o);
+		Do("Order food name: " + o.getFoodName());
 		stateChanged();
 	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!currentOrders.isEmpty()) {
+			// Do("Orders not empty");
 			for (Order order : currentOrders) {
+				// Do("Order status: " + order.status);
 				if (order.getStatus() == orderStatus.ready) {
+					Do("Order is ready!");
 					orderDone(order);
 					return true;
 				} else if (order.getStatus() == orderStatus.waiting){
+					Do("Order is waiting!");
 					prepareFood(order);
+					return true;
+				} else {
 					return true;
 				}
 			}
@@ -73,16 +81,16 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
-		// Animation
+		Do("Preparing food!");
 		o.status = orderStatus.preparing;
+		Do("Order Food Name: " + o.getFoodName());
 		o.setCooking(timerList.get(o.getFoodName()));
-		stateChanged();
 	}
 
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
+		Do("Notifying waiter order is done");
 		o.getWaiter().hereIsFood(o);
 		currentOrders.remove(o);
-		stateChanged();
 	}
 	
 

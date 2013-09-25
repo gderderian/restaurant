@@ -37,6 +37,7 @@ public class WaiterAgent extends Agent {
 				cust.state = CustomerState.Done;
 			}
 		}
+		stateChanged();
 	}
 
 	public void hereIsFood(Order o) {
@@ -45,14 +46,16 @@ public class WaiterAgent extends Agent {
 				cust.state = CustomerState.FoodReady;
 			}
 		}
+		stateChanged();
 	}
 
-	public void seatCustomer(CustomerAgent c, Table t, HostAgent h) {
+	public void msgSeatCustomer(CustomerAgent c, Table t, HostAgent h) {
 		myHost = h;
 		MyCustomer customer = new MyCustomer();
 		customer.customer = c;
 		customer.table = t;
-		customer.state = CustomerState.Waiting;
+		myCustomers.add(customer);
+		stateChanged();
 	}
 	
 	public void readyToOrder(CustomerAgent c) {
@@ -61,9 +64,11 @@ public class WaiterAgent extends Agent {
 				cust.state = CustomerState.ReadyToOrder;
 			}
 		}
+		stateChanged();
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
+		Do("Accepted choice");
 		Order o = new Order(c, this, choice);
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
@@ -71,11 +76,14 @@ public class WaiterAgent extends Agent {
 				cust.state = CustomerState.OrderedWaiting;
 			}
 		}
+		stateChanged();
 	}
 	
 	public void ImDone(CustomerAgent c) {
+		Do("Customer " + c.getName() + " has finished and is DONE!");
 		myHost.msgLeavingTable(c);
 		myCustomers.remove(c);
+		stateChanged();
 	}
 
 	// Scheduler
@@ -83,31 +91,32 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c);
-				stateChanged();
+				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.ReadyToOrder){
 				takeOrder(c, c.table);
-				stateChanged();
+				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.OrderedWaiting){
+				Do("Sending " + c.customer.getName() + " order of " + c.order.getFoodName() + " to cook yay");
 				sendToKitchen(c, c.order);
-				stateChanged();
+				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.FoodReady){
 				deliverOrder(c, c.order);
-				stateChanged();
+				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Done){
 				goodbyeCustomer(c);
-				stateChanged();
+				return true;
 			}
 		}
 		return false;
@@ -120,6 +129,7 @@ public class WaiterAgent extends Agent {
 	}
 
 	private void sendToKitchen(MyCustomer c, Order o){
+		Do("Order sent to cook!");
 		myCook.hereIsOrder(o);
 		c.state = CustomerState.WaitingForFood;
 	}
@@ -139,6 +149,7 @@ public class WaiterAgent extends Agent {
 	
 	public void seatCustomer(MyCustomer c){
 		// Do gui
+		c.customer.msgSitAtTable(new Menu(), this);
 		c.state = CustomerState.Seated;
 	}
 	

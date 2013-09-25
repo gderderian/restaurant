@@ -42,6 +42,8 @@ public class RestaurantPanel extends JPanel {
         host.setGui(hostGui);
 
         gui.animationPanel.addGui(hostGui);
+        
+        host.addWaiter(waiter);
         host.startThread();
         
         cook.startThread();
@@ -112,9 +114,10 @@ public class RestaurantPanel extends JPanel {
     	System.out.println(isHungry);
     	
     	if (type.equals("Customers")) {
+    		
     		CustomerAgent c = new CustomerAgent(name);	
     		CustomerGui g = new CustomerGui(c, gui);
-
+    		
     		gui.animationPanel.addGui(g);
     		c.setHost(host);
     		
