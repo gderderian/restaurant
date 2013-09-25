@@ -24,10 +24,6 @@ public class HostAgent extends Agent {
 
 	private String name;
 	public HostGui hostGui = null;
-
-	public enum AgentState
-	{DoingNothing, Working, GoingToDesk, AtDesk, seatingCustomer};
-	private AgentState state = AgentState.DoingNothing;
 	
 	public HostAgent(String name) {
 		
@@ -79,13 +75,11 @@ public class HostAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		if (state == AgentState.DoingNothing) {
-			for (Table table : tables) {
-				if (!table.isOccupied()) {
-					if (!waitingCustomers.isEmpty()) {
-						seatCustomer(waitingCustomers.get(0), table);
-						return true;
-					}
+		for (Table table : tables) {
+			if (!table.isOccupied()) {
+				if (!waitingCustomers.isEmpty()) {
+					seatCustomer(waitingCustomers.get(0), table);
+					return true;
 				}
 			}
 		}

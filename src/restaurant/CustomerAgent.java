@@ -77,7 +77,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatDoYouWant() {
-		assignedWaiter.hereIsMyChoice(choice);
+		assignedWaiter.hereIsMyChoice(choice, this);
 		stateChanged();
 	}
 	
@@ -133,7 +133,7 @@ public class CustomerAgent extends Agent {
 	// Actions
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
-		assignedWaiter.hereIsMyChoice(itemChoice);
+		assignedWaiter.hereIsMyChoice(itemChoice, this);
 		stateChanged();
 	}
 	

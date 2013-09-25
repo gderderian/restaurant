@@ -20,6 +20,13 @@ public class Order {
 		status = orderStatus.preparing;
 	}
 	
+	public Order(CustomerAgent c, WaiterAgent w, String foodChoice){
+		recipientCustomer = c;
+		requestingWaiter = w;
+		foodItem = foodChoice;
+		status = orderStatus.preparing;
+	}
+	
 	public Order(Order o){
 		recipientCustomer = o.recipientCustomer;
 		requestingWaiter = o.requestingWaiter;

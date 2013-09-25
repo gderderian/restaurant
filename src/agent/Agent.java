@@ -9,7 +9,9 @@ import java.util.concurrent.*;
  */
 public abstract class Agent {
     Semaphore stateChange = new Semaphore(1, true);//binary semaphore, fair
+    Semaphore paused = new Semaphore(0);
     private AgentThread agentThread;
+    boolean isPaused = false;
 
     protected Agent() {
     }
@@ -99,18 +101,29 @@ public abstract class Agent {
      */
     private class AgentThread extends Thread {
         private volatile boolean goOn = false;
-
+        
         private AgentThread(String name) {
             super(name);
+        }
+        
+        private void paused(){
+        	isPaused = true;
+        }
+        
+        private void keepGoing(){
+        	isPaused = false;
+        	paused.release();
         }
 
         public void run() {
             goOn = true;
 
             while (goOn) {
+            	
                 try {
                     // The agent sleeps here until someone calls, stateChanged(),
                     // which causes a call to stateChange.give(), which wakes up agent.
+                	while(isPaused == true) { paused.acquire(); }
                     stateChange.acquire();
                     //The next while clause is the key to the control flow.
                     //When the agent wakes up it will call respondToStateChange()

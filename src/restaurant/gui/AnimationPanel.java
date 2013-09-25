@@ -48,8 +48,7 @@ public class AnimationPanel extends JPanel implements ActionListener {
     	} else {
         	timer.start();
         	timerIsRunning = true;
-    	}
-    	
+    	}	
     }
     
 	public void actionPerformed(ActionEvent e) {
