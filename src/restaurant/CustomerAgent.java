@@ -205,5 +205,5 @@ public class CustomerAgent extends Agent {
 	public String getCustomerName() {
 		return name;
 	}
-
+	
 }
