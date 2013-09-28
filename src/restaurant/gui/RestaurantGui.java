@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+
 /**
  * Main GUI class.
  * Contains the main frame and subsequent panels
@@ -24,23 +25,16 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * 1) the staff listing, menu, and lists of current customers all constructed
      *    in RestaurantPanel()
      * 2) the infoPanel about the clicked Customer (created just below)
-     */    
+     */
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
     /* infoPanel holds information about the clicked customer, if there is one*/
     private JPanel infoPanel;
-    private JLabel infoLabel; //part of infoPanel
-    private JCheckBox stateCB;//part of infoLabel
-    
-    // Added as part of lab
-    private JPanel demoPanel;
-    private JLabel demoLabel;
+    private JLabel infoLabel;
+    private JCheckBox stateCB;
     
     private JPanel leftPanel;
     
-    // Lab 2
-    private static final int DEMO_IMAGE_X = 64;
-    private static final int DEMO_IMAGE_Y = 64;
     private static final int WINDOW_BOUND = 50;
     private static final int REST_GRID_COLS = 1;
     private static final int REST_GRID_ROWS = 2;
@@ -48,10 +42,6 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private static final int INFO_PANEL_COLS = 2;
     private static final int INFO_PANEL_X_PADDING = 30;
     private static final int INFO_PANEL_Y_PADDING = 0;
-    private static final int DEMO_PANEL_ROWS = 1;
-    private static final int DEMO_PANEL_COLS = 2;
-    private static final int DEMO_PANEL_X_PADDING = 30;
-    private static final int DEMO_PANEL_Y_PADDING = 0;
 
     private Object currentPerson;
 
@@ -63,16 +53,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
     	
         int WINDOWX = 1000;
         int WINDOWY = 550;
-
-        //animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
-        //animationFrame.setVisible(true);
-    	//animationFrame.add(animationPanel);
     	
     	setBounds(WINDOW_BOUND, WINDOW_BOUND, WINDOWX, WINDOWY);
 
         setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.X_AXIS));
-    	//setLayout(new GridLayout(REST_GRID_ROWS, REST_GRID_COLS));
 
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));

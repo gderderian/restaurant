@@ -12,6 +12,8 @@ import java.util.Random;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
+import java.util.concurrent.Semaphore;
+
 
 /**
  * Restaurant customer agent.
@@ -43,6 +45,8 @@ public class CustomerAgent extends Agent {
 	public enum AgentEvent 
 	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated};
 	AgentEvent event = AgentEvent.none;
+	
+	private Semaphore isAnimating = new Semaphore(0,true);
 
 	public CustomerAgent(String name){
 		super();
