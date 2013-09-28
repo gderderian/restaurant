@@ -11,7 +11,9 @@ import java.util.TimerTask;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
+
 import java.util.concurrent.Semaphore;
 
 
@@ -20,7 +22,7 @@ import java.util.concurrent.Semaphore;
  */
 public class CustomerAgent extends Agent {
 	
-	static final int DEFAULT_HUNGER_LEVEL = 5;
+	static final int DEFAULT_HUNGER_LEVEL = 3500;
 	static final int DEFAULT_SIT_TIME = 5000;
 	static final int DEFAULT_CHOOSE_TIME = 5000;
 	
@@ -79,8 +81,7 @@ public class CustomerAgent extends Agent {
 		print("Received msgSitAtTable");
 		myMenu = m;
 		assignedWaiter = w;
-		event = AgentEvent.seated;
-		state = AgentState.BeingSeated;
+		event = AgentEvent.followHost;
 		stateChanged();
 	}
 	
@@ -104,12 +105,10 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
-	
-	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		
-		print("State: " + state + " - Event: " + event);
+		// print("State: " + state + " - Event: " + event);
 		
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingForSeat;
@@ -117,6 +116,7 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.WaitingForSeat && event == AgentEvent.followHost){
+			Do("SITTING DOWN NOW!!!");
 			state = AgentState.BeingSeated;
 			SitDown();
 			return true;
@@ -133,11 +133,12 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.DoingNothing && event == AgentEvent.doneEating){
-			//state = AgentState.Leaving;
+			state = AgentState.Leaving;
 			leaveRestaurant();
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
+			Do("RESETTING BACK TO NORMAL");
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
@@ -164,8 +165,14 @@ public class CustomerAgent extends Agent {
 	}
 
 	private void SitDown() {
-		Do("Being seated. Going to table");
-		customerGui.DoGoToSeat(1, destinationX, destinationY);
+		Do("Being seated. Going to table and beginning animation.");
+		customerGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		event = AgentEvent.seated;
 	}
 	
 	private void beginEating() {
@@ -177,7 +184,7 @@ public class CustomerAgent extends Agent {
 
 	private void leaveRestaurant() {
 		Do("Leaving.");
-		//customerGui.DoExitRestaurant();
+		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
 		state = AgentState.DoingNothing;
 		event = AgentEvent.none;
@@ -225,6 +232,11 @@ public class CustomerAgent extends Agent {
 	
 	public void assignWaiter(WaiterAgent w) {
 		assignedWaiter = w;
+	}
+	
+	public void releaseSemaphore(){
+		//System.out.println("Releasing semaphore");
+		isAnimating.release();
 	}
 	
 }

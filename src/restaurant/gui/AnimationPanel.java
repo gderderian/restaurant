@@ -20,8 +20,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private final int TABLE_Y = 50;
     private final int SCREEN_RECT_X_COORD = 0;
     private final int SCREEN_RECT_Y_COORD = 0;
-    private final int TABLE_X_COORD = 200;
-    private final int TABLE_Y_COORD = 250;
 
     private List<Gui> guis = new ArrayList<Gui>();
     
@@ -54,24 +52,28 @@ public class AnimationPanel extends JPanel implements ActionListener {
 	}
 
     public void paintComponent(Graphics g) {
+    	
         Graphics2D g2 = (Graphics2D)g;
 
         //Clear the screen by painting a rectangle the size of the frame
         g2.setColor(getBackground());
         g2.fillRect(SCREEN_RECT_X_COORD, SCREEN_RECT_Y_COORD, WINDOWX, WINDOWY);
 
-        //Here is the table
+        // Table 1
         g2.setColor(Color.ORANGE);
-        g2.fillRect(TABLE_X_COORD, TABLE_Y_COORD, TABLE_X, TABLE_Y); //200 and 250 need to be table params
+        g2.fillRect(150, 150, TABLE_X, TABLE_Y);
 
         // Table 2
-        g2.setColor(Color.RED);
-        g2.fillRect(250, 200, TABLE_X, TABLE_Y);
-        
+        g2.setColor(Color.ORANGE);
+        g2.fillRect(150, 275, TABLE_X, TABLE_Y);
         
         // Table 3
-        g2.setColor(Color.BLACK);
-        g2.fillRect(300, 150, TABLE_X, TABLE_Y);
+        g2.setColor(Color.ORANGE);
+        g2.fillRect(275, 150, TABLE_X, TABLE_Y);
+        
+        // Table 4
+        g2.setColor(Color.ORANGE);
+        g2.fillRect(275, 275, TABLE_X, TABLE_Y);
         
         for(Gui gui : guis) {
             if (gui.isPresent()) {

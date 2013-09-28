@@ -15,20 +15,11 @@ import java.io.IOException;
  * Contains the main frame and subsequent panels
  */
 public class RestaurantGui extends JFrame implements ActionListener {
-    /* The GUI has two frames, the control frame (in variable gui) 
-     * and the animation frame, (in variable animationFrame within gui)
-     */
-	// JFrame animationFrame = new JFrame("Restaurant Animation");
+
 	AnimationPanel animationPanel = new AnimationPanel();
-	
-    /* restPanel holds 2 panels
-     * 1) the staff listing, menu, and lists of current customers all constructed
-     *    in RestaurantPanel()
-     * 2) the infoPanel about the clicked Customer (created just below)
-     */
     private RestaurantPanel restPanel = new RestaurantPanel(this);
     
-    /* infoPanel holds information about the clicked customer, if there is one*/
+    /* infoPanel holds information about the clicked customer, if there is one */
     private JPanel infoPanel;
     private JLabel infoLabel;
     private JCheckBox stateCB;
@@ -100,6 +91,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
 
         
     }
+    
     /**
      * updateInfoPanel() takes the given customer (or, for v3, Host) object and
      * changes the information panel to hold that person's info.
@@ -120,6 +112,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         }
         infoPanel.validate();
     }
+    
     /**
      * Action listener method that reacts to the checkbox being clicked;
      * If it's the customer's checkbox, it will make him hungry
@@ -134,6 +127,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
             }
         }
     }
+    
     /**
      * Message sent from a customer gui to enable that customer's
      * "I'm hungry" checkbox.
@@ -149,6 +143,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
             }
         }
     }
+    
     /**
      * Main routine to get gui started
      */

@@ -9,6 +9,7 @@ import restaurant.gui.WaiterGui;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.math.*;
 
 /**
  * Restaurant Host Agent
@@ -16,7 +17,7 @@ import java.util.concurrent.Semaphore;
 public class HostAgent extends Agent {
 	
 	// Variable Declarations
-	static final int NTABLES = 3;
+	static final int NTABLES = 4;
 	
 	public List<CustomerAgent> waitingCustomers;
 	public List<WaiterAgent> myWaiters;
@@ -36,11 +37,20 @@ public class HostAgent extends Agent {
 		int table_x_start = 200;
 		int table_y_start = 250;
 		
+		// Generate tables
 		tables = new ArrayList<Table>(NTABLES);
-		for (int ix = 1; ix <= NTABLES; ix++) {
-			tables.add(new Table(ix, table_x_start, table_y_start));
-			table_x_start = table_x_start + 50;
-			table_y_start = table_y_start - 50;
+		int tableRoot = (int)Math.sqrt(NTABLES);
+		int startingCoord = 150;
+		int tableDistance = 125;
+		
+		for (int i = 0; i < tableRoot; i++) {
+			for (int j = 0; j < tableRoot; j++){
+				int tableNum = tableRoot * i + j + 1;
+				int tableX = startingCoord + i*tableDistance;
+				int tableY = startingCoord + j*tableDistance;
+				System.out.println("Adding in New Table: x:" + tableX + " - y:" + tableY + " - #" + tableNum);
+				tables.add(new Table(tableNum, tableX, tableY));
+			}
 		}
 		
 	}

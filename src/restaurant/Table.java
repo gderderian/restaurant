@@ -11,10 +11,10 @@ public class Table {
 		this.tableNumber = tableNumber;
 	}
 	
-	Table(int tableNumber, int tableX, int tableY) {
+	Table(int tableNumber, int newTableX, int newTableY) {
 		this.tableNumber = tableNumber;
-		this.tableX = tableX;
-		this.tableY = tableY;
+		this.tableX = newTableX;
+		this.tableY = newTableY;
 	}
 
 	void setOccupant(CustomerAgent cust) {

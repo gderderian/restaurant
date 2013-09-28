@@ -59,6 +59,7 @@ public class WaiterAgent extends Agent {
 		customer.customer = c;
 		customer.table = t;
 		myCustomers.add(customer);
+		c.getGui().setDestination(t.tableX, t.tableY);
 		stateChanged();
 	}
 	
@@ -167,7 +168,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	// Misc. Utilities
-	public enum CustomerState // Goes along with MyCustomer
+	public enum CustomerState // Goes along with MyCustomer below
 	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done};
 	
 	class MyCustomer {
