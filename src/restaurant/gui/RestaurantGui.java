@@ -17,7 +17,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
     /* The GUI has two frames, the control frame (in variable gui) 
      * and the animation frame, (in variable animationFrame within gui)
      */
-	JFrame animationFrame = new JFrame("Restaurant Animation");
+	// JFrame animationFrame = new JFrame("Restaurant Animation");
 	AnimationPanel animationPanel = new AnimationPanel();
 	
     /* restPanel holds 2 panels
@@ -36,6 +36,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private JPanel demoPanel;
     private JLabel demoLabel;
     
+    private JPanel leftPanel;
+    
     // Lab 2
     private static final int DEMO_IMAGE_X = 64;
     private static final int DEMO_IMAGE_Y = 64;
@@ -51,33 +53,42 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private static final int DEMO_PANEL_X_PADDING = 30;
     private static final int DEMO_PANEL_Y_PADDING = 0;
 
-    private Object currentPerson;/* Holds the agent that the info is about.
-    								Seems like a hack */
+    private Object currentPerson;
 
     /**
      * Constructor for RestaurantGui class.
      * Sets up all the gui components.
      */
     public RestaurantGui() {
-        int WINDOWX = 550;
+    	
+        int WINDOWX = 1000;
         int WINDOWY = 550;
 
-        animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
-        animationFrame.setVisible(true);
-    	animationFrame.add(animationPanel); 
+        //animationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //animationFrame.setBounds(100+WINDOWX, 50 , WINDOWX+100, WINDOWY+100);
+        //animationFrame.setVisible(true);
+    	//animationFrame.add(animationPanel);
     	
     	setBounds(WINDOW_BOUND, WINDOW_BOUND, WINDOWX, WINDOWY);
 
-        //setLayout(new BoxLayout((Container) getContentPane(), 
-        //		BoxLayout.Y_AXIS));
-    	setLayout(new GridLayout(REST_GRID_ROWS, REST_GRID_COLS));
+        setLayout(new BoxLayout((Container) getContentPane(), BoxLayout.X_AXIS));
+    	//setLayout(new GridLayout(REST_GRID_ROWS, REST_GRID_COLS));
 
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        
+        Dimension leftDim = new Dimension((int) (WINDOWX * .5), WINDOWY);
+        leftPanel.setPreferredSize(leftDim);
+        leftPanel.setMinimumSize(leftDim);
+        leftPanel.setMaximumSize(leftDim);
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Settings & Controls"));
+        
+        
         Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
-        add(restPanel);
+        leftPanel.add(restPanel);
         
         // Now, setup the info panel
         Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
@@ -97,38 +108,12 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
-        add(infoPanel);
+        leftPanel.add(infoPanel);
         
-        
-        // Add new demo panel for lab
-        Dimension demoDim = new Dimension(WINDOWX, (int) (WINDOWY * .10));
-        demoPanel = new JPanel();
-        demoPanel.setPreferredSize(demoDim);
-        demoPanel.setMinimumSize(demoDim);
-        demoPanel.setMaximumSize(demoDim);
-        demoPanel.setBorder(BorderFactory.createTitledBorder("Welcome Message from Grant"));
-        demoPanel.setLayout(new GridLayout(DEMO_PANEL_ROWS, DEMO_PANEL_COLS, DEMO_PANEL_X_PADDING, DEMO_PANEL_Y_PADDING));
-        demoLabel = new JLabel(); 
-        demoLabel.setText("<html><pre><i>Hello world, my name is Grant!</i></pre></html>");
-        
-        // Add image too (as JButton)
-        JButton shieldButton = new JButton();
-        Image uscShield = null;
-		try {
-			uscShield = ImageIO.read(getClass().getResource("small_shield.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        shieldButton.setIcon(new ImageIcon(uscShield));
-        shieldButton.setPreferredSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
-        shieldButton.setMinimumSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
-        shieldButton.setMaximumSize(new Dimension(DEMO_IMAGE_X, DEMO_IMAGE_Y));
-        
-        demoPanel.add(shieldButton);
-       
-        demoPanel.add(demoLabel);
-        
-        // add(demoPanel);
+        add(leftPanel);
+        animationPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Animation"));
+        add(animationPanel);
+
         
     }
     /**
@@ -144,11 +129,8 @@ public class RestaurantGui extends JFrame implements ActionListener {
         if (person instanceof CustomerAgent) {
             CustomerAgent customer = (CustomerAgent) person;
             stateCB.setText("Hungry?");
-          //Should checkmark be there?
             stateCB.setSelected(customer.getGui().isHungry());
-          //Is customer hungry? Hack. Should ask customerGui
             stateCB.setEnabled(!customer.getGui().isHungry());
-          // Hack. Should ask customerGui
             infoLabel.setText(
                "<html><pre>     Name: " + customer.getName() + " </pre></html>");
         }

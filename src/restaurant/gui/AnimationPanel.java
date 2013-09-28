@@ -10,12 +10,11 @@ import java.util.ArrayList;
 
 public class AnimationPanel extends JPanel implements ActionListener {
 
-    private final int WINDOWX = 450;
-    private final int WINDOWY = 350;
+    private final int WINDOWX = 500;
+    private final int WINDOWY = 550;
     private Image bufferImage;
     private Dimension bufferSize;
     
-    // Lab 2 Vars
     private final int MAIN_TIMER = 20;
     private final int TABLE_X = 50;
     private final int TABLE_Y = 50;
@@ -35,7 +34,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
         
         bufferSize = this.getSize();
         
-    	//Timer timer = new Timer(MAIN_TIMER, this);
     	timer.start();
     	timerIsRunning = true;
     }
@@ -52,7 +50,7 @@ public class AnimationPanel extends JPanel implements ActionListener {
     }
     
 	public void actionPerformed(ActionEvent e) {
-		repaint();  //Will have paintComponent called
+		repaint();
 	}
 
     public void paintComponent(Graphics g) {
