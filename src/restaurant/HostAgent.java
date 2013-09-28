@@ -5,7 +5,7 @@ import restaurant.CustomerAgent.AgentEvent;
 import restaurant.CustomerAgent.AgentState;
 import restaurant.WaiterAgent.CustomerState;
 import restaurant.WaiterAgent.MyCustomer;
-import restaurant.gui.HostGui;
+import restaurant.gui.WaiterGui;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -23,7 +23,7 @@ public class HostAgent extends Agent {
 	public Collection<Table> tables;
 
 	private String name;
-	public HostGui hostGui = null;
+	public WaiterGui hostGui = null;
 	
 	public HostAgent(String name) {
 		
@@ -108,11 +108,11 @@ public class HostAgent extends Agent {
 	}
 
 	// Misc. Utilities
-	public void setGui(HostGui gui) {
+	public void setGui(WaiterGui gui) {
 		hostGui = gui;
 	}
 
-	public HostGui getGui() {
+	public WaiterGui getGui() {
 		return hostGui;
 	}
 	

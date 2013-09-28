@@ -7,7 +7,6 @@ import restaurant.WaiterAgent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.Vector;
 
 /**
@@ -16,15 +15,17 @@ import java.util.Vector;
  */
 public class RestaurantPanel extends JPanel {
 
-    // Host, cook, waiters and customers
+	// Declare lists to store agents with multiple instances
+    private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
+    private Vector<WaiterAgent> waiterList = new Vector<WaiterAgent>();
+	
+    // Instantiate cook, host, and one waiter
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Mario");
     private WaiterAgent waiter = new WaiterAgent("Andrew");
     
-    private HostGui hostGui = new HostGui(host);
+    private WaiterGui hostGui = new WaiterGui(host);
     
-    private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
-
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
     private JPanel group = new JPanel();
@@ -34,9 +35,9 @@ public class RestaurantPanel extends JPanel {
     private static final int REST_PANEL_ROWS = 1;
     private static final int REST_PANEL_COLS = 2;
     private static final int REST_PANEL_SPACE = 20;
-    private static final int REST_PANEL_GROUP_SPACE = 10;
 
     public RestaurantPanel(RestaurantGui gui) {
+    	
         this.gui = gui;
         host.setGui(hostGui);
 
@@ -49,6 +50,8 @@ public class RestaurantPanel extends JPanel {
         
         waiter.startThread();
         waiter.setCook(cook);
+        
+        waiterList.add(waiter);
 
         setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
@@ -62,7 +65,25 @@ public class RestaurantPanel extends JPanel {
     }
     
     public void toggleTimer(){
-    	gui.animationPanel.toggleTimer();
+    	
+    	// Pause waiter agents
+    	for(WaiterAgent waiter : waiterList){
+    		waiter.toggleAgentPause();
+    	}
+    	
+    	// Pause customer agents
+    	for(CustomerAgent customer : customers){
+    		customer.toggleAgentPause();
+    	}
+    	
+    	// Pause cook
+    	cook.toggleAgentPause();
+    	
+    	// Pause host
+    	host.toggleAgentPause();
+    	
+    	//gui.animationPanel.toggleTimer(); // Legacy code to pause the gui animation
+    	
     }
 
     /**
@@ -70,16 +91,27 @@ public class RestaurantPanel extends JPanel {
      * and host and cook information
      */
     private void initRestLabel() {
+    	
         JLabel label = new JLabel();
-        //restLabel.setLayout(new BoxLayout((Container)restLabel, BoxLayout.Y_AXIS));
         restLabel.setLayout(new BorderLayout());
-        label.setText(
-                "<html><h3><u>Tonight's Staff</u></h3><table><tr><td>host:</td><td>" + host.getName() + "</td></tr></table><h3><u> Menu</u></h3><table><tr><td>Steak</td><td>$15.99</td></tr><tr><td>Chicken</td><td>$10.99</td></tr><tr><td>Salad</td><td>$5.99</td></tr><tr><td>Pizza</td><td>$8.99</td></tr></table><br></html>");
-
+        
+        restaurant.Menu restMenu = new restaurant.Menu();
+        
+        String mainIntro = 	"<html><h3><u>Tonight's Staff</u></h3>";
+        String mainHeaderHost = "<table><tr><td>Host:</td><td>" + host.getName() + "</td></tr></table>";
+        String mainHeaderWaiter = "<table><tr><td>Lead Waiter:</td><td>" + waiter.getName() + "</td></tr></table>";
+        String menuHeader = "<h3><u>Menu</u></h3>";
+        String menuDisplay = restMenu.displayMenu();
+        String concludeText = "</html>";
+        
+        String finalDisplay = mainIntro + mainHeaderHost + mainHeaderWaiter + menuHeader + menuDisplay + concludeText;
+        
+        label.setText(finalDisplay);
+        
         restLabel.setBorder(BorderFactory.createRaisedBevelBorder());
         restLabel.add(label, BorderLayout.CENTER);
-        restLabel.add(new JLabel("               "), BorderLayout.EAST);
-        restLabel.add(new JLabel("               "), BorderLayout.WEST);
+        restLabel.add(new JLabel("            "), BorderLayout.EAST);
+        restLabel.add(new JLabel("            "), BorderLayout.WEST);
     }
 
     /**

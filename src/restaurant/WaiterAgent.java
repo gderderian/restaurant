@@ -3,7 +3,7 @@ package restaurant;
 import agent.Agent;
 import restaurant.CustomerAgent.AgentEvent;
 import restaurant.CustomerAgent.AgentState;
-import restaurant.gui.HostGui;
+import restaurant.gui.WaiterGui;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -28,6 +28,10 @@ public class WaiterAgent extends Agent {
 	// Accessors
 	public String getName() {
 		return name;
+	}
+	
+	public Menu getMenu(){
+		return new Menu();
 	}
 	
 	// Messages

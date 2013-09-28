@@ -100,6 +100,8 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
+	
+	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		

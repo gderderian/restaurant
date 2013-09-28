@@ -23,6 +23,14 @@ public abstract class Agent {
     protected void stateChanged() {
         stateChange.release();
     }
+    
+    public void toggleAgentPause(){
+    	if (!isPaused) {
+    		agentThread.pause();
+    	} else {
+    		agentThread.keepGoing();
+    	}
+    }
 
     /**
      * Agents must implement this scheduler to perform any actions appropriate for the
@@ -97,7 +105,7 @@ public abstract class Agent {
 
     /**
      * Agent scheduler thread, calls respondToStateChange() whenever a state
-     * change has been signalled.
+     * change has been signaled.
      */
     private class AgentThread extends Thread {
         private volatile boolean goOn = false;
@@ -106,11 +114,11 @@ public abstract class Agent {
             super(name);
         }
         
-        private void paused(){
+        public void pause(){
         	isPaused = true;
         }
         
-        private void keepGoing(){
+        public void keepGoing(){
         	isPaused = false;
         	paused.release();
         }
