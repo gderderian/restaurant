@@ -1,17 +1,9 @@
 package restaurant;
 
 import agent.Agent;
-
-import restaurant.CustomerAgent.AgentEvent;
-import restaurant.CustomerAgent.AgentState;
 import restaurant.Order.orderStatus;
-import restaurant.gui.WaiterGui;
-
 import java.util.*;
-import java.util.concurrent.Semaphore;
-
 import restaurant.Order;
-import restaurant.Table;
 
 
 /**
@@ -33,7 +25,7 @@ public class CookAgent extends Agent {
 
 		timerList = new Hashtable<String, Integer>();
 		timerList.put("Lemonade", 1500);
-		timerList.put("Water", 1000);
+		timerList.put("Mac & Cheese", 1000);
 		timerList.put("French Fries", 4000);
 		timerList.put("Pizza", 7000);
 		timerList.put("Pasta", 6000);

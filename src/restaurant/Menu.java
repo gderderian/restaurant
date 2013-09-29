@@ -10,10 +10,10 @@ public class Menu {
 	public Menu(){
 		itemList = new Hashtable<String, Double>();
 		itemList.put("Lemonade", 1.75);
-		itemList.put("Water", 0.25);
+		itemList.put("Mac & Cheese", 7.95);
 		itemList.put("French Fries", 4.25);
 		itemList.put("Pizza", 7.95);
-		itemList.put("Pasta", 6.75);
+		itemList.put("Pasta", 5.75);
 		itemList.put("Cobbler", 5.75);
 	}
 	
@@ -22,7 +22,7 @@ public class Menu {
 		String returnName;
 		switch(index){
 			case 1: returnName = "Lemonade"; break;
-			case 2: returnName = "Water"; break;
+			case 2: returnName = "Mac & Cheese"; break;
 			case 3: returnName = "French Fries"; break;
 			case 4: returnName = "Pizza"; break;
 			case 5: returnName = "Pasta"; break;

@@ -1,9 +1,6 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.CustomerAgent.AgentEvent;
-import restaurant.CustomerAgent.AgentState;
-import restaurant.gui.CustomerGui;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -67,7 +64,6 @@ public class WaiterAgent extends Agent {
 		customer.customer = c;
 		customer.table = t;
 		myCustomers.add(customer);
-		c.getGui().setDestination(t.tableX, t.tableY);
 		stateChanged();
 	}
 	
@@ -158,7 +154,7 @@ public class WaiterAgent extends Agent {
 	private void sendToKitchen(MyCustomer c, Order o){
 		c.state = CustomerState.WaitingForFood;
 		Do("Order sent to cook, headed to kitchen!");
-		waiterGui.setDestination(500, 500);
+		waiterGui.setDestination(500, 230);
 		waiterGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -182,14 +178,58 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void seatCustomer(MyCustomer c){
-		// Do gui
+		
+		waiterGui.setDestination(-20, -20);
+		waiterGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		Do("Going to fetch customer and then set their state");
+		
 		c.customer.msgSitAtTable(new Menu(), this);
+		c.customer.getGui().setDestination(c.table.tableX, c.table.tableY);
+		
+		waiterGui.setDestination(c.table.tableX, c.table.tableY);
+		waiterGui.beginAnimate();
+		
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		c.state = CustomerState.Seated;
+		
 	}
 	
 	public void deliverOrder(MyCustomer c, Order o){
+		
+		waiterGui.setDestination(500, 230);
+		waiterGui.beginAnimate();
+		
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		waiterGui.setCarryText(o.getFoodName());
+		waiterGui.setDestination(c.table.tableX, c.table.tableY);
+		waiterGui.beginAnimate();
+		
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		c.customer.hereIsOrder(o);
 		c.state = CustomerState.Eating;
+		waiterGui.setCarryText("");
+		
 	}
 	
 	public void goodbyeCustomer(MyCustomer c){

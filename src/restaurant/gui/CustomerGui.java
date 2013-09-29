@@ -1,11 +1,8 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
-import restaurant.HostAgent;
-
 import java.awt.*;
-
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon;
 
 public class CustomerGui implements Gui{
 
@@ -30,6 +27,7 @@ public class CustomerGui implements Gui{
 	
 	boolean isAnimating = false;
 	boolean hasDestination = false;
+	String carryingOrderText = "";
 	
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){
 		agent = c;
@@ -70,7 +68,9 @@ public class CustomerGui implements Gui{
 		else if (yPos > yDestination)
 			yPos--;
 		if (xPos == xDestination && yPos == yDestination) {
-			doneAnimating();
+			if (isAnimating){
+				doneAnimating();
+			}
 			if (command==Command.GoToSeat) agent.msgAnimationFinishedGoToSeat();
 			else if (command==Command.LeaveRestaurant) {
 				agent.msgAnimationFinishedLeaveRestaurant(); 
@@ -85,6 +85,9 @@ public class CustomerGui implements Gui{
 	public void draw(Graphics2D g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y);
+		if (!carryingOrderText.equals("")){
+			g.drawString(carryingOrderText, xPos, yPos);
+		}
 		//Image custImg = Toolkit.getDefaultToolkit().getImage("happy.jpg");
 	    //g.drawImage(custImg, xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y, null);
 	}
@@ -126,4 +129,9 @@ public class CustomerGui implements Gui{
 		yDestination = HIDDEN_Y;
 		command = Command.LeaveRestaurant;
 	}
+	
+    public void setCarryText(String carryText){
+    	carryingOrderText = carryText;
+    }
+    
 }

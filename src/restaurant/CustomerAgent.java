@@ -1,19 +1,12 @@
 package restaurant;
 
-import restaurant.Order.orderStatus;
+
 import restaurant.gui.CustomerGui;
-import restaurant.gui.RestaurantGui;
 import agent.Agent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.TimerTask;
 import java.util.Random;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.Timer;
-
 import java.util.concurrent.Semaphore;
 
 
@@ -51,9 +44,11 @@ public class CustomerAgent extends Agent {
 	private Semaphore isAnimating = new Semaphore(0,true);
 
 	public CustomerAgent(String name){
+		
 		super();
 		this.name = name;
-		this.choice = "";
+		choice = "";
+		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
 					choice = pickRandomItem();
@@ -156,6 +151,7 @@ public class CustomerAgent extends Agent {
 	
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
+		choice = itemChoice;
 		assignedWaiter.hereIsMyChoice(itemChoice, this);
 		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName());
 	}
@@ -183,6 +179,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void beginEating() {
+		customerGui.setCarryText(choice);
 		Do("Eating Food");
 		eatingTimer.setRepeats(false);
 		eatingTimer.restart();
@@ -190,6 +187,7 @@ public class CustomerAgent extends Agent {
 	}
 
 	private void leaveRestaurant() {
+		customerGui.setCarryText("");
 		Do("Leaving.");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);

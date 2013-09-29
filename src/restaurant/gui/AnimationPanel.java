@@ -15,7 +15,7 @@ public class AnimationPanel extends JPanel implements ActionListener {
     private Image bufferImage;
     private Dimension bufferSize;
     
-    private final int MAIN_TIMER = 20;
+    private final int MAIN_TIMER = 15;
     private final int TABLE_X = 50;
     private final int TABLE_Y = 50;
     private final int SCREEN_RECT_X_COORD = 0;

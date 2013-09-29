@@ -3,7 +3,6 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import restaurant.WaiterAgent;
-import restaurant.CustomerAgent.AgentState;
 
 import java.awt.*;
 
@@ -22,9 +21,12 @@ public class WaiterGui implements Gui {
 
 	boolean isAnimating = false;
 	boolean hasDestination = false;
+	
+	String carryingOrderText = "";
     
     public WaiterGui(WaiterAgent a) {
     	agent = a;
+    	carryingOrderText = "";
     }
 
 	public void setDestination(int newX, int newY){
@@ -55,6 +57,9 @@ public class WaiterGui implements Gui {
     public void draw(Graphics2D g) {
         g.setColor(Color.MAGENTA);
         g.fillRect(xPos, yPos, HOST_SIZE_X, HOST_SIZE_Y);
+		if (!carryingOrderText.equals("")){
+			g.drawString(carryingOrderText, xPos, yPos);
+		}
 		//Image hostImg = Toolkit.getDefaultToolkit().getImage("stickfig.png");
 	    //g.drawImage(hostImg, xPos, yPos, HOST_SIZE_X, HOST_SIZE_Y, null);
     }
@@ -92,5 +97,9 @@ public class WaiterGui implements Gui {
 
     public int getYPos() {
         return yPos;
+    }
+    
+    public void setCarryText(String carryText){
+    	carryingOrderText = carryText;
     }
 }

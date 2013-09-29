@@ -1,15 +1,9 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.CustomerAgent.AgentEvent;
-import restaurant.CustomerAgent.AgentState;
-import restaurant.WaiterAgent.CustomerState;
-import restaurant.WaiterAgent.MyCustomer;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.math.*;
 
 /**
  * Restaurant Host Agent
@@ -25,6 +19,7 @@ public class HostAgent extends Agent {
 
 	private String name;
 	public WaiterGui hostGui = null;
+	String carryingOrderText = "";
 	
 	public HostAgent(String name) {
 		
@@ -122,5 +117,9 @@ public class HostAgent extends Agent {
 	public WaiterGui getGui() {
 		return hostGui;
 	}
+	
+    public void setCarryText(String carryText){
+    	carryingOrderText = carryText;
+    }
 	
 }
