@@ -154,6 +154,30 @@ public class CustomerAgent extends Agent {
 		String itemChoice = pickRandomItem();
 		choice = itemChoice;
 		assignedWaiter.hereIsMyChoice(itemChoice, this);
+		
+		String carryText = "";
+		switch(choice){
+		case "Chicken":
+			carryText = "CHK";
+			break;
+		case "Mac & Cheese":
+			carryText = "M&C";
+			break;
+		case "French Fries":
+			carryText = "FRF";
+			break;
+		case "Pizza":
+			carryText = "PZA";
+			break;
+		case "Pasta":
+			carryText = "PST";
+			break;
+		case "Cobbler":
+			carryText = "CBL";
+			break;
+		}
+		customerGui.setCarryText(carryText + "?");
+		
 		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName());
 	}
 	

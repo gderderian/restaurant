@@ -79,7 +79,9 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
-		Do("Accepted choice");
+		
+		
+		
 		Order o = new Order(c, this, choice);
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
@@ -91,7 +93,6 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void ImDone(CustomerAgent c) {
-		Do("Customer " + c.getName() + " has finished and is done.");
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				cust.state = CustomerState.Done;
@@ -103,7 +104,6 @@ public class WaiterAgent extends Agent {
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		for (MyCustomer c : myCustomers) {
-			Do("Customer " + c.customer.getCustomerName() + " is " + c.state);
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c);
 				return true;

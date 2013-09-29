@@ -16,14 +16,12 @@ public class Order {
 	orderStatus status;
 	
 	public Order(CustomerAgent c, WaiterAgent w){
-		System.out.println("Order alive! 1");
 		recipientCustomer = c;
 		requestingWaiter = w;
 		status = orderStatus.waiting;
 	}
 	
 	public Order(CustomerAgent c, WaiterAgent w, String foodChoice){
-		System.out.println("Order alive! 2");
 		recipientCustomer = c;
 		requestingWaiter = w;
 		foodItem = foodChoice;
@@ -58,7 +56,7 @@ public class Order {
 				new ActionListener() { public void actionPerformed(ActionEvent event) {
 		          status = orderStatus.ready;
 		          foodTimer.stop();
-		          System.out.println("Order has finished");
+		          System.out.println("Order has finished cooking!");
 		      }
 		});
 		foodTimer.start();
