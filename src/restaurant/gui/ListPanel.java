@@ -1,11 +1,6 @@
 package restaurant.gui;
 
-import restaurant.CustomerAgent;
-import restaurant.HostAgent;
-
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -14,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * Subpanel of restaurantPanel.
- * This holds the scroll panes for the customers and, later, for waiters
+ * This holds the scroll panes for the customers and waiters
  */
 public class ListPanel extends JPanel implements ActionListener, KeyListener {
 
@@ -28,7 +23,6 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
     private RestaurantPanel restPanel;
     private String type;
     
-    // Lab 2
     private JPanel addPersonPanel;
     private JButton addPersonButton = new JButton("Add");
     private JCheckBox hungryCheckbox = new JCheckBox();
@@ -57,17 +51,21 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         add(new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>"));
 
         addPersonB.addActionListener(this);
-        //add(addPersonB);
+
+        this.setBorder(BorderFactory.createTitledBorder("Animation Control"));
         
-        // Lab 2
         addPersonPanel = new JPanel();
         addPersonPanel.setLayout(new GridLayout(PERSON_GRID_ROWS, PERSON_GRID_COLS));
         
         addPersonPanel.add(personName);
         addPersonPanel.add(enterNamePrompt);
         addPersonPanel.add(personName);
-        addPersonPanel.add(hungryPrompt);
-        addPersonPanel.add(hungryCheckbox);
+        
+        if (type == "Customers"){
+            addPersonPanel.add(hungryPrompt);
+            addPersonPanel.add(hungryCheckbox);
+        }
+
         
         addPersonPanel.add(addPersonButton);
         addPersonButton.addActionListener(this);
@@ -79,17 +77,25 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         add(addPersonPanel);
         
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
-        pane.setViewportView(view);
-        add(pane);
         
-        // Lab 3
+        if (type == "Customers"){
+        	pane.setViewportView(view);
+        	add(pane);
+        }
+
         togglePanel = new JPanel();
+        togglePanel.setBorder(BorderFactory.createTitledBorder("Animation Control"));
         togglePanel.setLayout(new GridLayout(1, 1));
-        // JButton toggleTimerButton = new JButton("Pause");
+        
         toggleTimerButton.addActionListener(this);
         togglePanel.add(toggleTimerButton);
-        add(togglePanel);
         
+        Dimension toggleDim = new Dimension(50, 50);
+        toggleTimerButton.setPreferredSize(toggleDim);
+        toggleTimerButton.setMinimumSize(toggleDim);
+        toggleTimerButton.setMaximumSize(toggleDim);
+        
+        add(togglePanel);
         
     }
     
@@ -114,10 +120,8 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
      * Handles the event of the add button being pressed
      */
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addPersonB) {
-        	// Chapter 2.19 describes showInputDialog()
-            addPerson(JOptionPane.showInputDialog("Please enter a name:"), false);
-        } else if (e.getSource() == addPersonButton) {
+        
+    	if (e.getSource() == addPersonButton) {
         	
         	if (hungryCheckbox.isSelected() == true) {
         		addPerson(personName.getText(), true);
@@ -127,10 +131,6 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         	
         	personName.setText("");
         	hungryCheckbox.setSelected(false);
-        	
-        } else if (e.getSource() == personName) {
-        	
-        	System.out.println("Text!");
         	
         } else if (e.getSource() == toggleTimerButton) {
         	if (isPaused == true) {
@@ -144,13 +144,12 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         	}
         	
         } else {
-        	// Isn't the second for loop more beautiful?
-            /*for (int i = 0; i < list.size(); i++) {
-                JButton temp = list.get(i);*/
+        	
         	for (JButton temp:list){
                 if (e.getSource() == temp)
                     restPanel.showInfo(type, temp.getText());
             }
+        	
         }
     }
 
@@ -165,19 +164,26 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         if (name != null) {
             JButton button = new JButton(name);
             button.setBackground(Color.white);
-
             Dimension paneSize = pane.getSize();
-            Dimension buttonSize = new Dimension(paneSize.width - 20,
-                    (int) (paneSize.height / 5));
+            Dimension buttonSize = new Dimension(paneSize.width - 20, (int) (paneSize.height / 7));
             button.setPreferredSize(buttonSize);
             button.setMinimumSize(buttonSize);
             button.setMaximumSize(buttonSize);
             button.addActionListener(this);
             list.add(button);
             view.add(button);
-            restPanel.addPerson(type, name, isHungry);//puts customer on list
-            restPanel.showInfo(type, name);//puts hungry button on panel
+            restPanel.addPerson(type, name, isHungry);
+            restPanel.showInfo(type, name);
             validate();
         }
     }
+    
+    public void addWaiter(String name) {
+        if (name != null) {
+            restPanel.addPerson("Waiters", name, false);
+            validate();
+        }
+    }
+    
+    
 }

@@ -6,6 +6,7 @@ import restaurant.HostAgent;
 import restaurant.WaiterAgent;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.Vector;
 
@@ -22,13 +23,14 @@ public class RestaurantPanel extends JPanel {
 	
     // Instantiate cook, host, and one waiter
     private HostAgent host = new HostAgent("Sarah");
-    private CookAgent cook = new CookAgent("Mario");
+    private CookAgent cook = new CookAgent("Jeff");
     private WaiterAgent waiter = new WaiterAgent("Andrew");
     
     private WaiterGui waiterGui = new WaiterGui(waiter);
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
+    private ListPanel waiterPanel = new ListPanel(this, "Waiters");
     private JPanel group = new JPanel();
 
     private RestaurantGui gui;
@@ -60,6 +62,7 @@ public class RestaurantPanel extends JPanel {
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
 
         group.add(customerPanel);
+        group.add(waiterPanel);
 
         initRestLabel();
         add(restLabel);
@@ -113,8 +116,8 @@ public class RestaurantPanel extends JPanel {
         
         restLabel.setBorder(BorderFactory.createRaisedBevelBorder());
         restLabel.add(label, BorderLayout.CENTER);
-        restLabel.add(new JLabel("            "), BorderLayout.EAST);
-        restLabel.add(new JLabel("            "), BorderLayout.WEST);
+        restLabel.add(new JLabel("          "), BorderLayout.EAST);
+        restLabel.add(new JLabel("          "), BorderLayout.WEST);
     }
 
     /**
@@ -163,6 +166,21 @@ public class RestaurantPanel extends JPanel {
     			c.getGui().setHungry();
     		}
     			
+    	} else if (type.equals("Waiters")){
+    		
+    		WaiterAgent w = new WaiterAgent(name);
+    		WaiterGui g = new WaiterGui(w, gui);
+    		
+    		gui.animationPanel.addGui(g);
+    		w.setHost(host);
+    		w.setCook(cook);
+    		
+    		w.setGui(g);
+    		waiterList.add(w);
+    		w.startThread();
+    		
+    		host.addWaiter(w);
+    		
     	}
     }
 

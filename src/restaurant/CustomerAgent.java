@@ -34,7 +34,7 @@ public class CustomerAgent extends Agent {
 	private HostAgent host;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
@@ -126,7 +126,7 @@ public class CustomerAgent extends Agent {
 			tellWaiterReady();
 			return true;
 		}
-		if (state == AgentState.Choosing && event == AgentEvent.doneChoosing){
+		if (state == AgentState.CalledWaiter && event == AgentEvent.doneChoosing){
 			sendChoiceToWaiter();
 			state = AgentState.WaitingForFood;
 			return true;
@@ -148,6 +148,7 @@ public class CustomerAgent extends Agent {
 	// Actions
 	private void tellWaiterReady(){
 		assignedWaiter.readyToOrder(this);
+		state = AgentState.CalledWaiter;
 	}
 	
 	private void sendChoiceToWaiter(){
@@ -177,7 +178,6 @@ public class CustomerAgent extends Agent {
 			break;
 		}
 		customerGui.setCarryText(carryText + "?");
-		
 		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName());
 	}
 	

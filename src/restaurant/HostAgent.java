@@ -73,11 +73,6 @@ public class HostAgent extends Agent {
 			}
 		}
 		
-		for (WaiterAgent waiter : myWaiters) {
-			if (waiter.hasCustomer(cust) == true){
-				waiter.numCustomers--;
-			}
-		}
 	}
 
 	// Scheduler
@@ -96,16 +91,15 @@ public class HostAgent extends Agent {
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
 		// Find waiter and notify them
-		int init_cust = myWaiters.get(0).numCustomers;
+		int init_cust = myWaiters.get(0).getNumCustomers();
 		WaiterAgent w_selected = null;
 		for (WaiterAgent w : myWaiters){
-			if (w.numCustomers <= init_cust){
-				init_cust = w.numCustomers;
+			if (w.getNumCustomers() <= init_cust){
+				init_cust = w.getNumCustomers();
 				w_selected = w;
 			}
 		}
 		w_selected.msgSeatCustomer(customer, table, this);
-		w_selected.numCustomers++;
 		table.setOccupant(customer);
 		waitingCustomers.remove(customer);
 	}

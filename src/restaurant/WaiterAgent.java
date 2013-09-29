@@ -15,7 +15,6 @@ public class WaiterAgent extends Agent {
 	public HostAgent myHost;
 	public CookAgent myCook;
 	private String name;
-	public int numCustomers;
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -37,6 +36,14 @@ public class WaiterAgent extends Agent {
 	
 	public void setGui(WaiterGui g){
 		waiterGui = g;
+	}
+	
+	public void setHost(HostAgent h){
+		myHost = h;
+	}
+	
+	public int getNumCustomers() {
+		return myCustomers.size();
 	}
 	
 	// Messages

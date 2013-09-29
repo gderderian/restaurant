@@ -8,7 +8,7 @@ import java.util.concurrent.*;
  * Base class for simple agents
  */
 public abstract class Agent {
-    Semaphore stateChange = new Semaphore(1, true);//binary semaphore, fair
+    Semaphore stateChange = new Semaphore(1, true);
     Semaphore paused = new Semaphore(0);
     private AgentThread agentThread;
     boolean isPaused = false;
@@ -37,7 +37,7 @@ public abstract class Agent {
      * current state.  Will be called whenever a state change has occurred,
      * and will be called repeated as long as it returns true.
      *
-     * @return true iff some action was executed that might have changed the
+     * @return true if some action was executed that might have changed the
      *         state.
      */
     protected abstract boolean pickAndExecuteAnAction();

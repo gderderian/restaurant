@@ -10,6 +10,8 @@ public class WaiterGui implements Gui {
 
     private WaiterAgent agent = null;
 
+	RestaurantGui gui;
+    
     private int xPos = 230, yPos = 230;
     public int xDestination = 230, yDestination = 230, host_tableX, host_tableY;
 
@@ -26,6 +28,12 @@ public class WaiterGui implements Gui {
     
     public WaiterGui(WaiterAgent a) {
     	agent = a;
+    	carryingOrderText = "";
+    }
+    
+    public WaiterGui(WaiterAgent a, RestaurantGui g) {
+    	agent = a;
+    	gui = g;
     	carryingOrderText = "";
     }
 
@@ -45,13 +53,10 @@ public class WaiterGui implements Gui {
         else if (yPos > yDestination){
             yPos--;
         } else if (xPos == xDestination && yPos == yDestination){
-        	//System.out.println("Waiter done animating to customer");
         	if (isAnimating){
         		doneAnimating();
-        	}
-        	
+        	}	
         }
- 
     }
 
     public void draw(Graphics2D g) {
