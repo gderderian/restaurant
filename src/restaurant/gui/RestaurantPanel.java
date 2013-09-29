@@ -25,7 +25,7 @@ public class RestaurantPanel extends JPanel {
     private CookAgent cook = new CookAgent("Mario");
     private WaiterAgent waiter = new WaiterAgent("Andrew");
     
-    private WaiterGui hostGui = new WaiterGui(host);
+    private WaiterGui waiterGui = new WaiterGui(waiter);
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
@@ -40,9 +40,11 @@ public class RestaurantPanel extends JPanel {
     public RestaurantPanel(RestaurantGui gui) {
     	
         this.gui = gui;
-        host.setGui(hostGui);
+        host.setGui(waiterGui);
 
-        gui.animationPanel.addGui(hostGui);
+        waiter.setGui(waiterGui);
+        
+        gui.animationPanel.addGui(waiterGui);
         
         host.addWaiter(waiter);
         host.startThread();

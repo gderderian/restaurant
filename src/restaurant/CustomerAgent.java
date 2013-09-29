@@ -235,7 +235,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void releaseSemaphore(){
-		//System.out.println("Releasing semaphore");
+		//System.out.println("Releasing customer semaphore");
 		isAnimating.release();
 	}
 	

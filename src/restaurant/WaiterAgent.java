@@ -3,6 +3,7 @@ package restaurant;
 import agent.Agent;
 import restaurant.CustomerAgent.AgentEvent;
 import restaurant.CustomerAgent.AgentState;
+import restaurant.gui.CustomerGui;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -19,6 +20,9 @@ public class WaiterAgent extends Agent {
 	private String name;
 	public int numCustomers;
 	
+	private WaiterGui waiterGui;
+	private Semaphore isAnimating = new Semaphore(0,true);
+	
 	public WaiterAgent(String name) {
 		super();
 		this.name = name;
@@ -32,6 +36,10 @@ public class WaiterAgent extends Agent {
 	
 	public Menu getMenu(){
 		return new Menu();
+	}
+	
+	public void setGui(WaiterGui g){
+		waiterGui = g;
 	}
 	
 	// Messages
@@ -124,6 +132,7 @@ public class WaiterAgent extends Agent {
 				return true;
 			}
 		}
+		goHome();
 		return false;
 	}
 
@@ -167,6 +176,10 @@ public class WaiterAgent extends Agent {
 		myCustomers.remove(c);
 	}
 	
+	private void goHome(){
+		waiterGui.setDestination(230, 230);
+	}
+	
 	// Misc. Utilities
 	public enum CustomerState // Goes along with MyCustomer below
 	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done};
@@ -183,5 +196,9 @@ public class WaiterAgent extends Agent {
 		
 	}
 	
+	public void releaseSemaphore(){
+		//System.out.println("Releasing semaphore");
+		isAnimating.release();
+	}
 	
 }
