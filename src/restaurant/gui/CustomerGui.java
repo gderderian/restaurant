@@ -103,6 +103,14 @@ public class CustomerGui implements Gui{
 		return isHungry;
 	}
 
+	public int getX() {
+		return xPos;
+	}
+	
+	public int getY() {
+		return yPos;
+	}
+	
 	public void setPresent(boolean p) {
 		isPresent = p;
 	}

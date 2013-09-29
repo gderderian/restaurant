@@ -41,11 +41,11 @@ public class CustomerAgent extends Agent {
 	private HostAgent host;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, WaitingForFood, Eating, Leaving, Choosing};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated};
+	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated, wantWaiter};
 	AgentEvent event = AgentEvent.none;
 	
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -57,7 +57,7 @@ public class CustomerAgent extends Agent {
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
 					choice = pickRandomItem();
-					event = AgentEvent.doneChoosing;
+					event = AgentEvent.wantWaiter;
 					stateChanged();
 		      }
 		});
@@ -86,7 +86,8 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatDoYouWant() {
-		assignedWaiter.hereIsMyChoice(choice, this);
+		print("Received msgWhatWant");
+		event = AgentEvent.doneChoosing;
 		stateChanged();
 	}
 	
@@ -116,7 +117,6 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.WaitingForSeat && event == AgentEvent.followHost){
-			Do("SITTING DOWN NOW!!!");
 			state = AgentState.BeingSeated;
 			SitDown();
 			return true;
@@ -125,6 +125,10 @@ public class CustomerAgent extends Agent {
 			print("Beginning to choose");
 			state = AgentState.Choosing;
 			beginChoosing();
+			return true;
+		}
+		if (state == AgentState.Choosing && event == AgentEvent.wantWaiter){
+			tellWaiterReady();
 			return true;
 		}
 		if (state == AgentState.Choosing && event == AgentEvent.doneChoosing){
@@ -138,7 +142,6 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
-			Do("RESETTING BACK TO NORMAL");
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
@@ -147,6 +150,10 @@ public class CustomerAgent extends Agent {
 	}
 
 	// Actions
+	private void tellWaiterReady(){
+		assignedWaiter.readyToOrder(this);
+	}
+	
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem();
 		assignedWaiter.hereIsMyChoice(itemChoice, this);

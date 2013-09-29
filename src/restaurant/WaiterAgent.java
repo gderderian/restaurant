@@ -72,12 +72,14 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void readyToOrder(CustomerAgent c) {
+		
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				cust.state = CustomerState.ReadyToOrder;
 			}
 		}
 		stateChanged();
+		
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
@@ -109,13 +111,14 @@ public class WaiterAgent extends Agent {
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.ReadyToOrder){
+				Do("Customer is ready to order!");
 				takeOrder(c, c.table);
 				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.OrderedWaiting){
-				Do("Sending " + c.customer.getName() + " order of " + c.order.getFoodName() + " to cook yay");
+				Do("Sending " + c.customer.getName() + " order of " + c.order.getFoodName() + " to cook");
 				sendToKitchen(c, c.order);
 				return true;
 			}
@@ -138,14 +141,31 @@ public class WaiterAgent extends Agent {
 
 	// Actions
 	private void takeOrder(MyCustomer c, Table t){
+
+		Do("About to tell waiter to go to x/y:" + c.customer.getGui().getX() + "/" + c.customer.getGui().getY());
+		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY());
+		waiterGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		c.customer.msgWhatDoYouWant();
 		c.state = CustomerState.Ordering;
+		
 	}
 
 	private void sendToKitchen(MyCustomer c, Order o){
-		Do("Order sent to cook!");
-		myCook.hereIsOrder(o);
 		c.state = CustomerState.WaitingForFood;
+		Do("Order sent to cook, headed to kitchen!");
+		waiterGui.setDestination(500, 500);
+		waiterGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		myCook.hereIsOrder(o);
 	}
 	
 	public boolean hasCustomer(CustomerAgent c){

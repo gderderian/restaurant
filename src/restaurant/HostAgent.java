@@ -34,10 +34,7 @@ public class HostAgent extends Agent {
 		myWaiters = new ArrayList<WaiterAgent>();
 		waitingCustomers = new ArrayList<CustomerAgent>();
 		
-		int table_x_start = 200;
-		int table_y_start = 250;
-		
-		// Generate tables
+		// Generate all new tables
 		tables = new ArrayList<Table>(NTABLES);
 		int tableRoot = (int)Math.sqrt(NTABLES);
 		int startingCoord = 150;
@@ -48,7 +45,7 @@ public class HostAgent extends Agent {
 				int tableNum = tableRoot * i + j + 1;
 				int tableX = startingCoord + i*tableDistance;
 				int tableY = startingCoord + j*tableDistance;
-				System.out.println("Adding in New Table: x:" + tableX + " - y:" + tableY + " - #" + tableNum);
+				// System.out.println("Adding in New Table: x:" + tableX + " - y:" + tableY + " - #" + tableNum);
 				tables.add(new Table(tableNum, tableX, tableY));
 			}
 		}

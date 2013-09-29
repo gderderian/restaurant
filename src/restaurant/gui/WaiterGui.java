@@ -42,8 +42,11 @@ public class WaiterGui implements Gui {
             yPos++;
         else if (yPos > yDestination){
             yPos--;
-        } else if (xPos == xDestination && yPos == yDestination
-        		& (xDestination == host_tableX + 20) & (yDestination == host_tableY - 20)) {
+        } else if (xPos == xDestination && yPos == yDestination){
+        	//System.out.println("Waiter done animating to customer");
+        	if (isAnimating){
+        		doneAnimating();
+        	}
         	
         }
  
@@ -59,9 +62,13 @@ public class WaiterGui implements Gui {
     public boolean isPresent() {
         return true;
     }
+    
+	public void beginAnimate(){
+		isAnimating = true;
+	}
 
 	public void doneAnimating(){
-		//System.out.println("Done animating in waiter gui, about to release semaphore");
+		System.out.println("Done animating in waiter gui, about to release semaphore");
 		agent.releaseSemaphore();
 		hasDestination = false;
 		isAnimating = false;
