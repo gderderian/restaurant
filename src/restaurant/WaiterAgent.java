@@ -220,7 +220,30 @@ public class WaiterAgent extends Agent {
 			e.printStackTrace();
 		}
 		
-		waiterGui.setCarryText(o.getFoodName());
+		String carryText = "";
+		
+		switch(o.getFoodName()){
+		case "Chicken":
+			carryText = "CHK";
+			break;
+		case "Mac & Cheese":
+			carryText = "M&C";
+			break;
+		case "French Fries":
+			carryText = "FRF";
+			break;
+		case "Pizza":
+			carryText = "PZA";
+			break;
+		case "Pasta":
+			carryText = "PST";
+			break;
+		case "Cobbler":
+			carryText = "CBL";
+			break;
+		}
+		
+		waiterGui.setCarryText(carryText);
 		waiterGui.setDestination(c.table.tableX, c.table.tableY);
 		waiterGui.beginAnimate();
 		
@@ -237,7 +260,6 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void goodbyeCustomer(MyCustomer c){
-		Do("GOODBYTE CUSOTMER!");
 		myCustomers.remove(c);
 		c.customer.getHost().msgLeavingTable(c.customer);
 	}

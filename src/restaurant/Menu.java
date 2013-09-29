@@ -9,7 +9,7 @@ public class Menu {
 	
 	public Menu(){
 		itemList = new Hashtable<String, Double>();
-		itemList.put("Lemonade", 1.75);
+		itemList.put("Chicken", 1.75);
 		itemList.put("Mac & Cheese", 7.95);
 		itemList.put("French Fries", 4.25);
 		itemList.put("Pizza", 7.95);
@@ -21,7 +21,7 @@ public class Menu {
 		
 		String returnName;
 		switch(index){
-			case 1: returnName = "Lemonade"; break;
+			case 1: returnName = "Chicken"; break;
 			case 2: returnName = "Mac & Cheese"; break;
 			case 3: returnName = "French Fries"; break;
 			case 4: returnName = "Pizza"; break;

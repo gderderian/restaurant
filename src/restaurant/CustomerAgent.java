@@ -3,10 +3,13 @@ package restaurant;
 
 import restaurant.gui.CustomerGui;
 import agent.Agent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
+
 import javax.swing.Timer;
+
 import java.util.concurrent.Semaphore;
 
 
@@ -177,7 +180,29 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void beginEating() {
-		customerGui.setCarryText(choice);
+		
+		String carryText = "";
+		switch(choice){
+		case "Chicken":
+			carryText = "CHK";
+			break;
+		case "Mac & Cheese":
+			carryText = "M&C";
+			break;
+		case "French Fries":
+			carryText = "FRF";
+			break;
+		case "Pizza":
+			carryText = "PZA";
+			break;
+		case "Pasta":
+			carryText = "PST";
+			break;
+		case "Cobbler":
+			carryText = "CBL";
+			break;
+		}
+		customerGui.setCarryText(carryText);
 		Do("Eating Food");
 		eatingTimer.setRepeats(false);
 		eatingTimer.restart();
