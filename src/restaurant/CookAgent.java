@@ -24,8 +24,8 @@ public class CookAgent extends Agent {
 		currentOrders = new ArrayList<Order>();
 
 		timerList = new Hashtable<String, Integer>();
-		timerList.put("Lemonade", 1500);
-		timerList.put("Mac & Cheese", 1000);
+		timerList.put("Chicken", 3000);
+		timerList.put("Mac & Cheese", 2500);
 		timerList.put("French Fries", 4000);
 		timerList.put("Pizza", 7000);
 		timerList.put("Pasta", 6000);

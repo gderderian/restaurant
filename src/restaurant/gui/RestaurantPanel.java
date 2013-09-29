@@ -69,8 +69,6 @@ public class RestaurantPanel extends JPanel {
     
     public void toggleTimer(){
     	
-    	System.out.println("Pausing all agents!");
-    	
     	// Pause waiter agents
     	for(WaiterAgent waiter : waiterList){
     		waiter.toggleAgentPause();

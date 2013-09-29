@@ -26,10 +26,8 @@ public abstract class Agent {
     
     public void toggleAgentPause(){
     	if (!isPaused) {
-    		System.out.println("Pausing agents in thread");
     		agentThread.pause();
     	} else {
-    		System.out.println("Unpausing agents in thread");
     		agentThread.keepGoing();
     	}
     }
