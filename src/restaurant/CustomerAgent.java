@@ -26,9 +26,6 @@ public class CustomerAgent extends Agent {
 	Timer choosingTimer;
 	private CustomerGui customerGui;
 	
-	int destinationX = 0;
-	int destinationY = 0;
-
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
 	private HostAgent host;
@@ -137,6 +134,7 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
+			refreshAfterLeaving();
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
@@ -194,10 +192,21 @@ public class CustomerAgent extends Agent {
 		state = AgentState.DoingNothing;
 		event = AgentEvent.none;
 	}
+	
+	private void refreshAfterLeaving(){
+		assignedWaiter = null;
+		myMenu = null;
+		host = null;
+		choice = "";
+	}
 
 	// Accessors
 	public String getName() {
 		return name;
+	}
+	
+	public HostAgent getHost() {
+		return host;
 	}
 	
 	public int getHungerLevel() {

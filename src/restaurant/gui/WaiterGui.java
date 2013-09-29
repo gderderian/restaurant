@@ -73,10 +73,10 @@ public class WaiterGui implements Gui {
 	}
 
 	public void doneAnimating(){
-		System.out.println("Done animating in waiter gui, about to release semaphore");
-		agent.releaseSemaphore();
 		hasDestination = false;
 		isAnimating = false;
+		System.out.println("Done animating in waiter gui, about to release semaphore");
+		agent.releaseSemaphore();
 	}
     
     public void DoBringToTable(CustomerAgent customer, int tableX, int tableY) {

@@ -91,15 +91,19 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void ImDone(CustomerAgent c) {
-		Do("Customer " + c.getName() + " has finished and is DONE!");
-		myHost.msgLeavingTable(c);
-		myCustomers.remove(c);
+		Do("Customer " + c.getName() + " has finished and is done.");
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				cust.state = CustomerState.Done;
+			}
+		}
 		stateChanged();
 	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		for (MyCustomer c : myCustomers) {
+			Do("Customer " + c.customer.getCustomerName() + " is " + c.state);
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c);
 				return true;
@@ -233,7 +237,9 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void goodbyeCustomer(MyCustomer c){
+		Do("GOODBYTE CUSOTMER!");
 		myCustomers.remove(c);
+		c.customer.getHost().msgLeavingTable(c.customer);
 	}
 	
 	private void goHome(){

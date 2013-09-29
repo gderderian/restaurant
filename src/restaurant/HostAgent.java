@@ -58,15 +58,16 @@ public class HostAgent extends Agent {
 
 	// Messages
 	public void msgIWantFood(CustomerAgent cust) {
-		Do(cust.getName() + " is here and wants food!!!");
+		Do(cust.getName() + " is here and wants food.");
 		waitingCustomers.add(cust);
 		stateChanged();
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {
+		
 		for (Table table : tables) {
 			if (table.getOccupant() == cust) {
-				print(cust + " leaving " + table);
+				print(cust + " leaving " + table + " - setting as unoccupied");
 				table.setUnoccupied();
 				stateChanged();
 			}
