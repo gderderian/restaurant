@@ -1,10 +1,10 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.Order.orderStatus;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
-import restaurant.Order;
-
+import javax.swing.Timer;
 
 /**
  * Restaurant Cook Agent
@@ -42,10 +42,12 @@ public class CookAgent extends Agent {
 	}
 	
 	// Messages
-	public void hereIsOrder(Order o) {
-		Do("I have order!");
+	public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
+		Order o = new Order();
+		o.foodItem = choice;
+		o.requestingWaiter = waiter;
+		o.recipTable = tableNum;
 		currentOrders.add(o);
-		Do("Order food name: " + o.getFoodName());
 		stateChanged();
 	}
 
@@ -77,9 +79,62 @@ public class CookAgent extends Agent {
 
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
 		Do("Notifying waiter order is done");
-		o.getWaiter().hereIsFood(o);
+		o.getWaiter().hereIsFood(o.recipTable, o.foodItem);
 		currentOrders.remove(o);
 	}
 	
+	public enum orderStatus {waiting, preparing, ready};
+	
+	public class Order {
+		
+		String foodItem;
+		int recipTable;
+		WaiterAgent requestingWaiter;
+		Timer foodTimer;
+		orderStatus status;
+		
+		public Order(WaiterAgent w){
+			requestingWaiter = w;
+			status = orderStatus.waiting;
+		}
+		
+		public Order(){
+			status = orderStatus.waiting;
+		}
+		
+		public Order(CustomerAgent c, WaiterAgent w, String foodChoice){
+			requestingWaiter = w;
+			foodItem = foodChoice;
+			status = orderStatus.waiting;
+		}
+		
+		public void setPreparing(){
+			status = orderStatus.preparing;
+		}
+		
+		public orderStatus getStatus(){
+			return status;
+		}
+		
+		public String getFoodName(){
+			return foodItem;
+		}
+		
+		public WaiterAgent getWaiter(){
+			return requestingWaiter;
+		}
+		
+		public void setCooking(int cookTime){
+			foodTimer = new Timer(cookTime,
+					new ActionListener() { public void actionPerformed(ActionEvent event) {
+			          status = orderStatus.ready;
+			          foodTimer.stop();
+			          System.out.println("Order has finished cooking!");
+			      }
+			});
+			foodTimer.start();
+		}
+			
+	}
 
 }

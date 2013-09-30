@@ -86,7 +86,7 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void hereIsOrder(Order o) {
+	public void hereIsOrder(String choice) {
 		state = AgentState.Eating;
 		beginEating();
 		stateChanged();
@@ -103,9 +103,6 @@ public class CustomerAgent extends Agent {
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
-		// print("State: " + state + " - Event: " + event);
-		
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingForSeat;
 			goToRestaurant();
@@ -277,13 +274,6 @@ public class CustomerAgent extends Agent {
 	public CustomerGui getGui() {
 		return customerGui;
 	}
-
-	// Misc. Utilities
-	public String pickRandomItem() {
-		Random randNum = new Random();
-		int itemPickNum = randNum.nextInt(myMenu.itemList.size()) + 1;
-		return myMenu.getAt(itemPickNum);
-	}
 	
 	public void setHost(HostAgent host) {
 		this.host = host;
@@ -296,9 +286,15 @@ public class CustomerAgent extends Agent {
 	public void assignWaiter(WaiterAgent w) {
 		assignedWaiter = w;
 	}
+
+	// Misc. Utilities
+	public String pickRandomItem() {
+		Random randNum = new Random();
+		int itemPickNum = randNum.nextInt(myMenu.itemList.size()) + 1;
+		return myMenu.getAt(itemPickNum);
+	}
 	
 	public void releaseSemaphore(){
-		//System.out.println("Releasing customer semaphore");
 		isAnimating.release();
 	}
 	

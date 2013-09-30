@@ -10,7 +10,6 @@ import java.util.*;
  */
 public class HostAgent extends Agent {
 	
-	// Variable Declarations
 	static final int NTABLES = 4;
 	
 	public List<CustomerAgent> waitingCustomers;
@@ -100,7 +99,7 @@ public class HostAgent extends Agent {
 					w_selected = w;
 				}
 			}
-			w_selected.msgSeatCustomer(customer, table, this);
+			w_selected.msgSeatCustomer(customer, table.tableNumber, this);
 			table.setOccupant(customer);
 			waitingCustomers.remove(customer);
 		}
@@ -117,6 +116,10 @@ public class HostAgent extends Agent {
 	
     public void setCarryText(String carryText){
     	carryingOrderText = carryText;
+    }
+    
+    public Collection<Table> getTables(){
+    	return tables;
     }
 	
 }

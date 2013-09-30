@@ -56,26 +56,25 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 
-	public void hereIsFood(Order o) {
+	public void hereIsFood(int tableNum, String choice) {
 		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(o.recipientCustomer)){
+			if (cust.tableNum == tableNum){
 				cust.state = CustomerState.FoodReady;
 			}
 		}
 		stateChanged();
 	}
 
-	public void msgSeatCustomer(CustomerAgent c, Table t, HostAgent h) {
+	public void msgSeatCustomer(CustomerAgent c, int tableNum, HostAgent h) {
 		myHost = h;
 		MyCustomer customer = new MyCustomer();
 		customer.customer = c;
-		customer.table = t;
+		customer.tableNum = tableNum;
 		myCustomers.add(customer);
 		stateChanged();
 	}
 	
 	public void readyToOrder(CustomerAgent c) {
-		
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				cust.state = CustomerState.ReadyToOrder;
@@ -86,13 +85,9 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
-		
-		
-		
-		Order o = new Order(c, this, choice);
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
-				cust.order = o;
+				cust.choice = choice;
 				cust.state = CustomerState.OrderedWaiting;
 			}
 		}
@@ -118,21 +113,19 @@ public class WaiterAgent extends Agent {
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.ReadyToOrder){
-				Do("Customer is ready to order!");
-				takeOrder(c, c.table);
+				takeOrder(c, c.tableNum);
 				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.OrderedWaiting){
-				Do("Sending " + c.customer.getName() + " order of " + c.order.getFoodName() + " to cook");
-				sendToKitchen(c, c.order);
+				sendToKitchen(c, c.choice);
 				return true;
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.FoodReady){
-				deliverOrder(c, c.order);
+				deliverOrder(c, c.choice);
 				return true;
 			}
 		}
@@ -147,9 +140,7 @@ public class WaiterAgent extends Agent {
 	}
 
 	// Actions
-	private void takeOrder(MyCustomer c, Table t){
-
-		Do("About to tell waiter to go to x/y:" + c.customer.getGui().getX() + "/" + c.customer.getGui().getY());
+	private void takeOrder(MyCustomer c, int tableNum){
 		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY());
 		waiterGui.beginAnimate();
 		try {
@@ -159,10 +150,9 @@ public class WaiterAgent extends Agent {
 		}
 		c.customer.msgWhatDoYouWant();
 		c.state = CustomerState.Ordering;
-		
 	}
 
-	private void sendToKitchen(MyCustomer c, Order o){
+	private void sendToKitchen(MyCustomer c, String choice){
 		c.state = CustomerState.WaitingForFood;
 		Do("Order sent to cook, headed to kitchen!");
 		waiterGui.setDestination(500, 230);
@@ -172,7 +162,7 @@ public class WaiterAgent extends Agent {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		myCook.hereIsOrder(o);
+		myCook.hereIsOrder(choice, this, c.tableNum);
 	}
 	
 	public boolean hasCustomer(CustomerAgent c){
@@ -201,9 +191,19 @@ public class WaiterAgent extends Agent {
 		Do("Going to fetch customer and then set their state");
 		
 		c.customer.msgSitAtTable(new Menu(), this);
-		c.customer.getGui().setDestination(c.table.tableX, c.table.tableY);
 		
-		waiterGui.setDestination(c.table.tableX, c.table.tableY);
+		int destX = 0, destY = 0;
+		
+		for (Table t : myHost.getTables()) {
+			if (c.tableNum == t.tableNumber){
+				destX = t.tableX;
+				destY = t.tableY;
+			}
+		}
+		
+		c.customer.getGui().setDestination(destX, destY);
+		
+		waiterGui.setDestination(destX, destY);
 		waiterGui.beginAnimate();
 		
 		try {
@@ -216,7 +216,7 @@ public class WaiterAgent extends Agent {
 		
 	}
 	
-	public void deliverOrder(MyCustomer c, Order o){
+	public void deliverOrder(MyCustomer c, String choice){
 		
 		waiterGui.setDestination(500, 230);
 		waiterGui.beginAnimate();
@@ -229,7 +229,7 @@ public class WaiterAgent extends Agent {
 		
 		String carryText = "";
 		
-		switch(o.getFoodName()){
+		switch(choice){
 		case "Chicken":
 			carryText = "CHK";
 			break;
@@ -251,7 +251,7 @@ public class WaiterAgent extends Agent {
 		}
 		
 		waiterGui.setCarryText(carryText);
-		waiterGui.setDestination(c.table.tableX, c.table.tableY);
+		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY());
 		waiterGui.beginAnimate();
 		
 		try {
@@ -260,7 +260,7 @@ public class WaiterAgent extends Agent {
 			e.printStackTrace();
 		}
 		
-		c.customer.hereIsOrder(o);
+		c.customer.hereIsOrder(choice);
 		c.state = CustomerState.Eating;
 		waiterGui.setCarryText("");
 		
@@ -281,8 +281,8 @@ public class WaiterAgent extends Agent {
 	
 	class MyCustomer {
 		CustomerAgent customer;
-		Table table;
-		Order order;
+		int tableNum;
+		String choice;
 		CustomerState state;
 	
 		MyCustomer(){
