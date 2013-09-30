@@ -80,7 +80,6 @@ public class WaiterGui implements Gui {
 	public void doneAnimating(){
 		hasDestination = false;
 		isAnimating = false;
-		System.out.println("Done animating in waiter gui, about to release semaphore");
 		agent.releaseSemaphore();
 	}
     

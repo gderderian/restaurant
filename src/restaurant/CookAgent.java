@@ -128,7 +128,6 @@ public class CookAgent extends Agent {
 					new ActionListener() { public void actionPerformed(ActionEvent event) {
 			          status = orderStatus.ready;
 			          foodTimer.stop();
-			          System.out.println("Order has finished cooking!");
 			      }
 			});
 			foodTimer.start();
