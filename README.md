@@ -16,4 +16,4 @@ ant run.gui
 The program will then begin to run. To exit, close the terminal/command line window you opened.
 
 ###Resources
-  + [My Design Doc](https://github.com/usc-csci201-fall2013/restaurant_gderderi/blob/master/docs/DesignDoc.md)
+  + [My Restaurant Design Doc](https://github.com/usc-csci201-fall2013/restaurant_gderderi/blob/master/docs/DesignDoc.md)
