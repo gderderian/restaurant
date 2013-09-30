@@ -49,16 +49,12 @@ public class CustomerGui implements Gui{
 	}
 	
 	public void doneAnimating(){
-		//System.out.println("Doneanimating in customer gui, about to release semaphore");
 		agent.releaseSemaphore();
 		hasDestination = false;
 		isAnimating = false;
 	}
 
 	public void updatePosition() {
-		
-		//System.out.println("Current X/Y:" + xPos + "/" + yPos + " - Destination Y:" + xDestination + "/" + yDestination);
-		
 		if (xPos < xDestination)
 			xPos++;
 		else if (xPos > xDestination)
@@ -73,8 +69,7 @@ public class CustomerGui implements Gui{
 			}
 			if (command==Command.GoToSeat) agent.msgAnimationFinishedGoToSeat();
 			else if (command==Command.LeaveRestaurant) {
-				agent.msgAnimationFinishedLeaveRestaurant(); 
-				//System.out.println("about to call gui.setCustomerEnabled(agent);");
+				agent.msgAnimationFinishedLeaveRestaurant();
 				isHungry = false;
 				gui.setCustomerEnabled(agent);
 			}

@@ -37,7 +37,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
     }
 
     public void toggleTimer() {
-    	System.out.println(timerIsRunning);
     	if (timerIsRunning == true){
     		timer.stop();
     		timerIsRunning = false;

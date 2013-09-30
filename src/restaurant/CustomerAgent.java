@@ -146,6 +146,7 @@ public class CustomerAgent extends Agent {
 	private void tellWaiterReady(){
 		assignedWaiter.readyToOrder(this);
 		state = AgentState.CalledWaiter;
+		Do("Telling waiter that I'm ready.");
 	}
 	
 	private void sendChoiceToWaiter(){
@@ -175,22 +176,24 @@ public class CustomerAgent extends Agent {
 			break;
 		}
 		customerGui.setCarryText(carryText + "?");
-		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName());
+		
+		Do("Sending food choice " + choice + " to waiter.");
 	}
 	
 	private void beginChoosing(){
 		choosingTimer.setRepeats(false);
 		choosingTimer.restart();
 		choosingTimer.start();
+		Do("Beginning to decide what food item to pick.");
 	}
 	
 	private void goToRestaurant() {
-		Do("Going to restaurant");
 		host.msgIWantFood(this);
+		Do("Going to restaurant and telling host that I'm hungry.");
 	}
 
 	private void SitDown() {
-		Do("Being seated. Going to table and beginning animation.");
+		Do("Going to sit down.");
 		customerGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -201,7 +204,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void beginEating() {
-		
+		Do("Beginning to eat food.");
 		String carryText = "";
 		switch(choice){
 		case "Chicken":
@@ -224,15 +227,14 @@ public class CustomerAgent extends Agent {
 			break;
 		}
 		customerGui.setCarryText(carryText);
-		Do("Eating Food");
 		eatingTimer.setRepeats(false);
 		eatingTimer.restart();
 		eatingTimer.start();
 	}
 
 	private void leaveRestaurant() {
+		Do("Leaving restaurant.");
 		customerGui.setCarryText("");
-		Do("Leaving.");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
 		state = AgentState.DoingNothing;
@@ -240,6 +242,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void refreshAfterLeaving(){
+		Do("Left restaurant.");
 		assignedWaiter = null;
 		myMenu = null;
 		host = null;

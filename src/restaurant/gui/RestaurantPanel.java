@@ -75,8 +75,6 @@ public class RestaurantPanel extends JPanel {
     
     public void toggleTimer(){
     	
-    	System.out.println("Pause button pressed");
-    	
     	// Pause waiter agents
     	for(WaiterAgent waiter : waiterList){
     		waiter.toggleAgentPause();
@@ -158,8 +156,6 @@ public class RestaurantPanel extends JPanel {
      * @param name name of person
      */
     public void addPerson(String type, String name, boolean isHungry) {
-
-    	System.out.println(isHungry);
     	
     	if (type.equals("Customers")) {
     		

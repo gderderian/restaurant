@@ -46,6 +46,10 @@ public class WaiterAgent extends Agent {
 		return myCustomers.size();
 	}
 	
+	public void setCook(CookAgent cook){
+		myCook = cook;
+	}
+	
 	// Messages
 	public void doneEating(CustomerAgent c) {
 		for (MyCustomer cust : myCustomers) {
@@ -141,6 +145,7 @@ public class WaiterAgent extends Agent {
 
 	// Actions
 	private void takeOrder(MyCustomer c, int tableNum){
+		Do("Going to take order from customer " + c.customer.getName() + " at table #" + tableNum + ".");
 		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY());
 		waiterGui.beginAnimate();
 		try {
@@ -153,8 +158,8 @@ public class WaiterAgent extends Agent {
 	}
 
 	private void sendToKitchen(MyCustomer c, String choice){
+		Do("Sending order " + choice + " from customer " + c.customer.getName() + " to kitchen.");
 		c.state = CustomerState.WaitingForFood;
-		Do("Order sent to cook, headed to kitchen!");
 		waiterGui.setDestination(500, 230);
 		waiterGui.beginAnimate();
 		try {
@@ -164,22 +169,9 @@ public class WaiterAgent extends Agent {
 		}
 		myCook.hereIsOrder(choice, this, c.tableNum);
 	}
-	
-	public boolean hasCustomer(CustomerAgent c){
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public void setCook(CookAgent cook){
-		myCook = cook;
-	}
-	
+
 	public void seatCustomer(MyCustomer c){
-		
+		Do("Seating customer " + c.customer.getName() + ".");
 		waiterGui.setDestination(-20, -20);
 		waiterGui.beginAnimate();
 		try {
@@ -187,8 +179,6 @@ public class WaiterAgent extends Agent {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		Do("Going to fetch customer and then set their state");
 		
 		c.customer.msgSitAtTable(new Menu(), this);
 		
@@ -217,7 +207,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void deliverOrder(MyCustomer c, String choice){
-		
+		Do("Delivering order " + choice + " to customer " + c.customer.getName() + ".");
 		waiterGui.setDestination(500, 230);
 		waiterGui.beginAnimate();
 		
@@ -267,11 +257,13 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void goodbyeCustomer(MyCustomer c){
+		Do("Removing customer " + c.customer.getName() + "from my lists and saying goodbye.");
 		myCustomers.remove(c);
 		c.customer.getHost().msgLeavingTable(c.customer);
 	}
 	
 	private void goHome(){
+		Do("Going back to home position as there are no tasks for me to do right now.");
 		waiterGui.setDestination(230, 230);
 	}
 	
@@ -294,6 +286,15 @@ public class WaiterAgent extends Agent {
 	public void releaseSemaphore(){
 		//System.out.println("Releasing semaphore");
 		isAnimating.release();
+	}
+	
+	public boolean hasCustomer(CustomerAgent c){
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

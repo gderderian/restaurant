@@ -71,16 +71,15 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
-		Do("Preparing food!");
 		o.status = orderStatus.preparing;
-		Do("Order Food Name: " + o.getFoodName());
 		o.setCooking(timerList.get(o.getFoodName()));
+		Do("Beginning to prepare food " + o.getFoodName() + ".");
 	}
 
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
-		Do("Notifying waiter order is done");
 		o.getWaiter().hereIsFood(o.recipTable, o.foodItem);
 		currentOrders.remove(o);
+		Do("Notifying waiter that " + o.getFoodName() + " is done.");
 	}
 	
 	public enum orderStatus {waiting, preparing, ready};
