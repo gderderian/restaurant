@@ -394,7 +394,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		assignedWaiter.readyToOrder(this)
 		state = AgentState.CalledWaiter
 	}
-	
+```
+```
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem()
 		choice = itemChoice
@@ -424,18 +425,21 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		customerGui.setCarryText(carryText + "?")
 		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName())
 	}
-	
+```
+```
 	private void beginChoosing(){
 		choosingTimer.setRepeats(false)
 		choosingTimer.restart()
 		choosingTimer.start()
 	}
-	
+```
+```
 	private void goToRestaurant() {
 		Do("Going to restaurant")
 		host.msgIWantFood(this)
 	}
-
+```
+```
 	private void SitDown() {
 		Do("Being seated. Going to table and beginning animation.")
 		customerGui.beginAnimate()
@@ -446,7 +450,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		}
 		event = AgentEvent.seated
 	}
-	
+```
+```
 	private void beginEating() {
 		
 		String carryText = ""
@@ -476,7 +481,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		eatingTimer.restart()
 		eatingTimer.start()
 	}
-
+```
+```
 	private void leaveRestaurant() {
 		customerGui.setCarryText("")
 		Do("Leaving.")
@@ -485,7 +491,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		state = AgentState.DoingNothing
 		event = AgentEvent.none
 	}
-	
+```
+```
 	private void refreshAfterLeaving(){
 		assignedWaiter = null
 		myMenu = null
@@ -500,7 +507,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		assignedWaiter.readyToOrder(this)
 		state = AgentState.CalledWaiter
 	}
-	
+```
+```
 	private void sendChoiceToWaiter(){
 		String itemChoice = pickRandomItem()
 		choice = itemChoice
@@ -530,18 +538,21 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		customerGui.setCarryText(carryText + "?")
 		Do("Picked: " + itemChoice + " - Sending to waiter " + assignedWaiter.getName())
 	}
-	
+```
+```
 	private void beginChoosing(){
 		choosingTimer.setRepeats(false)
 		choosingTimer.restart()
 		choosingTimer.start()
 	}
-	
+```
+```
 	private void goToRestaurant() {
 		Do("Going to restaurant")
 		host.msgIWantFood(this)
 	}
-
+```
+```
 	private void SitDown() {
 		Do("Being seated. Going to table and beginning animation.")
 		customerGui.beginAnimate()
@@ -552,7 +563,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		}
 		event = AgentEvent.seated
 	}
-	
+```
+```
 	private void beginEating() {
 		
 		String carryText = ""
@@ -582,7 +594,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		eatingTimer.restart()
 		eatingTimer.start()
 	}
-
+```
+```
 	private void leaveRestaurant() {
 		customerGui.setCarryText("")
 		Do("Leaving.")
@@ -591,7 +604,8 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 		state = AgentState.DoingNothing
 		event = AgentEvent.none
 	}
-	
+```
+```
 	private void refreshAfterLeaving(){
 		assignedWaiter = null
 		myMenu = null
@@ -642,7 +656,8 @@ public void hereIsOrder(Order o) {
 		Do("Order Food Name: " + o.getFoodName())
 		o.setCooking(timerList.get(o.getFoodName()))
 	}
-
+```
+```
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
 		o.getWaiter().hereIsFood(o)
 		currentOrders.remove(o)
