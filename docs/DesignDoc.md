@@ -2,6 +2,8 @@
 
 This document outlines the crucial parts of each main agent in the restaurant: HostAgent, WaiterAgent, CookAgent, and CustomerAgent.
 
+![Design Doc](designdocimg.png "Design Doc")
+
 ## Host Agent
 
 ### Data
