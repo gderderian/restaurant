@@ -24,9 +24,9 @@ public class RestaurantPanel extends JPanel {
     // Instantiate cook, host, and one waiter
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Jeff");
-    private WaiterAgent waiter = new WaiterAgent("Andrew");
+    //private WaiterAgent waiter = new WaiterAgent("Andrew");
     
-    private WaiterGui waiterGui = new WaiterGui(waiter);
+    //private WaiterGui waiterGui = new WaiterGui(waiter);
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
@@ -42,30 +42,38 @@ public class RestaurantPanel extends JPanel {
     public RestaurantPanel(RestaurantGui gui) {
     	
         this.gui = gui;
-        host.setGui(waiterGui);
+        //host.setGui(waiterGui);
 
-        waiter.setGui(waiterGui);
+        //waiter.setGui(waiterGui);
         
-        gui.animationPanel.addGui(waiterGui);
+        //gui.animationPanel.addGui(waiterGui);
         
-        host.addWaiter(waiter);
+        //host.addWaiter(waiter);
         host.startThread();
         
         cook.startThread();
         
-        waiter.startThread();
-        waiter.setCook(cook);
+        //waiter.startThread();
+        //waiter.setCook(cook);
         
-        waiterList.add(waiter);
+        //waiterList.add(waiter);
 
         setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
 
-        group.add(customerPanel);
-        group.add(waiterPanel);
+        JPanel personControl = new JPanel();
+        personControl.setLayout(new BoxLayout(personControl, BoxLayout.Y_AXIS));
+        
+        personControl.add(customerPanel);
+        personControl.add(waiterPanel);
+        
+        group.add(personControl);
 
         initRestLabel();
+        
         add(restLabel);
+        
+        
         add(group);
         
     }
@@ -105,12 +113,12 @@ public class RestaurantPanel extends JPanel {
         
         String mainIntro = 	"<html><h3><u>Tonight's Staff</u></h3>";
         String mainHeaderHost = "<table><tr><td>Host:</td><td>" + host.getName() + "</td></tr></table>";
-        String mainHeaderWaiter = "<table><tr><td>Lead Waiter:</td><td>" + waiter.getName() + "</td></tr></table>";
+        // String mainHeaderWaiter = "<table><tr><td>Lead Waiter:</td><td>" + waiter.getName() + "</td></tr></table>";
         String menuHeader = "<h3><u>Menu</u></h3>";
         String menuDisplay = restMenu.displayMenu();
         String concludeText = "</html>";
         
-        String finalDisplay = mainIntro + mainHeaderHost + mainHeaderWaiter + menuHeader + menuDisplay + concludeText;
+        String finalDisplay = mainIntro + mainHeaderHost + menuHeader + menuDisplay + concludeText;
         
         label.setText(finalDisplay);
         

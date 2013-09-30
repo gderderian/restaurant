@@ -18,7 +18,6 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
                     JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     private JPanel view = new JPanel();
     private List<JButton> list = new ArrayList<JButton>();
-    private JButton addPersonB = new JButton("Add");
 
     private RestaurantPanel restPanel;
     private String type;
@@ -26,76 +25,53 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
     private JPanel addPersonPanel;
     private JButton addPersonButton = new JButton("Add");
     private JCheckBox hungryCheckbox = new JCheckBox();
-	private JLabel enterNamePrompt = new JLabel("Name:");
-	private JLabel hungryPrompt = new JLabel("Hungry?");
 	private JTextField personName = new JTextField();
 	
-	private static final int PERSON_GRID_ROWS = 1;
-	private static final int PERSON_GRID_COLS = 5;
-
-	private JPanel togglePanel;
-    private JButton toggleTimerButton = new JButton("Pause");
-    private boolean isPaused = false;
+	private static final int PERSON_GRID_ROWS = 2;
+	private static final int PERSON_GRID_COLS = 1;
 	
     /**
-     * Constructor for ListPanel.  Sets up all the gui
+     * Constructor for ListPanel.  Sets up the GUIs for displaying customers or waiters.
      *
      * @param rp   reference to the restaurant panel
      * @param type indicates if this is for customers or waiters
      */
     public ListPanel(RestaurantPanel rp, String type) {
+    	
         restPanel = rp;
         this.type = type;
+        
+        setLayout(new GridLayout(PERSON_GRID_ROWS, PERSON_GRID_COLS));
+        this.setBorder(BorderFactory.createTitledBorder(type + " Management"));
 
-        setLayout(new BoxLayout((Container) this, BoxLayout.Y_AXIS));
-        add(new JLabel("<html><pre> <u>" + type + "</u><br></pre></html>"));
-
-        addPersonB.addActionListener(this);
-
-        this.setBorder(BorderFactory.createTitledBorder("Animation Control"));
+        addPersonButton.addActionListener(this);
+        personName.addKeyListener(this);
+        
+        hungryCheckbox.setText("Hungry?");
         
         addPersonPanel = new JPanel();
         addPersonPanel.setLayout(new GridLayout(PERSON_GRID_ROWS, PERSON_GRID_COLS));
         
-        addPersonPanel.add(personName);
-        addPersonPanel.add(enterNamePrompt);
+        //addPersonPanel.add(personName);
+        // addPersonPanel.add(enterNamePrompt);
         addPersonPanel.add(personName);
         
         if (type == "Customers"){
-            addPersonPanel.add(hungryPrompt);
             addPersonPanel.add(hungryCheckbox);
         }
 
-        
         addPersonPanel.add(addPersonButton);
-        addPersonButton.addActionListener(this);
         
         hungryCheckbox.setEnabled(false);
-        
-        personName.addKeyListener(this);
        
         add(addPersonPanel);
         
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
         
-        if (type == "Customers"){
+        //if (type == "Customers"){
         	pane.setViewportView(view);
         	add(pane);
-        }
-
-        togglePanel = new JPanel();
-        togglePanel.setBorder(BorderFactory.createTitledBorder("Animation Control"));
-        togglePanel.setLayout(new GridLayout(1, 1));
-        
-        toggleTimerButton.addActionListener(this);
-        togglePanel.add(toggleTimerButton);
-        
-        Dimension toggleDim = new Dimension(50, 50);
-        toggleTimerButton.setPreferredSize(toggleDim);
-        toggleTimerButton.setMinimumSize(toggleDim);
-        toggleTimerButton.setMaximumSize(toggleDim);
-        
-        add(togglePanel);
+       // }
         
     }
     
@@ -131,17 +107,6 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         	
         	personName.setText("");
         	hungryCheckbox.setSelected(false);
-        	
-        } else if (e.getSource() == toggleTimerButton) {
-        	if (isPaused == true) {
-        		toggleTimerButton.setText("Pause");
-            	restPanel.toggleTimer();
-            	isPaused = false;
-        	} else {
-        		toggleTimerButton.setText("Resume");
-            	restPanel.toggleTimer();
-            	isPaused = true;
-        	}
         	
         } else {
         	

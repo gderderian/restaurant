@@ -52,15 +52,11 @@ public class CookAgent extends Agent {
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!currentOrders.isEmpty()) {
-			Do("Orders not empty");
 			for (Order order : currentOrders) {
-				Do("Order status: " + order.status);
 				if (order.getStatus() == orderStatus.ready) {
-					Do("Order is ready!");
 					orderDone(order);
 					return true;
 				} else if (order.getStatus() == orderStatus.waiting){
-					Do("Order is waiting!");
 					prepareFood(order);
 					return true;
 				} else {

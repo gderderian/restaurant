@@ -91,17 +91,19 @@ public class HostAgent extends Agent {
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
 		// Find waiter and notify them
-		int init_cust = myWaiters.get(0).getNumCustomers();
-		WaiterAgent w_selected = null;
-		for (WaiterAgent w : myWaiters){
-			if (w.getNumCustomers() <= init_cust){
-				init_cust = w.getNumCustomers();
-				w_selected = w;
+		if (myWaiters.size() != 0) {
+			int init_cust = myWaiters.get(0).getNumCustomers();
+			WaiterAgent w_selected = null;
+			for (WaiterAgent w : myWaiters){
+				if (w.getNumCustomers() <= init_cust){
+					init_cust = w.getNumCustomers();
+					w_selected = w;
+				}
 			}
+			w_selected.msgSeatCustomer(customer, table, this);
+			table.setOccupant(customer);
+			waitingCustomers.remove(customer);
 		}
-		w_selected.msgSeatCustomer(customer, table, this);
-		table.setOccupant(customer);
-		waitingCustomers.remove(customer);
 	}
 
 	// Misc. Utilities

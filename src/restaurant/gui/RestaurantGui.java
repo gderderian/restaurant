@@ -2,6 +2,9 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 
+
+
+
 //import javax.swing.Image;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -35,6 +38,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private static final int INFO_PANEL_Y_PADDING = 0;
 
     private Object currentPerson;
+    
+	private JPanel controlPanel;
+    private JButton toggleTimerButton = new JButton("Pause");
+    private boolean isPaused = false;
 
     /**
      * Constructor for RestaurantGui class.
@@ -64,8 +71,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         restPanel.setMaximumSize(restDim);
         leftPanel.add(restPanel);
         
-        // Now, setup the info panel
-        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .25));
+        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .15));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -79,7 +85,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         infoPanel.setLayout(new GridLayout(INFO_PANEL_ROWS, INFO_PANEL_COLS, INFO_PANEL_X_PADDING, INFO_PANEL_Y_PADDING));
         
         infoLabel = new JLabel(); 
-        infoLabel.setText("<html><pre><i>Click Add to make customers</i></pre></html>");
+        infoLabel.setText("<html><p>Enter a customer or waiter name above and click add to begin!</p></html>");
         infoPanel.add(infoLabel);
         infoPanel.add(stateCB);
         leftPanel.add(infoPanel);
@@ -87,7 +93,13 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(leftPanel);
         animationPanel.setBorder(BorderFactory.createTitledBorder("Restaurant Animation"));
         add(animationPanel);
-
+        
+        controlPanel = new JPanel();
+        controlPanel.setBorder(BorderFactory.createTitledBorder("Agent Controls"));
+        // togglePanel.setLayout(new GridLayout(1, 1));
+        toggleTimerButton.addActionListener(this);
+        controlPanel.add(toggleTimerButton);
+        leftPanel.add(controlPanel);
         
     }
     
@@ -124,6 +136,17 @@ public class RestaurantGui extends JFrame implements ActionListener {
                 c.getGui().setHungry();
                 stateCB.setEnabled(false);
             }
+        } else if (e.getSource() == toggleTimerButton) {
+        	if (isPaused == true) {
+        		toggleTimerButton.setText("Pause");
+            	restPanel.toggleTimer();
+            	isPaused = false;
+        	} else {
+        		toggleTimerButton.setText("Resume");
+            	restPanel.toggleTimer();
+            	isPaused = true;
+        	}
+        	
         }
     }
     
