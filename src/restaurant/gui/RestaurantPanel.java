@@ -4,9 +4,7 @@ import restaurant.CustomerAgent;
 import restaurant.CookAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
-
 import javax.swing.*;
-
 import java.awt.*;
 import java.util.Vector;
 
@@ -42,27 +40,25 @@ public class RestaurantPanel extends JPanel {
     public RestaurantPanel(RestaurantGui gui) {
     	
         this.gui = gui;
-        //host.setGui(waiterGui);
 
-        //waiter.setGui(waiterGui);
-        
-        //gui.animationPanel.addGui(waiterGui);
-        
-        //host.addWaiter(waiter);
         host.startThread();
-        
         cook.startThread();
-        
-        //waiter.startThread();
-        //waiter.setCook(cook);
-        
-        //waiterList.add(waiter);
 
         setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
 
         JPanel personControl = new JPanel();
         personControl.setLayout(new BoxLayout(personControl, BoxLayout.Y_AXIS));
+        
+        Dimension custPanelDim = new Dimension(500, 550/3);
+        customerPanel.setPreferredSize(custPanelDim);
+        customerPanel.setMinimumSize(custPanelDim);
+        customerPanel.setMaximumSize(custPanelDim);
+        
+        Dimension waitPanelDim = new Dimension(500, 550/3);
+        waiterPanel.setPreferredSize(waitPanelDim);
+        waiterPanel.setMinimumSize(waitPanelDim);
+        waiterPanel.setMaximumSize(waitPanelDim);
         
         personControl.add(customerPanel);
         personControl.add(waiterPanel);
@@ -72,9 +68,8 @@ public class RestaurantPanel extends JPanel {
         initRestLabel();
         
         add(restLabel);
-        
-        
         add(group);
+
         
     }
     
@@ -146,6 +141,9 @@ public class RestaurantPanel extends JPanel {
                     gui.updateInfoPanel(temp);
             }
         }
+        
+        
+        
     }
 
     /**

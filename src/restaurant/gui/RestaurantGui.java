@@ -1,6 +1,7 @@
 package restaurant.gui;
 
 import restaurant.CustomerAgent;
+import restaurant.WaiterAgent;
 
 
 
@@ -65,13 +66,13 @@ public class RestaurantGui extends JFrame implements ActionListener {
         leftPanel.setMaximumSize(leftDim);
         leftPanel.setBorder(BorderFactory.createTitledBorder("Settings & Controls"));
         
-        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6));
+        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6725));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
         leftPanel.add(restPanel);
         
-        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .15));
+        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .125));
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -95,8 +96,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(animationPanel);
         
         controlPanel = new JPanel();
+        Dimension controlPanelDim = new Dimension(WINDOWX, (int) (WINDOWY * .125));
+        controlPanel.setPreferredSize(controlPanelDim);
+        controlPanel.setMinimumSize(controlPanelDim);
+        controlPanel.setMaximumSize(controlPanelDim);
         controlPanel.setBorder(BorderFactory.createTitledBorder("Agent Controls"));
-        // togglePanel.setLayout(new GridLayout(1, 1));
         toggleTimerButton.addActionListener(this);
         controlPanel.add(toggleTimerButton);
         leftPanel.add(controlPanel);
@@ -113,6 +117,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
         stateCB.setVisible(true);
         currentPerson = person;
 
+        if(person instanceof WaiterAgent){
+        	System.out.println("WAITERAGENT CLICKED!!!");
+        }
+        
         if (person instanceof CustomerAgent) {
             CustomerAgent customer = (CustomerAgent) person;
             stateCB.setText("Hungry?");

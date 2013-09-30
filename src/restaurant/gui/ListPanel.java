@@ -51,9 +51,7 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         
         addPersonPanel = new JPanel();
         addPersonPanel.setLayout(new GridLayout(PERSON_GRID_ROWS, PERSON_GRID_COLS));
-        
-        //addPersonPanel.add(personName);
-        // addPersonPanel.add(enterNamePrompt);
+ 
         addPersonPanel.add(personName);
         
         if (type == "Customers"){
@@ -68,10 +66,9 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
         
         view.setLayout(new BoxLayout((Container) view, BoxLayout.Y_AXIS));
         
-        //if (type == "Customers"){
-        	pane.setViewportView(view);
-        	add(pane);
-       // }
+        pane.setViewportView(view);
+        add(pane);
+      
         
     }
     
