@@ -16,20 +16,20 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 ```
 ### Scheduler
 ```
-	for (Table table : tables) {
-		if (!table.isOccupied()) {
-			if (!waitingCustomers.isEmpty()) {
-				seatCustomer(waitingCustomers.get(0), table)
+for (Table table : tables) {
+			if (!table.isOccupied()) {
+				if (!waitingCustomers.isEmpty()) {
+					seatCustomer(waitingCustomers.get(0), table)
 					return true
+				}
 			}
 		}
-	}
-	return false
+return false
 ```
 
 ### Messages
 ```
-	public void msgIWantFood(CustomerAgent cust) {
+public void msgIWantFood(CustomerAgent cust) {
 		waitingCustomers.add(cust)
 		stateChanged()
 	}
@@ -44,11 +44,11 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 				stateChanged()
 			}
 		}
+		
+	}
 ```
-
 ### Actions
 ```
-	private void seatCustomer(CustomerAgent customer, Table table) {
 		// Find waiter and notify them
 		if (myWaiters.size() != 0) {
 			int init_cust = myWaiters.get(0).getNumCustomers()
@@ -59,11 +59,10 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 					w_selected = w
 				}
 			}
-			w_selected.msgSeatCustomer(customer, table, this)
+			w_selected.msgSeatCustomer(customer, table.tableNumber, this)
 			table.setOccupant(customer)
 			waitingCustomers.remove(customer)
 		}
-	}
 ```
 
 ## Waiter Agent
@@ -80,7 +79,7 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 
 ### Scheduler
 ```
-for (MyCustomer c : myCustomers) {
+		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c)
 				return true
@@ -88,19 +87,19 @@ for (MyCustomer c : myCustomers) {
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.ReadyToOrder){
-				takeOrder(c, c.table)
+				takeOrder(c, c.tableNum)
 				return true
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.OrderedWaiting){
-				sendToKitchen(c, c.order)
+				sendToKitchen(c, c.choice)
 				return true
 			}
 		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.FoodReady){
-				deliverOrder(c, c.order)
+				deliverOrder(c, c.choice)
 				return true
 			}
 		}
@@ -116,7 +115,7 @@ for (MyCustomer c : myCustomers) {
 
 ### Messages
 ```
-	public void doneEating(CustomerAgent c) {
+public void doneEating(CustomerAgent c) {
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				cust.state = CustomerState.Done
@@ -126,9 +125,9 @@ for (MyCustomer c : myCustomers) {
 	}
 ```
 ```
-	public void hereIsFood(Order o) {
+	public void hereIsFood(int tableNum, String choice) {
 		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(o.recipientCustomer)){
+			if (cust.tableNum == tableNum){
 				cust.state = CustomerState.FoodReady
 			}
 		}
@@ -136,11 +135,11 @@ for (MyCustomer c : myCustomers) {
 	}
 ```
 ```
-	public void msgSeatCustomer(CustomerAgent c, Table t, HostAgent h) {
+	public void msgSeatCustomer(CustomerAgent c, int tableNum, HostAgent h) {
 		myHost = h
 		MyCustomer customer = new MyCustomer()
 		customer.customer = c
-		customer.table = t
+		customer.tableNum = tableNum
 		myCustomers.add(customer)
 		stateChanged()
 	}
@@ -158,10 +157,9 @@ for (MyCustomer c : myCustomers) {
 ```
 ```
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
-		Order o = new Order(c, this, choice)
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
-				cust.order = o
+				cust.choice = choice
 				cust.state = CustomerState.OrderedWaiting
 			}
 		}
@@ -182,7 +180,7 @@ for (MyCustomer c : myCustomers) {
 
 ### Actions
 ```
-	private void takeOrder(MyCustomer c, Table t){
+private void takeOrder(MyCustomer c, int tableNum){
 		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY())
 		waiterGui.beginAnimate()
 		try {
@@ -195,7 +193,7 @@ for (MyCustomer c : myCustomers) {
 	}
 ```
 ```
-	private void sendToKitchen(MyCustomer c, Order o){
+	private void sendToKitchen(MyCustomer c, String choice){
 		c.state = CustomerState.WaitingForFood
 		waiterGui.setDestination(500, 230)
 		waiterGui.beginAnimate()
@@ -204,27 +202,11 @@ for (MyCustomer c : myCustomers) {
 		} catch (InterruptedException e) {
 			e.printStackTrace()
 		}
-		myCook.hereIsOrder(o)
-	}
-```
-```
-	public boolean hasCustomer(CustomerAgent c){
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				return true
-			}
-		}
-		return false
-	}
-```
-```
-	public void setCook(CookAgent cook){
-		myCook = cook
+		myCook.hereIsOrder(choice, this, c.tableNum)
 	}
 ```
 ```
 	public void seatCustomer(MyCustomer c){
-		
 		waiterGui.setDestination(-20, -20)
 		waiterGui.beginAnimate()
 		try {
@@ -234,9 +216,19 @@ for (MyCustomer c : myCustomers) {
 		}
 		
 		c.customer.msgSitAtTable(new Menu(), this)
-		c.customer.getGui().setDestination(c.table.tableX, c.table.tableY)
 		
-		waiterGui.setDestination(c.table.tableX, c.table.tableY)
+		int destX = 0, destY = 0
+		
+		for (Table t : myHost.getTables()) {
+			if (c.tableNum == t.tableNumber){
+				destX = t.tableX
+				destY = t.tableY
+			}
+		}
+		
+		c.customer.getGui().setDestination(destX, destY)
+		
+		waiterGui.setDestination(destX, destY)
 		waiterGui.beginAnimate()
 		
 		try {
@@ -250,8 +242,7 @@ for (MyCustomer c : myCustomers) {
 	}
 ```
 ```
-	public void deliverOrder(MyCustomer c, Order o){
-		
+	public void deliverOrder(MyCustomer c, String choice){
 		waiterGui.setDestination(500, 230)
 		waiterGui.beginAnimate()
 		
@@ -263,7 +254,7 @@ for (MyCustomer c : myCustomers) {
 		
 		String carryText = ""
 		
-		switch(o.getFoodName()){
+		switch(choice){
 		case "Chicken":
 			carryText = "CHK"
 			break
@@ -285,7 +276,7 @@ for (MyCustomer c : myCustomers) {
 		}
 		
 		waiterGui.setCarryText(carryText)
-		waiterGui.setDestination(c.table.tableX, c.table.tableY)
+		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY())
 		waiterGui.beginAnimate()
 		
 		try {
@@ -294,7 +285,7 @@ for (MyCustomer c : myCustomers) {
 			e.printStackTrace()
 		}
 		
-		c.customer.hereIsOrder(o)
+		c.customer.hereIsOrder(choice)
 		c.state = CustomerState.Eating
 		waiterGui.setCarryText("")
 		
@@ -384,110 +375,46 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 
 ### Messages
 ```
-	private void tellWaiterReady(){
-		assignedWaiter.readyToOrder(this)
-		state = AgentState.CalledWaiter
+	public void gotHungry() {
+		print("I'm hungry")
+		event = AgentEvent.gotHungry
+		stateChanged()
 	}
 ```
 ```
-	private void sendChoiceToWaiter(){
-		String itemChoice = pickRandomItem()
-		choice = itemChoice
-		assignedWaiter.hereIsMyChoice(itemChoice, this)
-		
-		String carryText = ""
-		switch(choice){
-		case "Chicken":
-			carryText = "CHK"
-			break
-		case "Mac & Cheese":
-			carryText = "M&C"
-			break
-		case "French Fries":
-			carryText = "FRF"
-			break
-		case "Pizza":
-			carryText = "PZA"
-			break
-		case "Pasta":
-			carryText = "PST"
-			break
-		case "Cobbler":
-			carryText = "CBL"
-			break
-		}
-		customerGui.setCarryText(carryText + "?")
+	public void msgSitAtTable(Menu m, WaiterAgent w) {
+		print("Received msgSitAtTable")
+		myMenu = m
+		assignedWaiter = w
+		event = AgentEvent.followHost
+		stateChanged()
 	}
 ```
 ```
-	private void beginChoosing(){
-		choosingTimer.setRepeats(false)
-		choosingTimer.restart()
-		choosingTimer.start()
+	public void msgWhatDoYouWant() {
+		print("Received msgWhatWant")
+		event = AgentEvent.doneChoosing
+		stateChanged()
 	}
 ```
 ```
-	private void goToRestaurant() {
-		host.msgIWantFood(this)
+	public void hereIsOrder(String choice) {
+		state = AgentState.Eating
+		beginEating()
+		stateChanged()
 	}
 ```
 ```
-	private void SitDown() {
-		customerGui.beginAnimate()
-		try {
-			isAnimating.acquire()
-		} catch (InterruptedException e) {
-			e.printStackTrace()
-		}
-		event = AgentEvent.seated
+	public void msgAnimationFinishedGoToSeat() {
+		stateChanged()
 	}
 ```
 ```
-	private void beginEating() {
-		
-		String carryText = ""
-		switch(choice){
-		case "Chicken":
-			carryText = "CHK"
-			break
-		case "Mac & Cheese":
-			carryText = "M&C"
-			break
-		case "French Fries":
-			carryText = "FRF"
-			break
-		case "Pizza":
-			carryText = "PZA"
-			break
-		case "Pasta":
-			carryText = "PST"
-			break
-		case "Cobbler":
-			carryText = "CBL"
-			break
-		}
-		customerGui.setCarryText(carryText)
-		eatingTimer.setRepeats(false)
-		eatingTimer.restart()
-		eatingTimer.start()
+	public void msgAnimationFinishedLeaveRestaurant() {
+		event = AgentEvent.doneLeaving
+		stateChanged()
 	}
-```
-```
-	private void leaveRestaurant() {
-		customerGui.setCarryText("")
-		customerGui.DoExitRestaurant()
-		assignedWaiter.ImDone(this)
-		state = AgentState.DoingNothing
-		event = AgentEvent.none
-	}
-```
-```
-	private void refreshAfterLeaving(){
-		assignedWaiter = null
-		myMenu = null
-		host = null
-		choice = ""
-	}
+	
 ```
 
 ### Actions
@@ -525,6 +452,7 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			break
 		}
 		customerGui.setCarryText(carryText + "?")
+		
 	}
 ```
 ```
@@ -552,7 +480,6 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 ```
 ```
 	private void beginEating() {
-		
 		String carryText = ""
 		switch(choice){
 		case "Chicken":
@@ -608,7 +535,7 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 ```
 ### Scheduler
 ```
-if (!currentOrders.isEmpty()) {
+		if (!currentOrders.isEmpty()) {
 			for (Order order : currentOrders) {
 				if (order.getStatus() == orderStatus.ready) {
 					orderDone(order)
@@ -626,7 +553,11 @@ if (!currentOrders.isEmpty()) {
 
 ### Messages
 ```
-public void hereIsOrder(Order o) {
+	public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
+		Order o = new Order()
+		o.foodItem = choice
+		o.requestingWaiter = waiter
+		o.recipTable = tableNum
 		currentOrders.add(o)
 		stateChanged()
 	}
@@ -641,7 +572,7 @@ public void hereIsOrder(Order o) {
 ```
 ```
 	private void orderDone(Order o){
-		o.getWaiter().hereIsFood(o)
+		o.getWaiter().hereIsFood(o.recipTable, o.foodItem)
 		currentOrders.remove(o)
 	}
 ```
