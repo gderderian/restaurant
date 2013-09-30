@@ -118,7 +118,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
         currentPerson = person;
 
         if(person instanceof WaiterAgent){
-        	System.out.println("WAITERAGENT CLICKED!!!");
+        	stateCB.setVisible(false);
+        	WaiterAgent waiter = (WaiterAgent) person;
+        	infoLabel.setText("<html>Waiter Name: " + waiter.getName() + "</html>");
         }
         
         if (person instanceof CustomerAgent) {
@@ -126,8 +128,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
             stateCB.setText("Hungry?");
             stateCB.setSelected(customer.getGui().isHungry());
             stateCB.setEnabled(!customer.getGui().isHungry());
-            infoLabel.setText(
-               "<html><pre>     Name: " + customer.getName() + " </pre></html>");
+            infoLabel.setText("<html>Customer Name: " + customer.getName() + "</html>");
         }
         infoPanel.validate();
     }
@@ -179,7 +180,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */
     public static void main(String[] args) {
         RestaurantGui gui = new RestaurantGui();
-        gui.setTitle("csci201 Restaurant");
+        gui.setTitle("Grant's csci201 Restaurant - v2.0");
         gui.setVisible(true);
         gui.setResizable(false);
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

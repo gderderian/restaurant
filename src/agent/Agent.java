@@ -26,8 +26,10 @@ public abstract class Agent {
     
     public void toggleAgentPause(){
     	if (!isPaused) {
+    		System.out.println("Not paused right now, pausing");
     		agentThread.pause();
     	} else {
+    		System.out.println("Paused right now, resuming");
     		agentThread.keepGoing();
     	}
     }

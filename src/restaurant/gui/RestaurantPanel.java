@@ -75,6 +75,8 @@ public class RestaurantPanel extends JPanel {
     
     public void toggleTimer(){
     	
+    	System.out.println("Pause button pressed");
+    	
     	// Pause waiter agents
     	for(WaiterAgent waiter : waiterList){
     		waiter.toggleAgentPause();
@@ -91,7 +93,7 @@ public class RestaurantPanel extends JPanel {
     	// Pause host
     	host.toggleAgentPause();
     	
-    	//gui.animationPanel.toggleTimer(); // Legacy code to pause the gui animation
+    	gui.animationPanel.toggleTimer();
     	
     }
 
@@ -134,15 +136,18 @@ public class RestaurantPanel extends JPanel {
     public void showInfo(String type, String name) {
 
         if (type.equals("Customers")) {
-
             for (int i = 0; i < customers.size(); i++) {
                 CustomerAgent temp = customers.get(i);
                 if (temp.getName() == name)
                     gui.updateInfoPanel(temp);
             }
+        } else if (type.equals("Waiters")){
+        	for (int i = 0; i < waiterList.size(); i++) {
+                WaiterAgent temp = waiterList.get(i);
+                if (temp.getName() == name)
+                    gui.updateInfoPanel(temp);
+            }
         }
-        
-        
         
     }
 

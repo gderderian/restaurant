@@ -127,7 +127,7 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
             JButton button = new JButton(name);
             button.setBackground(Color.white);
             Dimension paneSize = pane.getSize();
-            Dimension buttonSize = new Dimension(paneSize.width - 20, (int) (paneSize.height / 7));
+            Dimension buttonSize = new Dimension(paneSize.width - 20, (int) (paneSize.height / 5));
             button.setPreferredSize(buttonSize);
             button.setMinimumSize(buttonSize);
             button.setMaximumSize(buttonSize);
