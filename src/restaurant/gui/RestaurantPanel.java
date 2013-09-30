@@ -36,6 +36,9 @@ public class RestaurantPanel extends JPanel {
     private static final int REST_PANEL_ROWS = 1;
     private static final int REST_PANEL_COLS = 2;
     private static final int REST_PANEL_SPACE = 20;
+    private static final int X_DIM = 500;
+    private static final int Y_DIM = 550;
+    private static final int THIRD = 3;
 
     public RestaurantPanel(RestaurantGui gui) {
     	
@@ -50,12 +53,12 @@ public class RestaurantPanel extends JPanel {
         JPanel personControl = new JPanel();
         personControl.setLayout(new BoxLayout(personControl, BoxLayout.Y_AXIS));
         
-        Dimension custPanelDim = new Dimension(500, 550/3);
+        Dimension custPanelDim = new Dimension(X_DIM, Y_DIM/THIRD);
         customerPanel.setPreferredSize(custPanelDim);
         customerPanel.setMinimumSize(custPanelDim);
         customerPanel.setMaximumSize(custPanelDim);
         
-        Dimension waitPanelDim = new Dimension(500, 550/3);
+        Dimension waitPanelDim = new Dimension(X_DIM, Y_DIM/THIRD);
         waiterPanel.setPreferredSize(waitPanelDim);
         waiterPanel.setMinimumSize(waitPanelDim);
         waiterPanel.setMaximumSize(waitPanelDim);
@@ -70,7 +73,6 @@ public class RestaurantPanel extends JPanel {
         add(restLabel);
         add(group);
 
-        
     }
     
     public void toggleTimer(){

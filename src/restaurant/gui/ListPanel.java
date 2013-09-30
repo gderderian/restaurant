@@ -30,6 +30,9 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
 	private static final int PERSON_GRID_ROWS = 2;
 	private static final int PERSON_GRID_COLS = 1;
 	
+	private static final int PANE_SIZE_WIDTH_DIVIDE = 20;
+	private static final int PANE_SIZE_HEIGHT_DIVIDE = 5;
+	
     /**
      * Constructor for ListPanel.  Sets up the GUIs for displaying customers or waiters.
      *
@@ -127,7 +130,7 @@ public class ListPanel extends JPanel implements ActionListener, KeyListener {
             JButton button = new JButton(name);
             button.setBackground(Color.white);
             Dimension paneSize = pane.getSize();
-            Dimension buttonSize = new Dimension(paneSize.width - 20, (int) (paneSize.height / 5));
+            Dimension buttonSize = new Dimension(paneSize.width - PANE_SIZE_WIDTH_DIVIDE, (int) (paneSize.height / PANE_SIZE_HEIGHT_DIVIDE));
             button.setPreferredSize(buttonSize);
             button.setMinimumSize(buttonSize);
             button.setMaximumSize(buttonSize);

@@ -2,7 +2,6 @@ package restaurant.gui;
 
 import restaurant.CustomerAgent;
 import java.awt.*;
-//import javax.swing.ImageIcon;
 
 public class CustomerGui implements Gui{
 
@@ -83,8 +82,6 @@ public class CustomerGui implements Gui{
 		if (!carryingOrderText.equals("")){
 			g.drawString(carryingOrderText, xPos, yPos);
 		}
-		//Image custImg = Toolkit.getDefaultToolkit().getImage("happy.jpg");
-	    //g.drawImage(custImg, xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y, null);
 	}
 
 	public boolean isPresent() {

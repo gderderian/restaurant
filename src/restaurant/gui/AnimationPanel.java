@@ -12,8 +12,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
 
     private final int WINDOWX = 500;
     private final int WINDOWY = 550;
-    private Image bufferImage;
-    private Dimension bufferSize;
     
     private final int MAIN_TIMER = 15;
     private final int TABLE_X = 50;
@@ -29,9 +27,6 @@ public class AnimationPanel extends JPanel implements ActionListener {
     public AnimationPanel() {
     	setSize(WINDOWX, WINDOWY);
         setVisible(true);
-        
-        bufferSize = this.getSize();
-        
     	timer.start();
     	timerIsRunning = true;
     }
@@ -60,19 +55,19 @@ public class AnimationPanel extends JPanel implements ActionListener {
 
         // Table 1
         g2.setColor(Color.ORANGE);
-        g2.fillRect(150, 150, TABLE_X, TABLE_Y);
+        g2.fillRect(150, 150, TABLE_X, TABLE_Y); // Table location set by host
 
         // Table 2
         g2.setColor(Color.ORANGE);
-        g2.fillRect(150, 275, TABLE_X, TABLE_Y);
+        g2.fillRect(150, 275, TABLE_X, TABLE_Y); // Table location set by host
         
         // Table 3
         g2.setColor(Color.ORANGE);
-        g2.fillRect(275, 150, TABLE_X, TABLE_Y);
+        g2.fillRect(275, 150, TABLE_X, TABLE_Y); // Table location set by host
         
         // Table 4
         g2.setColor(Color.ORANGE);
-        g2.fillRect(275, 275, TABLE_X, TABLE_Y);
+        g2.fillRect(275, 275, TABLE_X, TABLE_Y); // Table location set by host
         
         for(Gui gui : guis) {
             if (gui.isPresent()) {

@@ -65,8 +65,6 @@ public class WaiterGui implements Gui {
 		if (!carryingOrderText.equals("")){
 			g.drawString(carryingOrderText, xPos, yPos);
 		}
-		//Image hostImg = Toolkit.getDefaultToolkit().getImage("stickfig.png");
-	    //g.drawImage(hostImg, xPos, yPos, HOST_SIZE_X, HOST_SIZE_Y, null);
     }
 
     public boolean isPresent() {

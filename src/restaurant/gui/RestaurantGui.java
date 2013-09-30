@@ -37,6 +37,9 @@ public class RestaurantGui extends JFrame implements ActionListener {
     private static final int INFO_PANEL_COLS = 2;
     private static final int INFO_PANEL_X_PADDING = 30;
     private static final int INFO_PANEL_Y_PADDING = 0;
+    private static final double HALF = .5;
+    private static final double TWO_THIRDS = .6725;
+    private static final double ONE_THIRD = .125;
 
     private Object currentPerson;
     
@@ -60,19 +63,19 @@ public class RestaurantGui extends JFrame implements ActionListener {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         
-        Dimension leftDim = new Dimension((int) (WINDOWX * .5), WINDOWY);
+        Dimension leftDim = new Dimension((int) (WINDOWX * HALF), WINDOWY);
         leftPanel.setPreferredSize(leftDim);
         leftPanel.setMinimumSize(leftDim);
         leftPanel.setMaximumSize(leftDim);
         leftPanel.setBorder(BorderFactory.createTitledBorder("Settings & Controls"));
         
-        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * .6725));
+        Dimension restDim = new Dimension(WINDOWX, (int) (WINDOWY * TWO_THIRDS));
         restPanel.setPreferredSize(restDim);
         restPanel.setMinimumSize(restDim);
         restPanel.setMaximumSize(restDim);
         leftPanel.add(restPanel);
         
-        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * .125));
+        Dimension infoDim = new Dimension(WINDOWX, (int) (WINDOWY * ONE_THIRD)); // Takes up .125 of the height of the window in pixels
         infoPanel = new JPanel();
         infoPanel.setPreferredSize(infoDim);
         infoPanel.setMinimumSize(infoDim);
@@ -96,7 +99,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
         add(animationPanel);
         
         controlPanel = new JPanel();
-        Dimension controlPanelDim = new Dimension(WINDOWX, (int) (WINDOWY * .125));
+        Dimension controlPanelDim = new Dimension(WINDOWX, (int) (WINDOWY * ONE_THIRD));
         controlPanel.setPreferredSize(controlPanelDim);
         controlPanel.setMinimumSize(controlPanelDim);
         controlPanel.setMaximumSize(controlPanelDim);
