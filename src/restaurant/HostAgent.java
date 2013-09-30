@@ -88,7 +88,6 @@ public class HostAgent extends Agent {
 
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		//Do("Seating customer " + customer.getName() + " at table #" + table.tableNumber + ".");
 		// Find waiter and notify them
 		if (myWaiters.size() != 0) {
 			int init_cust = myWaiters.get(0).getNumCustomers();
