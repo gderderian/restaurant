@@ -72,6 +72,21 @@ public class HostAgent extends Agent {
 		}
 		
 	}
+	
+	public void wantBreak(WaiterAgent w){
+		
+		// Other waiters on break
+		
+		if (myWaiters.size() <= 1){
+			w.breakRejected();
+		} else {
+			
+			
+			
+			w.breakApproved();
+		}
+		
+	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
@@ -93,7 +108,7 @@ public class HostAgent extends Agent {
 			int init_cust = myWaiters.get(0).getNumCustomers();
 			WaiterAgent w_selected = null;
 			for (WaiterAgent w : myWaiters){
-				if (w.getNumCustomers() <= init_cust){
+				if (w.getNumCustomers() <= init_cust && w.onBreak == false){
 					init_cust = w.getNumCustomers();
 					w_selected = w;
 				}

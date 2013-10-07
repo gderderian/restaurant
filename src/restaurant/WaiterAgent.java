@@ -15,6 +15,8 @@ public class WaiterAgent extends Agent {
 	public HostAgent myHost;
 	public CookAgent myCook;
 	private String name;
+	boolean wantBreak;
+	public boolean onBreak;
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -23,6 +25,8 @@ public class WaiterAgent extends Agent {
 		super();
 		this.name = name;
 		myCustomers = new ArrayList<MyCustomer>();
+		wantBreak = false;
+		onBreak = false;
 	}
 
 	// Accessors
@@ -106,6 +110,24 @@ public class WaiterAgent extends Agent {
 		}
 		stateChanged();
 	}
+	
+	public void needNewChoice(int tableNum, String choice) {
+		for (MyCustomer cust : myCustomers) {
+			if (cust.tableNum == tableNum){
+				cust.state = CustomerState.NeedNewChoice;
+			}
+		}
+		stateChanged();
+	}
+	
+	public void breakApproved(){
+		onBreak = true;
+		wantBreak = false;
+	}
+	
+	public void breakRejected(){
+		wantBreak = false;
+	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
@@ -136,6 +158,12 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Done){
 				goodbyeCustomer(c);
+				return true;
+			}
+		}
+		for (MyCustomer c : myCustomers) {
+			if (c.state == CustomerState.NeedNewChoice){
+				repickFood(c);
 				return true;
 			}
 		}
@@ -267,9 +295,15 @@ public class WaiterAgent extends Agent {
 		waiterGui.setDestination(230, 230);
 	}
 	
+	private void repickFood(MyCustomer c){
+		Do("Telling the customer they need to repick an item because their previous choice is not in stock (according to cook).");
+		c.customer.repickFood(c.choice);
+		c.state = CustomerState.Ordering;
+	}
+	
 	// Misc. Utilities
 	public enum CustomerState // Goes along with MyCustomer below
-	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done};
+	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice};
 	
 	class MyCustomer {
 		CustomerAgent customer;

@@ -15,6 +15,7 @@ public class CookAgent extends Agent {
 	private String name;
 	private List<Order> currentOrders;
 	Hashtable<String, Integer> timerList;
+	Hashtable<String, Integer> inventoryCount;
 
 	// Accessors
 	public CookAgent(String name) {
@@ -31,6 +32,15 @@ public class CookAgent extends Agent {
 		timerList.put("Pasta", 6000);
 		timerList.put("Cobbler", 5000);
 		
+		// Initial inventory
+		inventoryCount = new Hashtable<String, Integer>();
+		inventoryCount.put("Chicken", 0);
+		inventoryCount.put("Mac & Cheese", 0);
+		inventoryCount.put("French Fries", 0);
+		inventoryCount.put("Pizza", 1);
+		inventoryCount.put("Pasta", 1);
+		inventoryCount.put("Cobbler", 3);
+		
 	}
 
 	public String getName() {
@@ -43,12 +53,27 @@ public class CookAgent extends Agent {
 	
 	// Messages
 	public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
-		Order o = new Order();
-		o.foodItem = choice;
-		o.requestingWaiter = waiter;
-		o.recipTable = tableNum;
-		currentOrders.add(o);
-		stateChanged();
+		
+		Do("Here is order to cook.");
+		
+		// Determine if there is enough inventory of this item to fulfill this order
+		if (inventoryCount.get(choice) >= 1) { // Able to fulfill order, dock one from that item's inventory
+			Order o = new Order();
+			o.foodItem = choice;
+			o.requestingWaiter = waiter;
+			o.recipTable = tableNum;
+			currentOrders.add(o);
+			stateChanged();
+		} else { // Unable to fulfill order, create it and have it marked as bounceback
+			Order o = new Order();
+			o.foodItem = choice;
+			o.requestingWaiter = waiter;
+			o.recipTable = tableNum;
+			o.status = orderStatus.bounceBack;
+			currentOrders.add(o);
+			stateChanged();
+		}
+		
 	}
 
 	// Scheduler
@@ -61,6 +86,8 @@ public class CookAgent extends Agent {
 				} else if (order.getStatus() == orderStatus.waiting){
 					prepareFood(order);
 					return true;
+				} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
+					orderOut(order);
 				} else {
 					return true;
 				}
@@ -73,6 +100,8 @@ public class CookAgent extends Agent {
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
 		o.status = orderStatus.preparing;
 		o.setCooking(timerList.get(o.getFoodName()));
+		int foodInventoryCount = inventoryCount.get(o.foodItem);
+		inventoryCount.put(o.foodItem, foodInventoryCount - 1); // After preparing, there is one less of this item available
 		Do("Beginning to prepare food " + o.getFoodName() + ".");
 	}
 
@@ -82,7 +111,13 @@ public class CookAgent extends Agent {
 		Do("Notifying waiter that " + o.getFoodName() + " is done.");
 	}
 	
-	public enum orderStatus {waiting, preparing, ready};
+	private void orderOut(Order o){ // Tells the specific waiter that their customer's order cannot be fulfilled
+		o.getWaiter().needNewChoice(o.recipTable, o.foodItem);
+		currentOrders.remove(o);
+		Do("Notifying waiter that " + o.getFoodName() + " is out an the customer who ordered it needs to rechoose.");
+	}
+	
+	public enum orderStatus {waiting, preparing, ready, bounceBack};
 	
 	public class Order {
 		
