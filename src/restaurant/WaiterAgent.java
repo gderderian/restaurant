@@ -2,7 +2,6 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
-
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
