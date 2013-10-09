@@ -13,10 +13,10 @@ public class Menu {
 		itemList = new Hashtable<String, Double>();
 		itemList.put("Chicken", 1.75);
 		itemList.put("Mac & Cheese", 7.95);
-		itemList.put("French Fries", 4.25);
-		itemList.put("Pizza", 7.95);
-		itemList.put("Pasta", 5.75);
-		itemList.put("Cobbler", 5.75);
+		//itemList.put("French Fries", 4.25);
+		//itemList.put("Pizza", 7.95);
+		//itemList.put("Pasta", 5.75);
+		//itemList.put("Cobbler", 5.75);
 	}
 
 	public String displayMenu(){
@@ -38,7 +38,7 @@ public class Menu {
 	
 	public String pickRandomItem() {
 		Random randNum = new Random();
-		int itemPickNum = randNum.nextInt(itemList.size()) + 1;
+		int itemPickNum = randNum.nextInt(itemList.size());
 		ArrayList<String> menuItems = new ArrayList<String>(itemList.keySet());
 		String randItem = menuItems.get(itemPickNum);
 		return randItem;

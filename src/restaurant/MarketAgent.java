@@ -25,8 +25,8 @@ public class MarketAgent extends Agent {
 		
 		// Initial inventory
 		inventoryCount = new Hashtable<String, Integer>();
-		inventoryCount.put("Chicken", 5);
-		inventoryCount.put("Mac & Cheese", 5);
+		inventoryCount.put("Chicken", 1);
+		inventoryCount.put("Mac & Cheese", 1);
 		inventoryCount.put("French Fries", 5);
 		inventoryCount.put("Pizza", 5);
 		inventoryCount.put("Pasta", 5);
@@ -45,20 +45,13 @@ public class MarketAgent extends Agent {
 	// Messages
 	public void orderFood(CookAgent c, String foodToMarketOrder, int quantity) {
 		// Determine if there is enough inventory of this item to fulfill this order
-		if (inventoryCount.get(foodToMarketOrder) >= 1) { // Able to fulfill order, dock one from that item's inventory
-			MarketOrder o = new MarketOrder();
-			o.foodItem = foodToMarketOrder;
-			o.requestingCook = c;
-			currentMarketOrders.add(o);
-			stateChanged();
-		} else { // Unable to fulfill order, create it and have it marked as bounceback
-			MarketOrder o = new MarketOrder();
-			o.foodItem = foodToMarketOrder;
-			o.requestingCook = c;
-			o.status = orderStatus.bounceBack;
-			currentMarketOrders.add(o);
-			stateChanged();
-		}
+		Do("Received order from cook for " + quantity + " " + foodToMarketOrder);
+		MarketOrder o = new MarketOrder();
+		o.foodItem = foodToMarketOrder;
+		o.requestingCook = c;
+		o.quantityRequested = quantity;
+		currentMarketOrders.add(o);
+		stateChanged();
 	}
 
 	// Scheduler
@@ -69,10 +62,8 @@ public class MarketAgent extends Agent {
 					orderDone(order);
 					return true;
 				} else if (order.getStatus() == orderStatus.waiting){
-					prepareFood(order);
+					prepareOrder(order);
 					return true;
-				} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
-					orderOut(order);
 				} else {
 					return true;
 				}
@@ -82,24 +73,24 @@ public class MarketAgent extends Agent {
 	}
 
 	// Actions
-	private void prepareFood(MarketOrder o){
+	private void prepareOrder(MarketOrder o){
 		o.status = orderStatus.preparing;
-		o.setFulfilling(5000);
+		// Can we fulfill this order?
 		int foodInventoryCount = inventoryCount.get(o.foodItem);
-		inventoryCount.put(o.foodItem, foodInventoryCount - 1);
-		Do("Beginning to prepare food " + o.getFoodName() + ".");
+		if (o.quantityRequested > foodInventoryCount){
+			o.deliverableQuantity = foodInventoryCount;
+		} else {
+			o.deliverableQuantity = o.quantityRequested;
+		}
+		inventoryCount.put(o.foodItem, foodInventoryCount - o.deliverableQuantity);
+		o.setFulfilling(5000);
+		Do("Beginning to prepare market order of " + o.getFoodName() + ".");
 	}
 
 	private void orderDone(MarketOrder o){
-		o.getCook().deliverFood(o.foodItem, o.quantity);
+		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity);
 		currentMarketOrders.remove(o);
 		Do("Notifying waiter that " + o.getFoodName() + " is done.");
-	}
-	
-	private void orderOut(MarketOrder o){
-		o.getCook().deliverFood(o.foodItem, o.quantity);
-		currentMarketOrders.remove(o);
-		Do("Notifying waiter that " + o.getFoodName() + " is out an the customer who ordered it needs to rechoose.");
 	}
 	
 	public enum orderStatus {waiting, preparing, ready, bounceBack};
@@ -107,14 +98,16 @@ public class MarketAgent extends Agent {
 	public class MarketOrder {
 		
 		String foodItem;
-		int quantity;
+		int quantityRequested;
 		CookAgent requestingCook;
 		Timer foodTimer;
 		orderStatus status;
+		int deliverableQuantity;
 		
 		public MarketOrder(CookAgent c){
 			requestingCook = c;
 			status = orderStatus.waiting;
+			deliverableQuantity = 0;
 		}
 		
 		public MarketOrder(){
