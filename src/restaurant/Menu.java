@@ -36,6 +36,10 @@ public class Menu {
 		itemList.remove(item);
 	}
 	
+	public Double getPriceofItem(String item){
+		return itemList.get(item);
+	}
+	
 	public String pickRandomItem() {
 		Random randNum = new Random();
 		int itemPickNum = randNum.nextInt(itemList.size());

@@ -1,6 +1,5 @@
 package restaurant;
 
-
 import restaurant.gui.CustomerGui;
 import agent.Agent;
 
@@ -27,7 +26,7 @@ public class CustomerAgent extends Agent {
 	Timer eatingTimer;
 	Timer choosingTimer;
 	private CustomerGui customerGui;
-	// private float money;
+	private double money;
 	
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
@@ -105,6 +104,11 @@ public class CustomerAgent extends Agent {
 		myMenu = newMenu;
 		state = AgentState.BeingSeated;
 		event = AgentEvent.seated;
+		stateChanged();
+	}
+	
+	public void dispenseChange(double newMoney) {
+		money = newMoney;
 		stateChanged();
 	}
 	
