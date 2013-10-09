@@ -20,7 +20,6 @@ public class Menu {
 	}
 
 	public String displayMenu(){
-		
 		String menuHTML = "";
 		Set<String> itemSet = itemList.keySet();
 		
@@ -31,7 +30,6 @@ public class Menu {
 		menuHTML = menuHTML + "</table>";
 		
 		return menuHTML;
-		
 	}
 	
 	public void removeItem(String item){

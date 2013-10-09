@@ -319,7 +319,6 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void releaseSemaphore(){
-		//System.out.println("Releasing semaphore");
 		isAnimating.release();
 	}
 	

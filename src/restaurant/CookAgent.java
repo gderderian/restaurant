@@ -1,6 +1,7 @@
 package restaurant;
 
 import agent.Agent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -14,8 +15,9 @@ public class CookAgent extends Agent {
 	// Variable Declarations
 	private String name;
 	private List<Order> currentOrders;
-	Hashtable<String, Integer> timerList;
-	Hashtable<String, Integer> inventoryCount;
+	private List<MarketAgent> myMarkets;
+	Hashtable<String, FoodItem> allFood;
+	private static final int reorderThreshold = 2;
 
 	// Accessors
 	public CookAgent(String name) {
@@ -23,23 +25,14 @@ public class CookAgent extends Agent {
 		super();
 		this.name = name;
 		currentOrders = new ArrayList<Order>();
-
-		timerList = new Hashtable<String, Integer>();
-		timerList.put("Chicken", 3000);
-		timerList.put("Mac & Cheese", 2500);
-		timerList.put("French Fries", 4000);
-		timerList.put("Pizza", 7000);
-		timerList.put("Pasta", 6000);
-		timerList.put("Cobbler", 5000);
 		
-		// Initial inventory
-		inventoryCount = new Hashtable<String, Integer>();
-		inventoryCount.put("Chicken", 0);
-		inventoryCount.put("Mac & Cheese", 0);
-		inventoryCount.put("French Fries", 0);
-		inventoryCount.put("Pizza", 1);
-		inventoryCount.put("Pasta", 1);
-		inventoryCount.put("Cobbler", 3);
+		allFood = new Hashtable<String, FoodItem>();
+		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
+		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
+		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
+		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
+		allFood.put("Pasta", new FoodItem("Pasta", 6000, 3));
+		allFood.put("Cobbler", new FoodItem("Cobbler", 5000, 3));
 		
 	}
 
@@ -57,14 +50,14 @@ public class CookAgent extends Agent {
 		Do("Here is order to cook.");
 		
 		// Determine if there is enough inventory of this item to fulfill this order
-		if (inventoryCount.get(choice) >= 1) { // Able to fulfill order, dock one from that item's inventory
+		if (allFood.get(choice).quantity >= 1) { // Able to fulfill order, dock one from that item's inventory
 			Order o = new Order();
 			o.foodItem = choice;
 			o.requestingWaiter = waiter;
 			o.recipTable = tableNum;
 			currentOrders.add(o);
 			stateChanged();
-		} else { // Unable to fulfill order, create it and have it marked as bounceback
+		} else { // Unable to fulfill order, create it and have it marked as bounce back
 			Order o = new Order();
 			o.foodItem = choice;
 			o.requestingWaiter = waiter;
@@ -74,6 +67,15 @@ public class CookAgent extends Agent {
 			stateChanged();
 		}
 		
+	}
+	
+	public void deliverFood(String incomingFood, int quantity) {
+		Do("Accepting order from market.");
+		FoodItem f = allFood.get(incomingFood);
+		int currentFoodQuantity = f.quantity;
+		int newFoodQuantity  = currentFoodQuantity + quantity;
+		f.quantity = newFoodQuantity;
+		f.reorderSent = false;
 	}
 
 	// Scheduler
@@ -99,9 +101,14 @@ public class CookAgent extends Agent {
 	// Actions
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
 		o.status = orderStatus.preparing;
-		o.setCooking(timerList.get(o.getFoodName()));
-		int foodInventoryCount = inventoryCount.get(o.foodItem);
-		inventoryCount.put(o.foodItem, foodInventoryCount - 1); // After preparing, there is one less of this item available
+		o.setCooking(allFood.get(o.getFoodName()).cookingTime);
+		allFood.get(o.foodItem).decrementQuantity(); // After preparing this order, there is one less of this item available
+		
+		// Restock food items
+		if (allFood.get(o.foodItem).quantity <= reorderThreshold && allFood.get(o.foodItem).reorderSent == false){
+			
+		}
+		
 		Do("Beginning to prepare food " + o.getFoodName() + ".");
 	}
 
@@ -115,6 +122,32 @@ public class CookAgent extends Agent {
 		o.getWaiter().needNewChoice(o.recipTable, o.foodItem);
 		currentOrders.remove(o);
 		Do("Notifying waiter that " + o.getFoodName() + " is out an the customer who ordered it needs to rechoose.");
+	}
+	
+	private void addMarket(MarketAgent m){
+		myMarkets.add(m);
+	}
+	
+	public class FoodItem {
+		
+		String foodItem;
+		int cookingTime;
+		int quantity;
+		boolean reorderSent;
+		int searchMarket;
+		
+		public FoodItem(String foodName, int cookTime, int initialInventory){
+			foodItem = foodName;
+			cookingTime = cookTime;
+			quantity = initialInventory;
+			reorderSent = false;
+			searchMarket = 1;
+		}
+		
+		public void decrementQuantity(){
+			quantity--;
+		}
+		
 	}
 	
 	public enum orderStatus {waiting, preparing, ready, bounceBack};
@@ -167,7 +200,7 @@ public class CookAgent extends Agent {
 			});
 			foodTimer.start();
 		}
-			
+
 	}
 
 }

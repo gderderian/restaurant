@@ -27,6 +27,7 @@ public class CustomerAgent extends Agent {
 	Timer eatingTimer;
 	Timer choosingTimer;
 	private CustomerGui customerGui;
+	private float money;
 	
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;

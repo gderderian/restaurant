@@ -4,6 +4,7 @@ import restaurant.CustomerAgent;
 import restaurant.CookAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
+import restaurant.MarketAgent;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
@@ -19,12 +20,12 @@ public class RestaurantPanel extends JPanel {
     private Vector<CustomerAgent> customers = new Vector<CustomerAgent>();
     private Vector<WaiterAgent> waiterList = new Vector<WaiterAgent>();
 	
-    // Instantiate cook, host, and one waiter
+    // Instantiate cook, host, and three markets
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Jeff");
-    //private WaiterAgent waiter = new WaiterAgent("Andrew");
-    
-    //private WaiterGui waiterGui = new WaiterGui(waiter);
+    private MarketAgent market1 = new MarketAgent("Ralphs");
+    private MarketAgent market2 = new MarketAgent("Vons");
+    private MarketAgent market3 = new MarketAgent("Albertsons");
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
@@ -46,6 +47,9 @@ public class RestaurantPanel extends JPanel {
 
         host.startThread();
         cook.startThread();
+        market1.startThread();
+        market2.startThread();
+        market3.startThread();
 
         setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
