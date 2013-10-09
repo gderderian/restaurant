@@ -6,7 +6,6 @@ import agent.Agent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
 
 import javax.swing.Timer;
 
@@ -32,8 +31,6 @@ public class CustomerAgent extends Agent {
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
 	private HostAgent host;
-	
-	private String badChoice;
 
 	public enum AgentState
 	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter};
@@ -50,7 +47,6 @@ public class CustomerAgent extends Agent {
 		super();
 		this.name = name;
 		choice = "";
-		badChoice = "";
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
@@ -104,8 +100,8 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void repickFood(String choice) {
-		badChoice = choice;
+	public void repickFood(Menu newMenu) {
+		myMenu = newMenu;
 		state = AgentState.BeingSeated;
 		event = AgentEvent.seated;
 		stateChanged();
@@ -162,26 +158,6 @@ public class CustomerAgent extends Agent {
 	private void sendChoiceToWaiter(){
 		
 		String itemChoice = pickRandomItem();
-		//String itemChoice = name;
-		
-		Do("Bad item choice = " + badChoice);
-		
-		//if (itemChoice.equals(badChoice)){
-		//	itemChoice = pickRandomItem();
-		//}
-		
-		if (!badChoice.equals("")){
-			Do("Picking new random item since old one doesn't work");
-			while(!itemChoice.equals(badChoice)){
-				itemChoice = pickRandomItem();
-				Do("New random item is " + itemChoice);
-				if (!itemChoice.equals(badChoice)){
-					badChoice = "";
-					break;
-				}
-			}
-		}
-			
 		choice = itemChoice;
 		assignedWaiter.hereIsMyChoice(itemChoice, this);
 		
@@ -323,10 +299,7 @@ public class CustomerAgent extends Agent {
 
 	// Misc. Utilities
 	public String pickRandomItem() {
-		Random randNum = new Random();
-		int itemPickNum = randNum.nextInt(myMenu.itemList.size()) + 1;
-		System.out.println("Item pick Integer: " + itemPickNum);
-		return myMenu.getAt(itemPickNum);
+		return myMenu.pickRandomItem();
 	}
 	
 	public void releaseSemaphore(){

@@ -296,7 +296,9 @@ public class WaiterAgent extends Agent {
 	
 	private void repickFood(MyCustomer c){
 		Do("Telling the customer they need to repick an item because their previous choice is not in stock (according to cook).");
-		c.customer.repickFood(c.choice);
+		Menu newMenu = new Menu();
+		newMenu.removeItem(c.choice);
+		c.customer.repickFood(newMenu);
 		c.state = CustomerState.Ordering;
 	}
 	

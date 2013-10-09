@@ -75,14 +75,10 @@ public class HostAgent extends Agent {
 	
 	public void wantBreak(WaiterAgent w){
 		
-		// Other waiters on break
-		
+		// Check for other waiters on break
 		if (myWaiters.size() <= 1){
 			w.breakRejected();
 		} else {
-			
-			
-			
 			w.breakApproved();
 		}
 		

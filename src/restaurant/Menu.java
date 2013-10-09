@@ -1,7 +1,9 @@
 package restaurant;
 
 import java.util.Hashtable;
+import java.util.Random;
 import java.util.Set;
+import java.util.*;
 
 public class Menu {
 	
@@ -16,23 +18,7 @@ public class Menu {
 		itemList.put("Pasta", 5.75);
 		itemList.put("Cobbler", 5.75);
 	}
-	
-	public String getAt(int index){
-		
-		String returnName;
-		switch(index){
-			case 1: returnName = "Chicken"; break;
-			case 2: returnName = "Mac & Cheese"; break;
-			case 3: returnName = "French Fries"; break;
-			case 4: returnName = "Pizza"; break;
-			case 5: returnName = "Pasta"; break;
-			case 6: returnName = "Cobbler"; break;
-			default: returnName = ""; break;
-		}
-		return returnName;
-		
-	}
-	
+
 	public String displayMenu(){
 		
 		String menuHTML = "";
@@ -48,6 +34,16 @@ public class Menu {
 		
 	}
 	
+	public void removeItem(String item){
+		itemList.remove(item);
+	}
 	
+	public String pickRandomItem() {
+		Random randNum = new Random();
+		int itemPickNum = randNum.nextInt(itemList.size()) + 1;
+		ArrayList<String> menuItems = new ArrayList<String>(itemList.keySet());
+		String randItem = menuItems.get(itemPickNum);
+		return randItem;
+	}
 	
 }
