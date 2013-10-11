@@ -5,6 +5,7 @@ import restaurant.CookAgent;
 import restaurant.HostAgent;
 import restaurant.WaiterAgent;
 import restaurant.MarketAgent;
+import restaurant.CashierAgent;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
@@ -26,6 +27,7 @@ public class RestaurantPanel extends JPanel {
     private MarketAgent market1 = new MarketAgent("Ralphs");
     private MarketAgent market2 = new MarketAgent("Vons");
     private MarketAgent market3 = new MarketAgent("Albertsons");
+    private CashierAgent cashier = new CashierAgent("Bob");
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
@@ -47,6 +49,7 @@ public class RestaurantPanel extends JPanel {
 
         host.startThread();
         cook.startThread();
+        cashier.startThread();
         market1.startThread();
         market2.startThread();
         market3.startThread();
@@ -176,6 +179,7 @@ public class RestaurantPanel extends JPanel {
     		c.setHost(host);
     		
     		c.setGui(g);
+    		c.setCashier(cashier);
     		customers.add(c);
     		c.startThread();
     		

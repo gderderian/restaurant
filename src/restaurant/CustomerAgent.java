@@ -31,9 +31,10 @@ public class CustomerAgent extends Agent {
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
 	private HostAgent host;
+	private CashierAgent cashier;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, NeedToPay, RequestedCheck};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
@@ -112,6 +113,11 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void hereIsCheck(double needToPay) {
+		state = AgentState.NeedToPay;
+		stateChanged();
+	}
+	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
@@ -141,7 +147,8 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.DoingNothing && event == AgentEvent.doneEating){
 			state = AgentState.Leaving;
-			leaveRestaurant();
+			//leaveRestaurant();
+			sendReadyForCheck();
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
@@ -158,6 +165,11 @@ public class CustomerAgent extends Agent {
 		assignedWaiter.readyToOrder(this);
 		state = AgentState.CalledWaiter;
 		Do("Telling waiter that I'm ready.");
+	}
+	
+	private void sendReadyForCheck(){
+		assignedWaiter.readyForCheck(this);
+		state = AgentState.RequestedCheck;
 	}
 	
 	private void sendChoiceToWaiter(){
@@ -260,6 +272,11 @@ public class CustomerAgent extends Agent {
 		host = null;
 		choice = "";
 	}
+	
+	private void sendPayment(){
+		
+		money = 0;
+	}
 
 	// Accessors
 	public String getName() {
@@ -300,6 +317,10 @@ public class CustomerAgent extends Agent {
 	
 	public void assignWaiter(WaiterAgent w) {
 		assignedWaiter = w;
+	}
+	
+	public void setCashier(CashierAgent c) {
+		cashier = c;
 	}
 
 	// Misc. Utilities

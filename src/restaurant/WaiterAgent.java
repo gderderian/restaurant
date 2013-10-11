@@ -127,6 +127,25 @@ public class WaiterAgent extends Agent {
 	public void breakRejected(){
 		wantBreak = false;
 	}
+	
+	public void hereIsCheck(CustomerAgent c, double checkAmount){
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				cust.state = CustomerState.NeedCheckDeliveredBack;
+				cust.payAmount = checkAmount;
+			}
+		}
+		stateChanged();
+	}
+	
+	public void readyForCheck(CustomerAgent c){
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				cust.state = CustomerState.NeedCheckDeliveredTo;
+			}
+		}
+		stateChanged();
+	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
@@ -163,6 +182,12 @@ public class WaiterAgent extends Agent {
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.NeedNewChoice){
 				repickFood(c);
+				return true;
+			}
+		}
+		for (MyCustomer c : myCustomers) {
+			if (c.state == CustomerState.NeedCheckDeliveredTo){
+				deliverCheck(c.customer);
 				return true;
 			}
 		}
@@ -302,18 +327,30 @@ public class WaiterAgent extends Agent {
 		c.state = CustomerState.Ordering;
 	}
 	
+	private void deliverCheck(CustomerAgent c){
+		double needToPay = 0;
+		for (MyCustomer cust : myCustomers) {
+			if (cust.customer.equals(c)){
+				needToPay = cust.payAmount;
+			}
+		}
+		c.hereIsCheck(needToPay);
+	}
+	
 	// Misc. Utilities
 	public enum CustomerState // Goes along with MyCustomer below
-	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice};
+	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice, NeedCheckDeliveredTo, NeedCheckDeliveredBack, Paying};
 	
 	class MyCustomer {
 		CustomerAgent customer;
 		int tableNum;
 		String choice;
 		CustomerState state;
+		double payAmount;
 	
 		MyCustomer(){
 			state = CustomerState.Waiting;
+			payAmount = 0;
 		}
 		
 	}
