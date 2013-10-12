@@ -15,6 +15,7 @@ public class CashierAgent extends Agent {
 	private String name;
 	private List<Check> myChecks;
 	private Menu myMenu;
+	private double checkAmount;
 
 	// Accessors
 	public CashierAgent(String name) {
@@ -23,6 +24,7 @@ public class CashierAgent extends Agent {
 		this.name = name;
 		myChecks = new ArrayList<Check>();
 		Menu myMenu = new Menu();
+		checkAmount = 0;
 		
 	}
 
@@ -32,9 +34,10 @@ public class CashierAgent extends Agent {
 	
 	// Messages
 	public void calculateCheck(WaiterAgent w, CustomerAgent c, String choice){
-		double checkAmount = myMenu.getPriceofItem(choice);
-		Check newCheck = new Check(w, c, checkAmount);
+		Do("Calculating check for customer");
+		Check newCheck = new Check(w, c, choice);
 		myChecks.add(newCheck);
+		stateChanged();
 	}
 	
 	public void acceptPayment(CustomerAgent c, double amountPaid){
@@ -46,21 +49,17 @@ public class CashierAgent extends Agent {
 				}
 			}
 		}
-		
-		
+		stateChanged();
 	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!myChecks.isEmpty()) {
 			for (Check check : myChecks) {
+				Do("Processing payment in cashier scheduler - before if statement");
 				if (check.getStatus() == checkStatus.pending) {
-					giveCheckToWaiter(check);
-					return true;
-				} else if (check.getStatus() == checkStatus.paid){
-					// prepareFood(check);
-					return true;
-				} else {
+					Do("Processing payment in cashier scheduler");
+					processCheckToWaiter(check);
 					return true;
 				}
 			}
@@ -69,10 +68,14 @@ public class CashierAgent extends Agent {
 	}
 
 	// Actions
-	public void giveCheckToWaiter(Check c){
+	public void processCheckToWaiter(Check c){
+		Do("Processing check back to waiter");
+		Menu myMenu = new Menu();
+		checkAmount = myMenu.getPriceofItem(c.choice);
+		c.amount = checkAmount;
+		c.status = checkStatus.calculated;
 		WaiterAgent w = c.waiter;
 		w.hereIsCheck(c.customer, c.amount);
-		c.status = checkStatus.calculated;
 	}
 	
 	public void processCustomerPayment(CustomerAgent customer, double amountPaid, Check c){
@@ -94,15 +97,22 @@ public class CashierAgent extends Agent {
 		WaiterAgent waiter;
 		double amount;
 		checkStatus status;
+		String choice;
 		
 		public Check(float checkAmount){
 			amount = checkAmount;
 		}
 		
-		public Check(WaiterAgent w, CustomerAgent c, double checkAmount){
+		public Check(WaiterAgent w, CustomerAgent c, String ch){
 			customer = c;
 			waiter = w;
-			amount = checkAmount;
+			choice = ch;
+			status = checkStatus.pending;
+		}
+		
+		public Check(WaiterAgent w, CustomerAgent c){
+			customer = c;
+			waiter = w;
 			status = checkStatus.pending;
 		}
 		

@@ -27,6 +27,7 @@ public class CustomerAgent extends Agent {
 	Timer choosingTimer;
 	private CustomerGui customerGui;
 	private double money;
+	private double needToPay;
 	
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
@@ -34,11 +35,11 @@ public class CustomerAgent extends Agent {
 	private CashierAgent cashier;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, NeedToPay, RequestedCheck};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated, wantWaiter};
+	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated, wantWaiter, receivedCheck};
 	AgentEvent event = AgentEvent.none;
 	
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -48,6 +49,8 @@ public class CustomerAgent extends Agent {
 		super();
 		this.name = name;
 		choice = "";
+		money = 15.00;
+		needToPay = 0;
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
@@ -110,11 +113,13 @@ public class CustomerAgent extends Agent {
 	
 	public void dispenseChange(double newMoney) {
 		money = newMoney;
+		Do("New money amount is $" + newMoney);
 		stateChanged();
 	}
 	
-	public void hereIsCheck(double needToPay) {
-		state = AgentState.NeedToPay;
+	public void hereIsCheck(double amountDue) {
+		needToPay = amountDue;
+		event = AgentEvent.receivedCheck;
 		stateChanged();
 	}
 	
@@ -147,16 +152,29 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.DoingNothing && event == AgentEvent.doneEating){
 			state = AgentState.Leaving;
-			//leaveRestaurant();
 			sendReadyForCheck();
 			return true;
 		}
+		
+		if (state == AgentState.RequestedCheck && event == AgentEvent.receivedCheck){
+			leaveRestaurant();
+			return true;
+		}
+		
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
 			refreshAfterLeaving();
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
 		}
+		
+		if (state == AgentState.Paying && event == AgentEvent.none){
+			sendPayment();
+			state = AgentState.Leaving;
+			event = AgentEvent.doneLeaving;
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -170,6 +188,7 @@ public class CustomerAgent extends Agent {
 	private void sendReadyForCheck(){
 		assignedWaiter.readyForCheck(this);
 		state = AgentState.RequestedCheck;
+		Do("Telling waiter I want my check because I'm ready to leave." + event + " - " + state);
 	}
 	
 	private void sendChoiceToWaiter(){
@@ -261,7 +280,7 @@ public class CustomerAgent extends Agent {
 		customerGui.setCarryText("");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
-		state = AgentState.DoingNothing;
+		state = AgentState.Paying; // Formerly doingNothing
 		event = AgentEvent.none;
 	}
 	
@@ -274,7 +293,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void sendPayment(){
-		
+		cashier.acceptPayment(this, money);
 		money = 0;
 	}
 

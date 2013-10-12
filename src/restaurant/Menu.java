@@ -36,8 +36,13 @@ public class Menu {
 		itemList.remove(item);
 	}
 	
-	public Double getPriceofItem(String item){
-		return itemList.get(item);
+	public double getPriceofItem(String item){
+		System.out.println("Getting price of item: " + item);
+		double priceOfItem = 0;
+		priceOfItem = itemList.get(item);
+		System.out.println("Price of item is: " + priceOfItem);
+		return priceOfItem;
+		
 	}
 	
 	public String pickRandomItem() {

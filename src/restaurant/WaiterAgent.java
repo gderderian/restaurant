@@ -16,6 +16,7 @@ public class WaiterAgent extends Agent {
 	private String name;
 	boolean wantBreak;
 	public boolean onBreak;
+	public CashierAgent myCashier;
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -51,6 +52,10 @@ public class WaiterAgent extends Agent {
 	
 	public void setCook(CookAgent cook){
 		myCook = cook;
+	}
+	
+	public void setCashier(CashierAgent cashier){
+		myCashier = cashier;
 	}
 	
 	// Messages
@@ -131,17 +136,18 @@ public class WaiterAgent extends Agent {
 	public void hereIsCheck(CustomerAgent c, double checkAmount){
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
-				cust.state = CustomerState.NeedCheckDeliveredBack;
 				cust.payAmount = checkAmount;
+				cust.state = CustomerState.needCheckDelivered;
 			}
 		}
 		stateChanged();
 	}
 	
 	public void readyForCheck(CustomerAgent c){
+		Do("Received ready for check message from customer");
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
-				cust.state = CustomerState.NeedCheckDeliveredTo;
+				cust.state = CustomerState.wantCheck;
 			}
 		}
 		stateChanged();
@@ -186,8 +192,15 @@ public class WaiterAgent extends Agent {
 			}
 		}
 		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.NeedCheckDeliveredTo){
-				deliverCheck(c.customer);
+			if (c.state == CustomerState.wantCheck){
+				Do("About to call request check function");
+				requestCheckForCustomer(c);
+				return true;
+			}
+		}
+		for (MyCustomer c : myCustomers) {
+			if (c.state == CustomerState.needCheckDelivered){
+				deliverCheck(c);
 				return true;
 			}
 		}
@@ -327,19 +340,26 @@ public class WaiterAgent extends Agent {
 		c.state = CustomerState.Ordering;
 	}
 	
-	private void deliverCheck(CustomerAgent c){
+	private void deliverCheck(MyCustomer c){
 		double needToPay = 0;
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				needToPay = cust.payAmount;
 			}
 		}
-		c.hereIsCheck(needToPay);
+		c.customer.hereIsCheck(needToPay);
+		c.state = CustomerState.payingCheck;
+	}
+	
+	private void requestCheckForCustomer(MyCustomer c){
+		Do("About to request check from cashier");
+		myCashier.calculateCheck(this, c.customer, c.choice);
+		c.state = CustomerState.waitingForCheck;
 	}
 	
 	// Misc. Utilities
 	public enum CustomerState // Goes along with MyCustomer below
-	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice, NeedCheckDeliveredTo, NeedCheckDeliveredBack, Paying};
+	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice, wantCheck, waitingForCheck, payingCheck, needCheckDelivered};
 	
 	class MyCustomer {
 		CustomerAgent customer;

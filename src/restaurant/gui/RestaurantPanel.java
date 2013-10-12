@@ -198,6 +198,7 @@ public class RestaurantPanel extends JPanel {
     		
     		w.setGui(g);
     		waiterList.add(w);
+    		w.setCashier(cashier);
     		w.startThread();
     		
     		host.addWaiter(w);
