@@ -1,10 +1,7 @@
 package restaurant;
 
 import agent.Agent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
-import javax.swing.Timer;
 
 /**
  * Restaurant Cashier Agent
@@ -14,7 +11,6 @@ public class CashierAgent extends Agent {
 	// Variable Declarations
 	private String name;
 	private List<Check> myChecks;
-	private Menu myMenu;
 	private double checkAmount;
 	
 	// Messages

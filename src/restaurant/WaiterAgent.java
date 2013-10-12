@@ -1,7 +1,8 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.gui.CustomerGui;
+import restaurant.CustomerAgent.AgentEvent;
+import restaurant.CustomerAgent.AgentState;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -23,6 +24,14 @@ public class WaiterAgent extends Agent {
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
+	
+	public enum AgentState
+	{DoingNothing, wantBreak, onBreak};
+	private AgentState state = AgentState.DoingNothing;
+
+	public enum AgentEvent 
+	{none, breakRequested, breakApproved, breakRejected};
+	AgentEvent event = AgentEvent.none;
 	
 	public WaiterAgent(String name) {
 		super();
@@ -100,22 +109,20 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void breakApproved(){
-		onBreak = true;
-		wantBreak = false;
-		requestedBreak = false;
+		state = AgentState.onBreak;
+		event = AgentEvent.breakApproved;
 		stateChanged();
 	}
 	
 	public void breakRejected(){
-		wantBreak = false;
-		requestedBreak = false;
+		state = AgentState.DoingNothing;
+		event = AgentEvent.breakRejected;
 		stateChanged();
 	}
 	
 	public void requestBreak(){
 		Do("Requesting break...");
-		wantBreak = true;
-		onBreak = false;
+		state = AgentState.wantBreak;
 		stateChanged();
 	}
 	
@@ -140,7 +147,21 @@ public class WaiterAgent extends Agent {
 	}
 
 	// Scheduler
-	protected boolean pickAndExecuteAnAction() {
+	protected boolean pickAndExecuteAnAction() {	
+		if (state == AgentState.wantBreak && event == AgentEvent.none){
+			requestBreakFromHost();
+			return true;
+		}
+		if (state == AgentState.onBreak && event == AgentEvent.breakApproved){
+			// Begin 10s timer, then uncheck gui box
+			beginBreak();
+			return true;
+		}
+		if (state == AgentState.DoingNothing && event == AgentEvent.breakRejected){
+			// Uncheck gui box and go back to normal
+			processBreakRejection();
+			return true;
+		}
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c);
@@ -189,11 +210,6 @@ public class WaiterAgent extends Agent {
 				deliverCheck(c);
 				return true;
 			}
-		}
-		if (wantBreak == true && onBreak == false && requestedBreak == false){
-			Do("About to call request break action");
-			requestBreakFromHost();
-			return true;
 		}
 		goHome();
 		return false;
@@ -349,7 +365,17 @@ public class WaiterAgent extends Agent {
 	private void requestBreakFromHost(){
 		Do("Requesting break from host.");
 		myHost.wantBreak(this);
-		requestedBreak = true;
+		event = AgentEvent.breakRequested;
+	}
+	
+	private void processBreakRejection(){
+		
+		
+	}
+	
+	private void beginBreak(){
+		
+		
 	}
 	
 	// Misc. Utilities

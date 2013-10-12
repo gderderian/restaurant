@@ -167,7 +167,6 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
-			//refreshAfterLeaving();
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
@@ -288,14 +287,6 @@ public class CustomerAgent extends Agent {
 		assignedWaiter.ImDone(this);
 		state = AgentState.Paying; // Formerly doingNothing
 		event = AgentEvent.none;
-	}
-	
-	private void refreshAfterLeaving(){
-		Do("Left restaurant.");
-		assignedWaiter = null;
-		myMenu = null;
-		host = null;
-		choice = "";
 	}
 	
 	private void sendPayment(){
