@@ -16,7 +16,6 @@ public class MarketAgent extends Agent {
 	private List<MarketOrder> currentMarketOrders;
 	Hashtable<String, Integer> inventoryCount;
 
-	// Accessors
 	public MarketAgent(String name) {
 
 		super();
@@ -32,14 +31,6 @@ public class MarketAgent extends Agent {
 		inventoryCount.put("Pasta", 5);
 		inventoryCount.put("Cobbler", 5);
 		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<MarketOrder> getMarketOrders() {
-		return currentMarketOrders;
 	}
 	
 	// Messages
@@ -140,6 +131,15 @@ public class MarketAgent extends Agent {
 			foodTimer.start();
 		}
 			
+	}
+	
+	// Accessors
+	public String getName() {
+		return name;
+	}
+
+	public List<MarketOrder> getMarketOrders() {
+		return currentMarketOrders;
 	}
 
 }

@@ -32,39 +32,6 @@ public class WaiterAgent extends Agent {
 		onBreak = false;
 		requestedBreak = false;
 	}
-
-	// Accessors
-	public String getName() {
-		return name;
-	}
-	
-	public Menu getMenu(){
-		return new Menu();
-	}
-	
-	public void setGui(WaiterGui g){
-		waiterGui = g;
-	}
-	
-	public void setHost(HostAgent h){
-		myHost = h;
-	}
-	
-	public int getNumCustomers() {
-		return myCustomers.size();
-	}
-	
-	public void setCook(CookAgent cook){
-		myCook = cook;
-	}
-	
-	public void setCashier(CashierAgent cashier){
-		myCashier = cashier;
-	}
-	
-	public WaiterGui getGui() {
-		return waiterGui;
-	}
 	
 	// Messages
 	public void doneEating(CustomerAgent c) {
@@ -414,6 +381,39 @@ public class WaiterAgent extends Agent {
 			}
 		}
 		return false;
+	}
+	
+	// Accessors
+	public String getName() {
+		return name;
+	}
+	
+	public Menu getMenu(){
+		return new Menu();
+	}
+	
+	public void setGui(WaiterGui g){
+		waiterGui = g;
+	}
+	
+	public void setHost(HostAgent h){
+		myHost = h;
+	}
+	
+	public int getNumCustomers() {
+		return myCustomers.size();
+	}
+	
+	public void setCook(CookAgent cook){
+		myCook = cook;
+	}
+	
+	public void setCashier(CashierAgent cashier){
+		myCashier = cashier;
+	}
+	
+	public WaiterGui getGui() {
+		return waiterGui;
 	}
 	
 }

@@ -158,7 +158,6 @@ public class CustomerAgent extends Agent {
 			sendReadyForCheck();
 			return true;
 		}
-		
 		if (state == AgentState.RequestedCheck && event == AgentEvent.receivedCheck){
 			leaveRestaurant();
 			return true;

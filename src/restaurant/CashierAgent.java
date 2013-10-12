@@ -16,21 +16,6 @@ public class CashierAgent extends Agent {
 	private List<Check> myChecks;
 	private Menu myMenu;
 	private double checkAmount;
-
-	// Accessors
-	public CashierAgent(String name) {
-
-		super();
-		this.name = name;
-		myChecks = new ArrayList<Check>();
-		Menu myMenu = new Menu();
-		checkAmount = 0;
-		
-	}
-
-	public String getName() {
-		return name;
-	}
 	
 	// Messages
 	public void calculateCheck(WaiterAgent w, CustomerAgent c, String choice){
@@ -130,6 +115,18 @@ public class CashierAgent extends Agent {
 			return status;
 		}
 		
+	}
+	
+	// Accessors
+	public CashierAgent(String name) {
+		super();
+		this.name = name;
+		myChecks = new ArrayList<Check>();
+		checkAmount = 0;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

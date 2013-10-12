@@ -17,6 +17,7 @@ public class Table {
 		this.tableY = newTableY;
 	}
 
+	// Accessors
 	void setOccupant(CustomerAgent cust) {
 		occupiedBy = cust;
 	}

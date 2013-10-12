@@ -19,6 +19,7 @@ public class Menu {
 		//itemList.put("Cobbler", 5.75);
 	}
 
+	// Utilities and accessors
 	public String displayMenu(){
 		String menuHTML = "";
 		Set<String> itemSet = itemList.keySet();

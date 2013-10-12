@@ -20,7 +20,6 @@ public class CookAgent extends Agent {
 	private static final int REORDER_THRESHOLD = 2;
 	private static final int MARKETS_NUM = 2;
 
-	// Accessors
 	public CookAgent(String name) {
 
 		super();
@@ -36,14 +35,6 @@ public class CookAgent extends Agent {
 		//allFood.put("Pasta", new FoodItem("Pasta", 6000, 3));
 		//allFood.put("Cobbler", new FoodItem("Cobbler", 5000, 3));
 		
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<Order> getOrders() {
-		return currentOrders;
 	}
 	
 	// Messages
@@ -209,6 +200,15 @@ public class CookAgent extends Agent {
 			foodTimer.start();
 		}
 
+	}
+	
+	// Accessors
+	public String getName() {
+		return name;
+	}
+
+	public List<Order> getOrders() {
+		return currentOrders;
 	}
 
 }
