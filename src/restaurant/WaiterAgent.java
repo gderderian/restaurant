@@ -341,12 +341,10 @@ public class WaiterAgent extends Agent {
 	}
 	
 	private void deliverCheck(MyCustomer c){
+		Do("DELIVERING CHECK!!!");
 		double needToPay = 0;
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				needToPay = cust.payAmount;
-			}
-		}
+		needToPay = c.payAmount;
+		Do("Delivering check and customer needs to pay $" + needToPay);
 		c.customer.hereIsCheck(needToPay);
 		c.state = CustomerState.payingCheck;
 	}

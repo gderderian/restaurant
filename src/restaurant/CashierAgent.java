@@ -56,9 +56,7 @@ public class CashierAgent extends Agent {
 	protected boolean pickAndExecuteAnAction() {
 		if (!myChecks.isEmpty()) {
 			for (Check check : myChecks) {
-				Do("Processing payment in cashier scheduler - before if statement");
 				if (check.getStatus() == checkStatus.pending) {
-					Do("Processing payment in cashier scheduler");
 					processCheckToWaiter(check);
 					return true;
 				}
@@ -79,13 +77,17 @@ public class CashierAgent extends Agent {
 	}
 	
 	public void processCustomerPayment(CustomerAgent customer, double amountPaid, Check c){
+		Do("Amount paid: $" + amountPaid + " - Amount of item: $" + c.amount);
 		if (amountPaid == c.amount){
+			Do("Can afford");
 			c.status = checkStatus.paid;
 		} else if (amountPaid > c.amount){
+			Do("Can afford");
 			customer.dispenseChange(amountPaid - c.amount);
 			c.status = checkStatus.paid;
 		} else if (amountPaid < c.amount){
 			// customer.makeWorkAtRestaurant();
+			Do("Can't afford");
 		}
 	}
 	

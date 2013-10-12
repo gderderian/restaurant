@@ -118,6 +118,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void hereIsCheck(double amountDue) {
+		Do("Customer needs to pay $" + amountDue);
 		needToPay = amountDue;
 		event = AgentEvent.receivedCheck;
 		stateChanged();
@@ -160,21 +161,18 @@ public class CustomerAgent extends Agent {
 			leaveRestaurant();
 			return true;
 		}
-		
 		if (state == AgentState.Leaving && event == AgentEvent.doneLeaving){
-			refreshAfterLeaving();
+			//refreshAfterLeaving();
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
 		}
-		
 		if (state == AgentState.Paying && event == AgentEvent.none){
 			sendPayment();
 			state = AgentState.Leaving;
 			event = AgentEvent.doneLeaving;
 			return true;
 		}
-		
 		return false;
 	}
 
@@ -233,6 +231,7 @@ public class CustomerAgent extends Agent {
 	private void goToRestaurant() {
 		host.msgIWantFood(this);
 		Do("Going to restaurant and telling host that I'm hungry.");
+		Do("I have $" + money);
 	}
 
 	private void SitDown() {
@@ -293,8 +292,9 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void sendPayment(){
+		Do("Sending money to cashier: $" + money);
 		cashier.acceptPayment(this, money);
-		money = 0;
+		// money = 0;
 	}
 
 	// Accessors
