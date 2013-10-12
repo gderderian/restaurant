@@ -28,6 +28,7 @@ public class CustomerAgent extends Agent {
 	private CustomerGui customerGui;
 	private double money;
 	private double needToPay;
+	private int orderAttempts;
 	
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
@@ -51,6 +52,7 @@ public class CustomerAgent extends Agent {
 		choice = "";
 		money = 15.00;
 		needToPay = 0;
+		orderAttempts = 0;
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
@@ -195,6 +197,8 @@ public class CustomerAgent extends Agent {
 		choice = itemChoice;
 		assignedWaiter.hereIsMyChoice(itemChoice, this);
 		
+		orderAttempts++;
+		
 		String carryText = "";
 		switch(choice){
 		case "Chicken":
@@ -294,7 +298,6 @@ public class CustomerAgent extends Agent {
 	private void sendPayment(){
 		Do("Sending money to cashier: $" + money);
 		cashier.acceptPayment(this, money);
-		// money = 0;
 	}
 
 	// Accessors

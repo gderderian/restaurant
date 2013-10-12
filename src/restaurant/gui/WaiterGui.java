@@ -25,6 +25,7 @@ public class WaiterGui implements Gui {
 	boolean hasDestination = false;
 	
 	String carryingOrderText = "";
+	boolean isOnBreak = false;
     
     public WaiterGui(WaiterAgent a) {
     	agent = a;
@@ -104,4 +105,13 @@ public class WaiterGui implements Gui {
     public void setCarryText(String carryText){
     	carryingOrderText = carryText;
     }
+    
+	public boolean isOnBreak() {
+		return isOnBreak;
+	}
+	
+	public void setRequestBreak() {
+		isOnBreak = true;
+		agent.requestBreak();
+	}
 }

@@ -121,8 +121,10 @@ public class RestaurantGui extends JFrame implements ActionListener {
         currentPerson = person;
 
         if(person instanceof WaiterAgent){
-        	stateCB.setVisible(false);
         	WaiterAgent waiter = (WaiterAgent) person;
+        	stateCB.setText("On break?");
+        	stateCB.setSelected(waiter.getGui().isOnBreak());
+        	stateCB.setEnabled(!waiter.getGui().isOnBreak());
         	infoLabel.setText("<html>Waiter Name: " + waiter.getName() + "</html>");
         }
         
@@ -147,6 +149,11 @@ public class RestaurantGui extends JFrame implements ActionListener {
                 CustomerAgent c = (CustomerAgent) currentPerson;
                 c.getGui().setHungry();
                 stateCB.setEnabled(false);
+            }
+            if (currentPerson instanceof WaiterAgent) {
+            	WaiterAgent w = (WaiterAgent) currentPerson;
+            	w.getGui().setRequestBreak();
+            	stateCB.setEnabled(false);
             }
         } else if (e.getSource() == toggleTimerButton) {
         	if (isPaused == true) {
@@ -183,7 +190,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */
     public static void main(String[] args) {
         RestaurantGui gui = new RestaurantGui();
-        gui.setTitle("Grant's csci201 Restaurant - v2.0");
+        gui.setTitle("Grant's csci201 Restaurant - v2.1");
         gui.setVisible(true);
         gui.setResizable(false);
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

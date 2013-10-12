@@ -1,7 +1,9 @@
 package restaurant;
 
 import agent.Agent;
+import restaurant.gui.CustomerGui;
 import restaurant.gui.WaiterGui;
+
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
@@ -14,8 +16,9 @@ public class WaiterAgent extends Agent {
 	public HostAgent myHost;
 	public CookAgent myCook;
 	private String name;
-	boolean wantBreak;
+	public boolean wantBreak;
 	public boolean onBreak;
+	public boolean requestedBreak;
 	public CashierAgent myCashier;
 	
 	private WaiterGui waiterGui;
@@ -27,6 +30,7 @@ public class WaiterAgent extends Agent {
 		myCustomers = new ArrayList<MyCustomer>();
 		wantBreak = false;
 		onBreak = false;
+		requestedBreak = false;
 	}
 
 	// Accessors
@@ -56,6 +60,10 @@ public class WaiterAgent extends Agent {
 	
 	public void setCashier(CashierAgent cashier){
 		myCashier = cashier;
+	}
+	
+	public WaiterGui getGui() {
+		return waiterGui;
 	}
 	
 	// Messages
@@ -127,10 +135,21 @@ public class WaiterAgent extends Agent {
 	public void breakApproved(){
 		onBreak = true;
 		wantBreak = false;
+		requestedBreak = false;
+		stateChanged();
 	}
 	
 	public void breakRejected(){
 		wantBreak = false;
+		requestedBreak = false;
+		stateChanged();
+	}
+	
+	public void requestBreak(){
+		Do("Requesting break...");
+		wantBreak = true;
+		onBreak = false;
+		stateChanged();
 	}
 	
 	public void hereIsCheck(CustomerAgent c, double checkAmount){
@@ -203,6 +222,11 @@ public class WaiterAgent extends Agent {
 				deliverCheck(c);
 				return true;
 			}
+		}
+		if (wantBreak == true && onBreak == false && requestedBreak == false){
+			Do("About to call request break action");
+			requestBreakFromHost();
+			return true;
 		}
 		goHome();
 		return false;
@@ -353,6 +377,12 @@ public class WaiterAgent extends Agent {
 		Do("About to request check from cashier");
 		myCashier.calculateCheck(this, c.customer, c.choice);
 		c.state = CustomerState.waitingForCheck;
+	}
+	
+	private void requestBreakFromHost(){
+		Do("Requesting break from host.");
+		myHost.wantBreak(this);
+		requestedBreak = true;
 	}
 	
 	// Misc. Utilities

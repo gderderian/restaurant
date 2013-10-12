@@ -39,7 +39,6 @@ public class HostAgent extends Agent {
 				int tableNum = tableRoot * i + j + 1;
 				int tableX = startingCoord + i*tableDistance;
 				int tableY = startingCoord + j*tableDistance;
-				// System.out.println("Adding in New Table: x:" + tableX + " - y:" + tableY + " - #" + tableNum);
 				tables.add(new Table(tableNum, tableX, tableY));
 			}
 		}
@@ -74,11 +73,13 @@ public class HostAgent extends Agent {
 	}
 	
 	public void wantBreak(WaiterAgent w){
-		
+		Do("Received request to go on break from waiter");
 		// Check for other waiters on break
 		if (myWaiters.size() <= 1){
+			Do("Rejecting request.");
 			w.breakRejected();
 		} else {
+			Do("Approving request");
 			w.breakApproved();
 		}
 		
