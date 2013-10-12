@@ -40,7 +40,7 @@ public class CustomerAgent extends Agent {
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, doneEating, doneLeaving, doneChoosing, seated, wantWaiter, receivedCheck};
+	{none, gotHungry, followHost, begunEating, doneEating, doneLeaving, doneChoosing, seated, wantWaiter, receivedCheck};
 	AgentEvent event = AgentEvent.none;
 	
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -93,7 +93,6 @@ public class CustomerAgent extends Agent {
 	
 	public void hereIsOrder(String choice) {
 		state = AgentState.Eating;
-		beginEating();
 		stateChanged();
 	}
 	
@@ -153,6 +152,11 @@ public class CustomerAgent extends Agent {
 			state = AgentState.WaitingForFood;
 			return true;
 		}
+		if (state == AgentState.Eating && event == AgentEvent.doneChoosing){
+			beginEating();
+			event = AgentEvent.begunEating;
+			return true;
+		}		
 		if (state == AgentState.DoingNothing && event == AgentEvent.doneEating){
 			state = AgentState.Leaving;
 			sendReadyForCheck();
@@ -342,6 +346,10 @@ public class CustomerAgent extends Agent {
 	
 	public void setCashier(CashierAgent c) {
 		cashier = c;
+	}
+	
+	public double getNeedToPay() {
+		return needToPay;
 	}
 
 	// Misc. Utilities
