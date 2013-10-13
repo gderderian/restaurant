@@ -4,6 +4,9 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 
 ![Design Doc](designdocimg.png "Design Doc")
 
+Links to all agents on this page directly:
+[MarketAgent](#market)
+
 ## Host Agent
 
 ### Data
@@ -908,6 +911,7 @@ public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
 	}
 ```
 
+<a id="market"></a>
 ## Market Agent
 
 ### Data
