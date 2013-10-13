@@ -15,6 +15,7 @@ public class MarketAgent extends Agent {
 	private String name;
 	private List<MarketOrder> currentMarketOrders;
 	Hashtable<String, Integer> inventoryCount;
+	private static final int DEFAULT_ORDER_FULFILL_TIME = 5000; // All market orders take a default of five seconds to fulfill
 
 	public MarketAgent(String name) {
 
@@ -22,10 +23,10 @@ public class MarketAgent extends Agent {
 		this.name = name;
 		currentMarketOrders = new ArrayList<MarketOrder>();
 		
-		// Initial inventory
+		// Initial inventory declarations for each menuItem
 		inventoryCount = new Hashtable<String, Integer>();
-		inventoryCount.put("Chicken", 1);
-		inventoryCount.put("Mac & Cheese", 1);
+		inventoryCount.put("Chicken", 5);
+		inventoryCount.put("Mac & Cheese", 5);
 		inventoryCount.put("French Fries", 5);
 		inventoryCount.put("Pizza", 5);
 		inventoryCount.put("Pasta", 5);
@@ -35,8 +36,8 @@ public class MarketAgent extends Agent {
 	
 	// Messages
 	public void orderFood(CookAgent c, String foodToMarketOrder, int quantity) {
-		// Determine if there is enough inventory of this item to fulfill this order
-		Do("Received order from cook for " + quantity + " " + foodToMarketOrder);
+		// Create and add order into queue to be fulfilled by market
+		Do("Received order from cook for " + quantity + " " + foodToMarketOrder + "(s).");
 		MarketOrder o = new MarketOrder();
 		o.foodItem = foodToMarketOrder;
 		o.requestingCook = c;
@@ -50,12 +51,10 @@ public class MarketAgent extends Agent {
 		if (!currentMarketOrders.isEmpty()) {
 			for (MarketOrder order : currentMarketOrders) {
 				if (order.getStatus() == orderStatus.ready) {
-					orderDone(order);
+					orderDone(order); // Notify cook that their MarketOrder is done and deliver order back to them
 					return true;
 				} else if (order.getStatus() == orderStatus.waiting){
-					prepareOrder(order);
-					return true;
-				} else {
+					prepareOrder(order); // Prepare waiting MarketOrder
 					return true;
 				}
 			}
@@ -66,25 +65,32 @@ public class MarketAgent extends Agent {
 	// Actions
 	private void prepareOrder(MarketOrder o){
 		o.status = orderStatus.preparing;
-		// Determine if we can fully fulfill this order
 		int foodInventoryCount = inventoryCount.get(o.foodItem);
-		if (o.quantityRequested > foodInventoryCount){
-			o.deliverableQuantity = foodInventoryCount;
+		if (o.quantityRequested > foodInventoryCount){ // Check and see if we (the market) actually have enough stock to fulfill
+			o.deliverableQuantity = foodInventoryCount; // Give them everything we have as we cannot fulfill their entire order
 		} else {
-			o.deliverableQuantity = o.quantityRequested;
+			o.deliverableQuantity = o.quantityRequested; // Give them everything we requested because we still have some in stock
 		}
-		inventoryCount.put(o.foodItem, foodInventoryCount - o.deliverableQuantity);
-		o.setFulfilling(5000);
-		Do("Beginning to prepare market order of " + o.getFoodName() + ".");
+		inventoryCount.put(o.foodItem, foodInventoryCount - o.deliverableQuantity); // Adjust inventory to reflect completed order
+		o.setFulfilling(DEFAULT_ORDER_FULFILL_TIME); // Begin fulfilling order by starting this order's timer
 	}
 
 	private void orderDone(MarketOrder o){
-		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity);
+		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity); // Notify cook that their order is now done
 		currentMarketOrders.remove(o);
-		Do("Notifying waiter that " + o.getFoodName() + " is done.");
 	}
 	
-	public enum orderStatus {waiting, preparing, ready, bounceBack};
+	// Accessors
+	public String getName() {
+		return name;
+	}
+
+	public List<MarketOrder> getMarketOrders() {
+		return currentMarketOrders;
+	}
+	
+	// Misc. utilities
+	public enum orderStatus {waiting, preparing, ready, bounceBack}; // Ties in with MarketOrder class below
 	
 	public class MarketOrder {
 		
@@ -121,25 +127,16 @@ public class MarketAgent extends Agent {
 			return requestingCook;
 		}
 		
-		public void setFulfilling(int cookTime){
-			foodTimer = new Timer(cookTime,
+		public void setFulfilling(int fulfillTime){ // This function is what delays marketOrders from being instantly available
+			foodTimer = new Timer(fulfillTime,
 					new ActionListener() { public void actionPerformed(ActionEvent event) {
-			          status = orderStatus.ready;
+			          status = orderStatus.ready; // Mark as ready only after set amount of time to fulfill order has compelted
 			          foodTimer.stop();
 			      }
 			});
 			foodTimer.start();
 		}
 			
-	}
-	
-	// Accessors
-	public String getName() {
-		return name;
-	}
-
-	public List<MarketOrder> getMarketOrders() {
-		return currentMarketOrders;
 	}
 
 }
