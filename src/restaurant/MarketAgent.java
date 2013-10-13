@@ -66,7 +66,7 @@ public class MarketAgent extends Agent {
 	// Actions
 	private void prepareOrder(MarketOrder o){
 		o.status = orderStatus.preparing;
-		// Can we fulfill this order?
+		// Determine if we can fully fulfill this order
 		int foodInventoryCount = inventoryCount.get(o.foodItem);
 		if (o.quantityRequested > foodInventoryCount){
 			o.deliverableQuantity = foodInventoryCount;

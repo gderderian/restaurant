@@ -5,6 +5,7 @@ import agent.Agent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+
 import javax.swing.Timer;
 
 /**
@@ -30,10 +31,21 @@ public class CookAgent extends Agent {
 		allFood = new Hashtable<String, FoodItem>();
 		allFood.put("Chicken", new FoodItem("Chicken", 3000, 1));
 		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
-		//allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
-		//allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
-		//allFood.put("Pasta", new FoodItem("Pasta", 6000, 3));
-		//allFood.put("Cobbler", new FoodItem("Cobbler", 5000, 3));
+		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
+		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
+		allFood.put("Pasta", new FoodItem("Pasta", 6000, 3));
+		allFood.put("Cobbler", new FoodItem("Cobbler", 5000, 3));
+		
+		// Do initial inventory check and re-order anything that might be low initially
+		ArrayList<String> cookFoodItems = new ArrayList<String>(allFood.keySet());
+		if (!cookFoodItems.isEmpty()) {
+			for (String food : cookFoodItems) {
+				if (allFood.get(food).quantity <= REORDER_THRESHOLD && allFood.get(food).reorderSent == false){
+					int orderQuantity = allFood.get(food).maxCapacity - allFood.get(food).quantity;
+					myMarkets.get(allFood.get(food).searchMarket).orderFood(this, food, orderQuantity);
+				}
+			}
+		}
 		
 	}
 	
