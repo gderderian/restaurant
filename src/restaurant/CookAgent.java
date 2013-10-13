@@ -18,7 +18,7 @@ public class CookAgent extends Agent {
 	private List<Order> currentOrders;
 	private List<MarketAgent> myMarkets;
 	Hashtable<String, FoodItem> allFood;
-	private static final int REORDER_THRESHOLD = 2;
+	private static final int REORDER_THRESHOLD = 2; // Once a food item has this many of itself left, a reorder request will automatically be placed
 	private static final int MARKETS_NUM = 2;
 
 	public CookAgent(String name) {

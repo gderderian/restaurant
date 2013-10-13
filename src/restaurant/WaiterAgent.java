@@ -1,15 +1,11 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.CustomerAgent.AgentEvent;
-import restaurant.CustomerAgent.AgentState;
 import restaurant.gui.WaiterGui;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
-
 import javax.swing.Timer;
 
 /**
@@ -23,10 +19,8 @@ public class WaiterAgent extends Agent {
 	public HostAgent myHost;
 	public CookAgent myCook;
 	private String name;
-	public boolean wantBreak;
-	public boolean onBreak;
-	public boolean requestedBreak;
 	public CashierAgent myCashier;
+	private boolean onBreak;
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -44,16 +38,16 @@ public class WaiterAgent extends Agent {
 		super();
 		this.name = name;
 		myCustomers = new ArrayList<MyCustomer>();
-		wantBreak = false;
 		onBreak = false;
-		requestedBreak = false;
 		
 		breakTimer = new Timer(DEFAULT_BREAK_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
 					Do("Returning from break");
 					waiterGui.returnFromBreak();
+					notifyHostReturnedFromBreak();
 					state = AgentState.DoingNothing;
 					event = AgentEvent.none;
+					onBreak = true;
 					stateChanged();
 		      }
 		});
@@ -129,11 +123,13 @@ public class WaiterAgent extends Agent {
 		Do("My break was approved.");
 		state = AgentState.onBreak;
 		event = AgentEvent.breakApproved;
+		onBreak = true;
 		stateChanged();
 	}
 	
 	public void breakRejected(){
 		Do("My break was rejected! Old state/event: " + state + " - " + event);
+		onBreak = false;
 		state = AgentState.wantBreak;
 		event = AgentEvent.breakRejected;
 		stateChanged();
@@ -168,9 +164,7 @@ public class WaiterAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
-		Do("State/event: " + state + " - " + event);
-		
+
 		if (state == AgentState.wantBreak && event == AgentEvent.none){
 			requestBreakFromHost();
 			return true;
@@ -359,6 +353,7 @@ public class WaiterAgent extends Agent {
 	public void goodbyeCustomer(MyCustomer c){
 		Do("Removing customer " + c.customer.getName() + "from my lists and saying goodbye.");
 		myCustomers.remove(c);
+		myHost.decrementCustomer(this);
 		c.customer.getHost().msgLeavingTable(c.customer);
 	}
 	
@@ -393,7 +388,7 @@ public class WaiterAgent extends Agent {
 	private void requestBreakFromHost(){
 		Do("Requesting break from host.");
 		myHost.wantBreak(this);
-		// event = AgentEvent.breakRequested;
+		event = AgentEvent.breakRequested;
 		state = AgentState.wantBreak;
 		waiterGui.requestedBreak();
 	}
@@ -444,6 +439,10 @@ public class WaiterAgent extends Agent {
 		return false;
 	}
 	
+	public void notifyHostReturnedFromBreak(){
+		myHost.returnedFromBreak(this);
+	}
+	
 	// Accessors
 	public String getName() {
 		return name;
@@ -475,6 +474,10 @@ public class WaiterAgent extends Agent {
 	
 	public WaiterGui getGui() {
 		return waiterGui;
+	}
+	
+	public boolean isOnBreak() {
+		return onBreak;
 	}
 	
 }

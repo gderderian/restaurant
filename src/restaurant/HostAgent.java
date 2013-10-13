@@ -1,8 +1,6 @@
 package restaurant;
 
 import agent.Agent;
-import restaurant.WaiterAgent.CustomerState;
-import restaurant.WaiterAgent.MyCustomer;
 import restaurant.gui.WaiterGui;
 
 import java.util.*;
@@ -56,12 +54,10 @@ public class HostAgent extends Agent {
 	public void msgLeavingTable(CustomerAgent cust) {
 		for (Table table : tables) {
 			if (table.getOccupant() == cust) {
-				print(cust + " leaving " + table + " - setting as unoccupied");
 				table.setUnoccupied();
 				stateChanged();
 			}
 		}
-		
 	}
 	
 	public void wantBreak(WaiterAgent w){

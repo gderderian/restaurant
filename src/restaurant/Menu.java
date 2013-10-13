@@ -11,15 +11,15 @@ public class Menu {
 	
 	public Menu(){
 		itemList = new Hashtable<String, Double>();
-		itemList.put("Chicken", 1.75);
-		itemList.put("Mac & Cheese", 7.95);
-		//itemList.put("French Fries", 4.25);
-		//itemList.put("Pizza", 7.95);
-		//itemList.put("Pasta", 5.75);
-		//itemList.put("Cobbler", 5.75);
+		itemList.put("Chicken", 7.95);
+		itemList.put("Mac & Cheese", 5.95);
+		itemList.put("French Fries", 2.50);
+		itemList.put("Pizza", 5.95);
+		itemList.put("Pasta", 6.75);
+		itemList.put("Cobbler", 6.50);
 	}
 
-	// Utilities and accessors
+	// Utilities
 	public String displayMenu(){
 		String menuHTML = "";
 		Set<String> itemSet = itemList.keySet();
@@ -52,6 +52,23 @@ public class Menu {
 		ArrayList<String> menuItems = new ArrayList<String>(itemList.keySet());
 		String randItem = menuItems.get(itemPickNum);
 		return randItem;
+	}
+	
+	public String pickRandomItemWithinCost(double maxCost) {
+		int counter = 0;
+		while (true){
+			Random randNum = new Random();
+			int itemPickNum = randNum.nextInt(itemList.size());
+			ArrayList<String> menuItems = new ArrayList<String>(itemList.keySet());
+			String randItem = menuItems.get(itemPickNum);
+			counter++;
+			if (itemList.get(randItem) <= maxCost) {
+				return randItem;
+			}
+			if (counter > itemList.size()){
+				return "";
+			}
+		}
 	}
 	
 }
