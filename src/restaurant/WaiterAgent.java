@@ -5,13 +5,19 @@ import restaurant.CustomerAgent.AgentEvent;
 import restaurant.CustomerAgent.AgentState;
 import restaurant.gui.WaiterGui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+
+import javax.swing.Timer;
 
 /**
  * Restaurant Waiter Agent
  */
 public class WaiterAgent extends Agent {
+	
+	static final int DEFAULT_BREAK_TIME = 15000;
 	
 	public List<MyCustomer> myCustomers;
 	public HostAgent myHost;
@@ -24,12 +30,13 @@ public class WaiterAgent extends Agent {
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
+	Timer breakTimer;
 	
 	public enum AgentState
 	{DoingNothing, wantBreak, onBreak};
 	private AgentState state = AgentState.DoingNothing;
 
-	public enum AgentEvent 
+	public enum AgentEvent
 	{none, breakRequested, breakApproved, breakRejected};
 	AgentEvent event = AgentEvent.none;
 	
@@ -40,6 +47,17 @@ public class WaiterAgent extends Agent {
 		wantBreak = false;
 		onBreak = false;
 		requestedBreak = false;
+		
+		breakTimer = new Timer(DEFAULT_BREAK_TIME,
+				new ActionListener() { public void actionPerformed(ActionEvent evt) {
+					Do("Returning from break");
+					waiterGui.returnFromBreak();
+					state = AgentState.DoingNothing;
+					event = AgentEvent.none;
+					stateChanged();
+		      }
+		});
+		
 	}
 	
 	// Messages
@@ -77,7 +95,6 @@ public class WaiterAgent extends Agent {
 			}
 		}
 		stateChanged();
-		
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
@@ -109,13 +126,15 @@ public class WaiterAgent extends Agent {
 	}
 	
 	public void breakApproved(){
+		Do("My break was approved.");
 		state = AgentState.onBreak;
 		event = AgentEvent.breakApproved;
 		stateChanged();
 	}
 	
 	public void breakRejected(){
-		state = AgentState.DoingNothing;
+		Do("My break was rejected! Old state/event: " + state + " - " + event);
+		state = AgentState.wantBreak;
 		event = AgentEvent.breakRejected;
 		stateChanged();
 	}
@@ -123,6 +142,7 @@ public class WaiterAgent extends Agent {
 	public void requestBreak(){
 		Do("Requesting break...");
 		state = AgentState.wantBreak;
+		event = AgentEvent.none;
 		stateChanged();
 	}
 	
@@ -147,21 +167,29 @@ public class WaiterAgent extends Agent {
 	}
 
 	// Scheduler
-	protected boolean pickAndExecuteAnAction() {	
+	protected boolean pickAndExecuteAnAction() {
+		
+		Do("State/event: " + state + " - " + event);
+		
 		if (state == AgentState.wantBreak && event == AgentEvent.none){
 			requestBreakFromHost();
 			return true;
 		}
-		if (state == AgentState.onBreak && event == AgentEvent.breakApproved){
-			// Begin 10s timer, then uncheck gui box
+		
+		if (state == AgentState.wantBreak && event == AgentEvent.breakApproved){
+			Do("About to call begin break function!");
+			state = AgentState.onBreak;
 			beginBreak();
 			return true;
 		}
-		if (state == AgentState.DoingNothing && event == AgentEvent.breakRejected){
-			// Uncheck gui box and go back to normal
+		
+		if (state == AgentState.wantBreak && event == AgentEvent.breakRejected){
+			Do("About to call break rejected function");
 			processBreakRejection();
 			return true;
 		}
+		
+		
 		for (MyCustomer c : myCustomers) {
 			if (c.state == CustomerState.Waiting){
 				seatCustomer(c);
@@ -365,17 +393,24 @@ public class WaiterAgent extends Agent {
 	private void requestBreakFromHost(){
 		Do("Requesting break from host.");
 		myHost.wantBreak(this);
-		event = AgentEvent.breakRequested;
+		// event = AgentEvent.breakRequested;
+		state = AgentState.wantBreak;
+		waiterGui.requestedBreak();
 	}
 	
 	private void processBreakRejection(){
-		
-		
+		Do("In breakrejected function");
+		waiterGui.breakRejected();
+		state = AgentState.DoingNothing;
+		event = AgentEvent.none;
 	}
 	
 	private void beginBreak(){
-		
-		
+		waiterGui.breakApproved();
+		breakTimer.setRepeats(false);
+		breakTimer.restart();
+		breakTimer.start();
+		event = AgentEvent.none;
 	}
 	
 	// Misc. Utilities

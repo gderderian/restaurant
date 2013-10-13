@@ -25,17 +25,19 @@ public class WaiterGui implements Gui {
 	boolean hasDestination = false;
 	
 	String carryingOrderText = "";
-	boolean isOnBreak = false;
+	boolean isOnBreak;
     
     public WaiterGui(WaiterAgent a) {
     	agent = a;
     	carryingOrderText = "";
+    	isOnBreak = false;
     }
     
     public WaiterGui(WaiterAgent a, RestaurantGui g) {
     	agent = a;
     	gui = g;
     	carryingOrderText = "";
+    	isOnBreak = false;
     }
 
 	public void setDestination(int newX, int newY){
@@ -111,7 +113,26 @@ public class WaiterGui implements Gui {
 	}
 	
 	public void setRequestBreak() {
-		isOnBreak = true;
+		System.out.println("Gui requesting break to waiter agent");
 		agent.requestBreak();
+		isOnBreak = true;
+	}
+	
+	public void breakRejected() {
+		isOnBreak = false;
+		gui.setCbEnabled(agent);
+	}
+	
+	public void returnFromBreak() {
+		isOnBreak = false;
+		gui.setCbEnabled(agent);
+	}
+	
+	public void breakApproved() {
+		isOnBreak = true;
+	}
+	
+	public void requestedBreak() {
+		isOnBreak = true;
 	}
 }
