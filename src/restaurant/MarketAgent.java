@@ -27,7 +27,7 @@ public class MarketAgent extends Agent {
 		inventoryCount = new Hashtable<String, Integer>();
 		inventoryCount.put("Chicken", 5);
 		inventoryCount.put("Mac & Cheese", 5);
-		inventoryCount.put("French Fries", 5);
+		inventoryCount.put("French Fries", 2);
 		inventoryCount.put("Pizza", 5);
 		inventoryCount.put("Pasta", 5);
 		inventoryCount.put("Cobbler", 5);
@@ -134,6 +134,7 @@ public class MarketAgent extends Agent {
 					new ActionListener() { public void actionPerformed(ActionEvent event) {
 			          status = orderStatus.ready; // Mark as ready only after set amount of time to fulfill order has compelted
 			          foodTimer.stop();
+			          stateChanged();
 			      }
 			});
 			foodTimer.start();

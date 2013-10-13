@@ -49,21 +49,22 @@ public class CustomerAgent extends Agent {
 		super();
 		this.name = name;
 		choice = "";
-		money = 15.00;
 		needToPay = 0;
 		orderAttempts = 0;
 		
 		// Hack to set amount of money based on customer's name
-		if (name == "reallycheap"){
+		if (name.equals("reallycheap")){
 			money = 1.00; // Can't afford anything
-		} else if (name == "cheap") {
+		} else if (name.equals("cheap")) {
 			money = 2.50;
-		} else if (name == "somemoney") {
+		} else if (name.equals("somemoney")) {
 			money = 7.00;
-		} else if (name == "lotsofmoney") {
+		} else if (name.equals("lotsofmoney")) {
 			money = 15.00;
-		} else if (name == "tonsofmoney") {
+		} else if (name.equals("tonsofmoney")) {
 			money = 25.00;
+		} else { // Default $15.00
+			money = 15.00;
 		}
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
