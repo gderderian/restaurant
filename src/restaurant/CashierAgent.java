@@ -13,10 +13,17 @@ public class CashierAgent extends Agent {
 	private List<Check> myChecks;
 	private double checkAmount;
 	
+	public CashierAgent(String name) {
+		super();
+		this.name = name;
+		myChecks = new ArrayList<Check>();
+		checkAmount = 0;
+	}
+	
 	// Messages
 	public void calculateCheck(WaiterAgent w, CustomerAgent c, String choice){
-		Do("Calculating check for customer");
-		Check newCheck = new Check(w, c, choice);
+		Do("Calculating check for customer.");
+		Check newCheck = new Check(w, c, choice); // Add in new check to be calculated for this customer
 		myChecks.add(newCheck);
 		stateChanged();
 	}
@@ -25,8 +32,8 @@ public class CashierAgent extends Agent {
 		// Lookup check to mark it as paid
 		if (!myChecks.isEmpty()) {
 			for (Check check : myChecks) {
-				if (check.customer.equals(c)){ // Successful lookup
-					processCustomerPayment(c, amountPaid, check);
+				if (check.customer.equals(c)){
+					processCustomerPayment(c, amountPaid, check); // Process this check with action below
 				}
 			}
 		}
@@ -47,7 +54,7 @@ public class CashierAgent extends Agent {
 	}
 
 	// Actions
-	public void processCheckToWaiter(Check c){
+	public void processCheckToWaiter(Check c){ // Mark check as calculated and send back to waiter
 		Do("Processing check back to waiter");
 		Menu myMenu = new Menu();
 		checkAmount = myMenu.getPriceofItem(c.choice);
@@ -58,21 +65,18 @@ public class CashierAgent extends Agent {
 	}
 	
 	public void processCustomerPayment(CustomerAgent customer, double amountPaid, Check c){
-		Do("Amount paid: $" + amountPaid + " - Amount of item: $" + c.amount);
-		if (amountPaid == c.amount){
-			Do("Can afford");
+		if (amountPaid == c.amount){ // Customer paid exact amount
 			c.status = checkStatus.paid;
-		} else if (amountPaid > c.amount){
-			Do("Can afford");
+		} else if (amountPaid > c.amount){ // Customer paid more than their order, dispense the difference to them in change
 			customer.dispenseChange(amountPaid - c.amount);
 			c.status = checkStatus.paid;
-		} else if (amountPaid < c.amount){
-			// customer.makeWorkAtRestaurant();
-			Do("Can't afford");
+		} else if (amountPaid < c.amount){ // Customer cannot afford to pay for what they ordered! Send them a shame command.
+			customer.goToCorner();
 		}
 	}
 	
-	public enum checkStatus {pending, calculated, paid};
+	// Misc. utilities
+	public enum checkStatus {pending, calculated, paid}; // Used in conjunction with Check class below
 	
 	public class Check {
 		
@@ -114,13 +118,6 @@ public class CashierAgent extends Agent {
 	}
 	
 	// Accessors
-	public CashierAgent(String name) {
-		super();
-		this.name = name;
-		myChecks = new ArrayList<Check>();
-		checkAmount = 0;
-	}
-
 	public String getName() {
 		return name;
 	}

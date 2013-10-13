@@ -34,11 +34,11 @@ public class CustomerAgent extends Agent {
 	private CashierAgent cashier;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying, CantPay};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
-	{none, gotHungry, followHost, begunEating, doneEating, doneLeaving, doneChoosing, seated, wantWaiter, receivedCheck};
+	{none, gotHungry, followHost, begunEating, doneEating, doneLeaving, doneChoosing, seated, wantWaiter, receivedCheck, notPaid};
 	AgentEvent event = AgentEvent.none;
 	
 	private Semaphore isAnimating = new Semaphore(0,true);
@@ -58,7 +58,11 @@ public class CustomerAgent extends Agent {
 		} else if (name == "cheap") {
 			money = 2.50;
 		} else if (name == "somemoney") {
-			
+			money = 7.00;
+		} else if (name == "lotsofmoney") {
+			money = 15.00;
+		} else if (name == "tonsofmoney") {
+			money = 25.00;
 		}
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
@@ -132,6 +136,12 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void goToCorner() {
+		state = AgentState.CantPay;
+		event = AgentEvent.notPaid;
+		stateChanged();
+	}
+	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
@@ -186,6 +196,12 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.WaitingForFood && event == AgentEvent.doneLeaving){
+			state = AgentState.DoingNothing;
+			event = AgentEvent.none;
+			return true;
+		}
+		if (state == AgentState.CantPay && event == AgentEvent.notPaid){
+			shame();
 			state = AgentState.DoingNothing;
 			event = AgentEvent.none;
 			return true;
@@ -376,6 +392,10 @@ public class CustomerAgent extends Agent {
 		return needToPay;
 	}
 
+	public void shame() {
+		customerGui.goInCorner();
+	}
+	
 	// Misc. Utilities
 	public String pickRandomItem() {
 		return myMenu.pickRandomItem();

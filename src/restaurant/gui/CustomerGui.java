@@ -21,12 +21,16 @@ public class CustomerGui implements Gui{
 	
 	private static final int HIDDEN_X = -40;
 	private static final int HIDDEN_Y = -40;
+	private static final int BADCUSTOMERPILE_X = 400;
+	private static final int BADCUSTOMERPILE_Y = 400;
 	private static final int CUST_SIZE_X = 20;
 	private static final int CUST_SIZE_Y = 20;
 	
 	boolean isAnimating = false;
 	boolean hasDestination = false;
 	String carryingOrderText = "";
+	
+	Color color = Color.GREEN;
 	
 	public CustomerGui(CustomerAgent c, RestaurantGui gui){
 		agent = c;
@@ -77,7 +81,7 @@ public class CustomerGui implements Gui{
 	}
 
 	public void draw(Graphics2D g) {
-		g.setColor(Color.GREEN);
+		g.setColor(color);
 		g.fillRect(xPos, yPos, CUST_SIZE_X, CUST_SIZE_Y);
 		if (!carryingOrderText.equals("")){
 			g.drawString(carryingOrderText, xPos, yPos);
@@ -117,9 +121,18 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoExitRestaurant() {
+		color = Color.black;
 		xDestination = HIDDEN_X;
 		yDestination = HIDDEN_Y;
 		command = Command.LeaveRestaurant;
+	}
+	
+	public void goInCorner() {
+		color = Color.black;
+		carryingOrderText = "BAD!";
+		xDestination = BADCUSTOMERPILE_X;
+		yDestination = BADCUSTOMERPILE_Y;
+		command = Command.noCommand;
 	}
 	
     public void setCarryText(String carryText){
