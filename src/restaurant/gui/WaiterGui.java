@@ -113,14 +113,13 @@ public class WaiterGui implements Gui {
 	}
 	
 	public void setRequestBreak() {
-		System.out.println("Gui requesting break to waiter agent");
 		agent.requestBreak();
 		isOnBreak = true;
 	}
 	
 	public void breakRejected() {
-		isOnBreak = false;
 		gui.setCbEnabled(agent);
+		isOnBreak = false;
 	}
 	
 	public void returnFromBreak() {
