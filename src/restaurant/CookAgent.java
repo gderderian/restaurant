@@ -36,24 +36,11 @@ public class CookAgent extends Agent {
 		allFood.put("Pasta", new FoodItem("Pasta", 6000, 3));
 		allFood.put("Cobbler", new FoodItem("Cobbler", 5000, 3));
 		
-		// Do initial inventory check and re-order anything that might be low initially
-		ArrayList<String> cookFoodItems = new ArrayList<String>(allFood.keySet());
-		if (!cookFoodItems.isEmpty()) {
-			for (String food : cookFoodItems) {
-				if (allFood.get(food).quantity <= REORDER_THRESHOLD && allFood.get(food).reorderSent == false){
-					int orderQuantity = allFood.get(food).maxCapacity - allFood.get(food).quantity;
-					myMarkets.get(allFood.get(food).searchMarket).orderFood(this, food, orderQuantity);
-				}
-			}
-		}
-		
 	}
 	
 	// Messages
 	public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
-		
 		Do("Here is order to cook.");
-		
 		// Determine if there is enough inventory of this item to fulfill this order
 		if (allFood.get(choice).quantity >= 1) { // Able to fulfill order, dock one from that item's inventory
 			Order o = new Order();
@@ -71,7 +58,6 @@ public class CookAgent extends Agent {
 			currentOrders.add(o);
 			stateChanged();
 		}
-		
 	}
 	
 	public void deliverFood(String incomingFood, int quantity) {
