@@ -2,12 +2,9 @@ package restaurant;
 
 import restaurant.gui.CustomerGui;
 import agent.Agent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.Timer;
-
 import java.util.concurrent.Semaphore;
 
 
@@ -50,13 +47,13 @@ public class CustomerAgent extends Agent {
 		super();
 		this.name = name;
 		choice = "";
-		money = 15.00;
+		money = 2.55;
 		needToPay = 0;
 		orderAttempts = 0;
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
-					choice = pickRandomItem();
+					choice = pickRandomItemWithinCost();
 					event = AgentEvent.wantWaiter;
 					stateChanged();
 		      }
@@ -127,6 +124,9 @@ public class CustomerAgent extends Agent {
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
+		
+		Do("Customer current info: state: " + state + " - event: " + event);
+		
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingForSeat;
 			goToRestaurant();
@@ -149,6 +149,7 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.CalledWaiter && event == AgentEvent.doneChoosing){
 			sendChoiceToWaiter();
+			Do("Calling suspicious message!");
 			state = AgentState.WaitingForFood;
 			return true;
 		}
@@ -177,6 +178,11 @@ public class CustomerAgent extends Agent {
 			event = AgentEvent.doneLeaving;
 			return true;
 		}
+		if (state == AgentState.WaitingForFood && event == AgentEvent.doneLeaving){
+			state = AgentState.DoingNothing;
+			event = AgentEvent.none;
+			return true;
+		}
 		return false;
 	}
 
@@ -195,10 +201,12 @@ public class CustomerAgent extends Agent {
 	
 	private void sendChoiceToWaiter(){
 		
-		String itemChoice = pickRandomItem();
-		choice = itemChoice;
-		assignedWaiter.hereIsMyChoice(itemChoice, this);
+		if (choice.equals("")) { // Customer cannot afford any items on the menu. Make them leave.
+			leaveAbruptly();
+			return;
+		}
 		
+		assignedWaiter.hereIsMyChoice(choice, this);
 		orderAttempts++;
 		
 		String carryText = "";
@@ -285,8 +293,16 @@ public class CustomerAgent extends Agent {
 		customerGui.setCarryText("");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
-		state = AgentState.Paying; // Formerly doingNothing
+		state = AgentState.Paying;
 		event = AgentEvent.none;
+	}
+	
+	private void leaveAbruptly() {
+		Do("Leaving restaurant.");
+		customerGui.setCarryText("");
+		customerGui.DoExitRestaurant();
+		assignedWaiter.ImDone(this);
+		event = AgentEvent.doneLeaving;
 	}
 	
 	private void sendPayment(){
@@ -346,6 +362,10 @@ public class CustomerAgent extends Agent {
 	// Misc. Utilities
 	public String pickRandomItem() {
 		return myMenu.pickRandomItem();
+	}
+	
+	public String pickRandomItemWithinCost() {
+		return myMenu.pickRandomItemWithinCost(money);
 	}
 	
 	public void releaseSemaphore(){
