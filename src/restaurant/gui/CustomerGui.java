@@ -139,4 +139,9 @@ public class CustomerGui implements Gui{
     	carryingOrderText = carryText;
     }
     
+    public void resetNotHungry() {
+		gui.setCustomerEnabled(agent);
+    	isHungry = false;
+    }
+    
 }

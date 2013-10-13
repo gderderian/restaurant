@@ -90,6 +90,13 @@ public class HostAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
+		
+		if (!waitingCustomers.isEmpty() && checkAllTablesOccupied() == true) { // Ask customer if they want to stay
+			waitingCustomers.get(0).restaurantFull();
+			waitingCustomers.remove(0);
+			return true;
+		}
+		
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
@@ -98,9 +105,11 @@ public class HostAgent extends Agent {
 				}
 			}
 		}
+		
 		for (MyWaiter waiter : myWaiters) {
 			if (waiter.state == WaiterState.wantBreak){
 				processBreakRequest(waiter);
+				return true;
 			}
 		}
 		return false;
@@ -108,6 +117,8 @@ public class HostAgent extends Agent {
 
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
+		// First see if the customer actually wants to stay
+		
 		// Find waiter and notify them
 		if (myWaiters.size() != 0) {
 			int init_cust = myWaiters.get(0).numCustomers;
@@ -141,7 +152,7 @@ public class HostAgent extends Agent {
 		}
 	}
 	
-	public int getNumWaitersOnBreak(){
+	public int getNumWaitersOnBreak() {
 		int onBreakNow = 0;
 		for (MyWaiter w : myWaiters){
 			if (w.state == WaiterState.onBreak){
@@ -149,6 +160,20 @@ public class HostAgent extends Agent {
 			}
 		}
 		return onBreakNow;
+	}
+	
+	public boolean checkAllTablesOccupied() {
+		int totalOccupied = 0;
+		for (Table table : tables) {
+			if (table.isOccupied()) {
+				totalOccupied++;
+			}
+		}
+		if (totalOccupied == tables.size()){
+			return true; // All tables are occupied
+		} else {
+			return false; // There are still free tables
+		}
 	}
 	
 	// Accessors

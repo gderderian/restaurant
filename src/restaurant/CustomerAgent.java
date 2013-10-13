@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
 import java.util.concurrent.Semaphore;
+import java.util.Random;
 
 
 /**
@@ -34,7 +35,7 @@ public class CustomerAgent extends Agent {
 	private CashierAgent cashier;
 
 	public enum AgentState
-	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying, CantPay};
+	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying, restaurantFull, CantPay};
 	private AgentState state = AgentState.DoingNothing;
 
 	public enum AgentEvent 
@@ -142,6 +143,11 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 	
+	public void restaurantFull(){
+		state = AgentState.restaurantFull;
+		stateChanged();
+	}
+	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
@@ -203,6 +209,11 @@ public class CustomerAgent extends Agent {
 		if (state == AgentState.CantPay && event == AgentEvent.notPaid){
 			shame();
 			state = AgentState.DoingNothing;
+			event = AgentEvent.none;
+			return true;
+		}
+		if (state == AgentState.restaurantFull && event == AgentEvent.gotHungry){
+			determineIfStay();
 			event = AgentEvent.none;
 			return true;
 		}
@@ -341,6 +352,24 @@ public class CustomerAgent extends Agent {
 	private void sendPayment(){
 		Do("Sending money to cashier: $" + money);
 		cashier.acceptPayment(this, money);
+	}
+	
+	private void determineIfStay(){
+		Random random = new Random();
+	    boolean willStay = random.nextBoolean();
+		
+	    if (willStay == true){
+	    	state = AgentState.DoingNothing;
+	    	event = AgentEvent.gotHungry;
+	    	host.msgIWantFood(this);
+	    	Do("I'LL CONTINUE TO WAIT!!!!!!!!!!!!!!!!");
+	    } else {
+	    	Do("TOO MANY PEOPLE ARE WAITING, I'M LEAVING!!!!!");
+	    	state = AgentState.DoingNothing;
+	    	event = AgentEvent.none;
+	    	customerGui.resetNotHungry();
+	    }
+		
 	}
 
 	// Accessors
