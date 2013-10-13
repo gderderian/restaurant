@@ -436,7 +436,21 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public String pickRandomItemWithinCost() {
-		return myMenu.pickRandomItemWithinCost(money);
+		if (name.equals("Chicken")){
+			return "Chicken";
+		} else if (name.equals("Mac & Cheese")) {
+			return "Mac & Cheese";
+		} else if (name.equals("French Fries")) {
+			return "French Fries";
+		} else if (name.equals("Pizza")) {
+			return "Pizza";
+		} else if (name.equals("Pasta")) {
+			return "Pasta";
+		} else if (name.equals("Cobbler")) {
+			return "Cobbler";
+		} else {
+			return myMenu.pickRandomItemWithinCost(money);
+		}
 	}
 	
 	public void releaseSemaphore(){
