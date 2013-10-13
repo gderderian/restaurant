@@ -48,9 +48,18 @@ public class CustomerAgent extends Agent {
 		super();
 		this.name = name;
 		choice = "";
-		money = 2.55;
+		money = 15.00;
 		needToPay = 0;
 		orderAttempts = 0;
+		
+		// Hack to set amount of money based on customer's name
+		if (name == "reallycheap"){
+			money = 1.00; // Can't afford anything
+		} else if (name == "cheap") {
+			money = 2.50;
+		} else if (name == "somemoney") {
+			
+		}
 		
 		choosingTimer = new Timer(DEFAULT_CHOOSE_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
@@ -199,11 +208,13 @@ public class CustomerAgent extends Agent {
 	
 	private void sendChoiceToWaiter(){
 		
+		// Customer can't afford anything on menu within their price range because choice was set to blank
 		if (choice.equals("")) { // Customer cannot afford any items on the menu. Make them leave.
 			leaveAbruptly();
 			return;
 		}
 		
+		// Customer leaves if there is nothing for them to order
 		if (orderAttempts > ORDER_ATTEMPT_THRESHOLD){ // Nothing is left on the menu for the customer to order. Make them leave.
 			Do("Customer is leaving because there is not enough food for them to oder and the threshold has been exceeded!!");
 			leaveAbruptly();
