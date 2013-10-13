@@ -64,6 +64,7 @@ public class MarketAgent extends Agent {
 
 	// Actions
 	private void prepareOrder(MarketOrder o){
+		Do("Preparing marketOrder of " + o.foodItem + ".");
 		o.status = orderStatus.preparing;
 		int foodInventoryCount = inventoryCount.get(o.foodItem);
 		if (o.quantityRequested > foodInventoryCount){ // Check and see if we (the market) actually have enough stock to fulfill
@@ -76,6 +77,7 @@ public class MarketAgent extends Agent {
 	}
 
 	private void orderDone(MarketOrder o){
+		Do("marketOrder of " + o.foodItem + " is now done.");
 		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity); // Notify cook that their order is now done
 		currentMarketOrders.remove(o);
 	}

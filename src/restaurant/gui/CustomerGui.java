@@ -121,7 +121,6 @@ public class CustomerGui implements Gui{
 	}
 
 	public void DoExitRestaurant() {
-		color = Color.black;
 		xDestination = HIDDEN_X;
 		yDestination = HIDDEN_Y;
 		command = Command.LeaveRestaurant;

@@ -125,7 +125,6 @@ public class RestaurantGui extends JFrame implements ActionListener {
         	stateCB.setText("On break?");
         	stateCB.setSelected(waiter.getGui().isOnBreak());
         	stateCB.setEnabled(!waiter.getGui().isOnBreak());
-        	System.out.println("clicked waiter status: " + waiter.getGui().isOnBreak());
         	infoLabel.setText("<html>Waiter Name: " + waiter.getName() + "</html>");
         }
         
@@ -193,7 +192,6 @@ public class RestaurantGui extends JFrame implements ActionListener {
      * @param c reference to the customer
      */
     public void setCbEnabled(WaiterAgent w) {
-    	System.out.println("Re-enabling checkbox!");
         if (currentPerson instanceof WaiterAgent) {
         	WaiterAgent waiter = (WaiterAgent) currentPerson;
             if (w.equals(waiter)) {

@@ -47,11 +47,13 @@ public class HostAgent extends Agent {
 	
 	// Messages
 	public void msgIWantFood(CustomerAgent cust) {
+		Do("Received message msgIWantFood from customer " + cust.getCustomerName() + ".");
 		waitingCustomers.add(cust);
 		stateChanged();
 	}
 
 	public void msgLeavingTable(CustomerAgent cust) {
+		Do("Received message msgLeavingTable from customer " + cust.getCustomerName() + ".");
 		for (Table table : tables) {
 			if (table.getOccupant() == cust) {
 				table.setUnoccupied();
@@ -61,7 +63,7 @@ public class HostAgent extends Agent {
 	}
 	
 	public void wantBreak(WaiterAgent w){
-		Do("Received request to go on break from waiter");
+		Do("Received request to go on break from waiter " + w.getName() + ".");
 		for (MyWaiter waiter : myWaiters) {
 			if (waiter.waiter.equals(w)){
 				waiter.state = WaiterState.wantBreak;
@@ -71,6 +73,7 @@ public class HostAgent extends Agent {
 	}
 	
 	public void decrementCustomer(WaiterAgent w){
+		Do("Received notification one customer left the restaurant.");
 		for (MyWaiter waiter : myWaiters) {
 			if (waiter.waiter.equals(w)){
 				waiter.numCustomers--;
@@ -80,6 +83,7 @@ public class HostAgent extends Agent {
 	}
 	
 	public void returnedFromBreak(WaiterAgent w){
+		Do("Notified that waiter " + w.getName() + " has now returned from break.");
 		for (MyWaiter waiter : myWaiters) {
 			if (waiter.waiter.equals(w)){
 				waiter.state = WaiterState.none;
@@ -90,13 +94,11 @@ public class HostAgent extends Agent {
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
 		if (!waitingCustomers.isEmpty() && checkAllTablesOccupied() == true) { // Ask customer if they want to stay
 			waitingCustomers.get(0).restaurantFull();
 			waitingCustomers.remove(0);
 			return true;
 		}
-		
 		for (Table table : tables) {
 			if (!table.isOccupied()) {
 				if (!waitingCustomers.isEmpty()) {
@@ -105,7 +107,6 @@ public class HostAgent extends Agent {
 				}
 			}
 		}
-		
 		for (MyWaiter waiter : myWaiters) {
 			if (waiter.state == WaiterState.wantBreak){
 				processBreakRequest(waiter);
@@ -117,9 +118,8 @@ public class HostAgent extends Agent {
 
 	// Actions
 	private void seatCustomer(CustomerAgent customer, Table table) {
-		// First see if the customer actually wants to stay
-		
 		// Find waiter and notify them
+		//Do("Seating customer " + customer.getCustomerName() + " at table #" + table.tableNumber + ".");
 		if (myWaiters.size() != 0) {
 			int init_cust = myWaiters.get(0).numCustomers;
 			MyWaiter w_selected = null;
@@ -129,9 +129,6 @@ public class HostAgent extends Agent {
 					w_selected = w;
 				}
 			}
-			Do("Selected Waiter Data: " + w_selected.name);
-			Do("Selected Customer Data: " + customer.getName());
-			Do("Selected Table Data: " + table.tableNumber);
 			w_selected.waiter.msgSeatCustomer(customer, table.tableNumber, this);
 			w_selected.numCustomers++;
 			table.setOccupant(customer);
@@ -142,37 +139,13 @@ public class HostAgent extends Agent {
 	public void processBreakRequest(MyWaiter w){
 		int onBreakNow = getNumWaitersOnBreak();
 		if (myWaiters.size() <= 1 || (onBreakNow == myWaiters.size() - 1)){ // One waiter also always has to be left!
-			Do("Rejecting request for waiter to go on break.");
+			Do("Rejecting request for waiter " + w.name + " to go on break.");
 			w.waiter.breakRejected();
 			w.state = WaiterState.none;
 		} else {
-			Do("Approving request for waite to go on break.");
+			Do("Approving request for waiter " + w.name + " to go on break.");
 			w.waiter.breakApproved();
 			w.state = WaiterState.onBreak;
-		}
-	}
-	
-	public int getNumWaitersOnBreak() {
-		int onBreakNow = 0;
-		for (MyWaiter w : myWaiters){
-			if (w.state == WaiterState.onBreak){
-				onBreakNow++;
-			}
-		}
-		return onBreakNow;
-	}
-	
-	public boolean checkAllTablesOccupied() {
-		int totalOccupied = 0;
-		for (Table table : tables) {
-			if (table.isOccupied()) {
-				totalOccupied++;
-			}
-		}
-		if (totalOccupied == tables.size()){
-			return true; // All tables are occupied
-		} else {
-			return false; // There are still free tables
 		}
 	}
 	
@@ -226,6 +199,30 @@ public class HostAgent extends Agent {
 			return false;
 		}
 		
+	}
+	
+	public int getNumWaitersOnBreak() {
+		int onBreakNow = 0;
+		for (MyWaiter w : myWaiters){
+			if (w.state == WaiterState.onBreak){
+				onBreakNow++;
+			}
+		}
+		return onBreakNow;
+	}
+	
+	public boolean checkAllTablesOccupied() {
+		int totalOccupied = 0;
+		for (Table table : tables) {
+			if (table.isOccupied()) {
+				totalOccupied++;
+			}
+		}
+		if (totalOccupied == tables.size()){
+			return true; // All tables are occupied
+		} else {
+			return false; // There are still free tables
+		}
 	}
 	
 }

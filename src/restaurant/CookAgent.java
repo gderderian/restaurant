@@ -40,7 +40,7 @@ public class CookAgent extends Agent {
 	
 	// Messages
 	public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
-		Do("Here is order to cook.");
+		Do("Cook has received an order of " + choice + " for table #" + tableNum + " via waiter " + waiter.getName() + ".");
 		// Determine if there is enough inventory of this item to fulfill this order
 		if (allFood.get(choice).quantity >= 1) { // Able to fulfill order, dock one from that item's inventory
 			Order o = new Order();
@@ -61,7 +61,7 @@ public class CookAgent extends Agent {
 	}
 	
 	public void deliverFood(String incomingFood, int quantity) {
-		Do("Accepting order of " + quantity + " " + incomingFood + "s from market.");
+		Do("Accepting order of " + quantity + " " + incomingFood + "(s) from market.");
 		FoodItem f = allFood.get(incomingFood);
 		if (quantity < f.requestedQuantity && f.searchMarket != MARKETS_NUM){
 			f.searchMarket++;
@@ -94,27 +94,26 @@ public class CookAgent extends Agent {
 
 	// Actions
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
+		Do("Beginning to prepare food " + o.getFoodName() + ".");
 		o.status = orderStatus.preparing;
 		o.setCooking(allFood.get(o.getFoodName()).cookingTime);
 		allFood.get(o.foodItem).decrementQuantity(); // After preparing this order, there is one less of this item available
 		if (allFood.get(o.foodItem).quantity <= REORDER_THRESHOLD && allFood.get(o.foodItem).reorderSent == false){
 			int orderQuantity = allFood.get(o.foodItem).maxCapacity - allFood.get(o.foodItem).quantity;
-			Do("Ordering " + orderQuantity + " " + o.foodItem + "s from market.");
 			myMarkets.get(allFood.get(o.foodItem).searchMarket).orderFood(this, o.foodItem, orderQuantity);
 		}
-		Do("Beginning to prepare food " + o.getFoodName() + ".");
 	}
 
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
+		Do("Notifying waiter that " + o.getFoodName() + " is done.");
 		o.getWaiter().hereIsFood(o.recipTable, o.foodItem);
 		currentOrders.remove(o);
-		Do("Notifying waiter that " + o.getFoodName() + " is done.");
 	}
 	
 	private void orderOut(Order o){ // Tells the specific waiter that their customer's order cannot be fulfilled
+		Do("Notifying waiter that " + o.getFoodName() + " is out of stock and the customer who ordered it needs to rechoose.");
 		o.getWaiter().needNewChoice(o.recipTable, o.foodItem);
 		currentOrders.remove(o);
-		Do("Notifying waiter that " + o.getFoodName() + " is out an the customer who ordered it needs to rechoose.");
 	}
 	
 	public void addMarket(MarketAgent m){

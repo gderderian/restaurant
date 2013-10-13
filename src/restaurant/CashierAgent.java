@@ -22,13 +22,14 @@ public class CashierAgent extends Agent {
 	
 	// Messages
 	public void calculateCheck(WaiterAgent w, CustomerAgent c, String choice){
-		Do("Calculating check for customer.");
+		Do("Calculating check for customer " + c.getCustomerName() + " who ordered " + choice + ".");
 		Check newCheck = new Check(w, c, choice); // Add in new check to be calculated for this customer
 		myChecks.add(newCheck);
 		stateChanged();
 	}
 	
 	public void acceptPayment(CustomerAgent c, double amountPaid){
+		Do("Accepting payment of $" + amountPaid + " from customer " + c.getCustomerName() + ".");
 		// Lookup check to mark it as paid
 		if (!myChecks.isEmpty()) {
 			for (Check check : myChecks) {
@@ -55,7 +56,7 @@ public class CashierAgent extends Agent {
 
 	// Actions
 	public void processCheckToWaiter(Check c){ // Mark check as calculated and send back to waiter
-		Do("Processing check back to waiter");
+		Do("Processing check and sending it back to waiter.");
 		Menu myMenu = new Menu();
 		checkAmount = myMenu.getPriceofItem(c.choice);
 		c.amount = checkAmount;
@@ -65,6 +66,7 @@ public class CashierAgent extends Agent {
 	}
 	
 	public void processCustomerPayment(CustomerAgent customer, double amountPaid, Check c){
+		Do("Processing payment of $" + amountPaid + " from customer " + customer.getCustomerName() + ".");
 		if (amountPaid == c.amount){ // Customer paid exact amount
 			c.status = checkStatus.paid;
 		} else if (amountPaid > c.amount){ // Customer paid more than their order, dispense the difference to them in change

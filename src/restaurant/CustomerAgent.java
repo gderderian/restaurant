@@ -84,13 +84,13 @@ public class CustomerAgent extends Agent {
 
 	// Messages
 	public void gotHungry() {
-		print("I'm hungry");
+		print("I'm hungry.");
 		event = AgentEvent.gotHungry;
 		stateChanged();
 	}
 
 	public void msgSitAtTable(Menu m, WaiterAgent w) {
-		print("Received msgSitAtTable");
+		print("Received msgSitAtTable.");
 		myMenu = m;
 		assignedWaiter = w;
 		event = AgentEvent.followHost;
@@ -98,12 +98,13 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgWhatDoYouWant() {
-		print("Received msgWhatWant");
+		print("Received msgWhatDoYouWant.");
 		event = AgentEvent.doneChoosing;
 		stateChanged();
 	}
 	
 	public void hereIsOrder(String choice) {
+		print("Received food choice " + choice + ".");
 		state = AgentState.Eating;
 		stateChanged();
 	}
@@ -113,11 +114,13 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void msgAnimationFinishedLeaveRestaurant() {
+		Do("Done leaving restaurant.");
 		event = AgentEvent.doneLeaving;
 		stateChanged();
 	}
 	
 	public void repickFood(Menu newMenu) {
+		Do("Need to repick my food choice.");
 		myMenu = newMenu;
 		state = AgentState.BeingSeated;
 		event = AgentEvent.seated;
@@ -126,7 +129,7 @@ public class CustomerAgent extends Agent {
 	
 	public void dispenseChange(double newMoney) {
 		money = newMoney;
-		Do("New money amount is $" + newMoney);
+		Do("Received change back, my new money amount is $" + newMoney + ".");
 		stateChanged();
 	}
 	
@@ -138,12 +141,14 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void goToCorner() {
+		Do("I ordered something that I now can't afford to pay for. I'm going in the corner and will stay there forever.");
 		state = AgentState.CantPay;
 		event = AgentEvent.notPaid;
 		stateChanged();
 	}
 	
 	public void restaurantFull(){
+		Do("The host says the restaurant is full. I need to decide whether to stay or leave.");
 		state = AgentState.restaurantFull;
 		stateChanged();
 	}
@@ -161,7 +166,6 @@ public class CustomerAgent extends Agent {
 			return true;
 		}
 		if (state == AgentState.BeingSeated && event == AgentEvent.seated){
-			print("Beginning to choose");
 			state = AgentState.Choosing;
 			beginChoosing();
 			return true;
@@ -172,7 +176,6 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.CalledWaiter && event == AgentEvent.doneChoosing){
 			sendChoiceToWaiter();
-			Do("Calling suspicious message!");
 			state = AgentState.WaitingForFood;
 			return true;
 		}
@@ -222,28 +225,29 @@ public class CustomerAgent extends Agent {
 
 	// Actions
 	private void tellWaiterReady(){
+		Do("Telling waiter that I'm ready to order.");
 		assignedWaiter.readyToOrder(this);
 		state = AgentState.CalledWaiter;
-		Do("Telling waiter that I'm ready.");
 	}
 	
 	private void sendReadyForCheck(){
+		Do("Telling waiter I want my check because I'm ready to leave.");
 		assignedWaiter.readyForCheck(this);
 		state = AgentState.RequestedCheck;
-		Do("Telling waiter I want my check because I'm ready to leave." + event + " - " + state);
 	}
 	
 	private void sendChoiceToWaiter(){
 		
 		// Customer can't afford anything on menu within their price range because choice was set to blank
 		if (choice.equals("")) { // Customer cannot afford any items on the menu. Make them leave.
+			Do("I can't afford anything that's on the menu given to me with the money I currently have ($" + money + "). I'm leaving!");
 			leaveAbruptly();
 			return;
 		}
 		
 		// Customer leaves if there is nothing for them to order
 		if (orderAttempts > ORDER_ATTEMPT_THRESHOLD){ // Nothing is left on the menu for the customer to order. Make them leave.
-			Do("Customer is leaving because there is not enough food for them to oder and the threshold has been exceeded!!");
+			Do("There's nothing for me to order from the restaurant anymore. I'm leaving!");
 			leaveAbruptly();
 			return;
 		}
@@ -278,16 +282,15 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void beginChoosing(){
+		Do("Beginning to decide what food item to pick.");
 		choosingTimer.setRepeats(false);
 		choosingTimer.restart();
 		choosingTimer.start();
-		Do("Beginning to decide what food item to pick.");
 	}
 	
 	private void goToRestaurant() {
+		Do("Going to restaurant and telling host that I'm hungry. I currently have $" + money + ".");
 		host.msgIWantFood(this);
-		Do("Going to restaurant and telling host that I'm hungry.");
-		Do("I have $" + money);
 	}
 
 	private void SitDown() {
@@ -328,6 +331,7 @@ public class CustomerAgent extends Agent {
 		eatingTimer.setRepeats(false);
 		eatingTimer.restart();
 		eatingTimer.start();
+		Do("Beginning to eat food.");
 	}
 
 	private void leaveRestaurant() {
@@ -350,7 +354,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	private void sendPayment(){
-		Do("Sending money to cashier: $" + money);
+		Do("Sending my payment of $" + money + " to cashier.");
 		cashier.acceptPayment(this, money);
 	}
 	
@@ -362,9 +366,9 @@ public class CustomerAgent extends Agent {
 	    	state = AgentState.DoingNothing;
 	    	event = AgentEvent.gotHungry;
 	    	host.msgIWantFood(this);
-	    	Do("I'LL CONTINUE TO WAIT!!!!!!!!!!!!!!!!");
+	    	Do("The restaurant is currently full according to the host, but I'll continue to stay and wait.");
 	    } else {
-	    	Do("TOO MANY PEOPLE ARE WAITING, I'M LEAVING!!!!!");
+	    	Do("The restaurant is currently full according to the host and I don't want to wait so I'm leaving.");
 	    	state = AgentState.DoingNothing;
 	    	event = AgentEvent.none;
 	    	customerGui.resetNotHungry();
