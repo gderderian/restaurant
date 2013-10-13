@@ -29,7 +29,7 @@ public class CookAgent extends Agent {
 		myMarkets = new ArrayList<MarketAgent>();
 		
 		allFood = new Hashtable<String, FoodItem>();
-		allFood.put("Chicken", new FoodItem("Chicken", 3000, 1));
+		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
 		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
 		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
 		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
@@ -101,6 +101,7 @@ public class CookAgent extends Agent {
 		if (allFood.get(o.foodItem).quantity <= REORDER_THRESHOLD && allFood.get(o.foodItem).reorderSent == false){
 			int orderQuantity = allFood.get(o.foodItem).maxCapacity - allFood.get(o.foodItem).quantity;
 			myMarkets.get(allFood.get(o.foodItem).searchMarket).orderFood(this, o.foodItem, orderQuantity);
+			allFood.get(o.foodItem).requestedQuantity = orderQuantity;
 		}
 	}
 
