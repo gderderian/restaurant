@@ -16,6 +16,7 @@ public class CustomerAgent extends Agent {
 	static final int DEFAULT_HUNGER_LEVEL = 3500;
 	static final int DEFAULT_SIT_TIME = 5000;
 	static final int DEFAULT_CHOOSE_TIME = 5000;
+	static final int ORDER_ATTEMPT_THRESHOLD = 3;
 	
 	private String name;
 	private String choice;
@@ -124,9 +125,6 @@ public class CustomerAgent extends Agent {
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		
-		Do("Customer current info: state: " + state + " - event: " + event);
-		
 		if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 			state = AgentState.WaitingForSeat;
 			goToRestaurant();
@@ -202,6 +200,12 @@ public class CustomerAgent extends Agent {
 	private void sendChoiceToWaiter(){
 		
 		if (choice.equals("")) { // Customer cannot afford any items on the menu. Make them leave.
+			leaveAbruptly();
+			return;
+		}
+		
+		if (orderAttempts > ORDER_ATTEMPT_THRESHOLD){ // Nothing is left on the menu for the customer to order. Make them leave.
+			Do("Customer is leaving because there is not enough food for them to oder and the threshold has been exceeded!!");
 			leaveAbruptly();
 			return;
 		}
@@ -293,6 +297,7 @@ public class CustomerAgent extends Agent {
 		customerGui.setCarryText("");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
+		orderAttempts = 0;
 		state = AgentState.Paying;
 		event = AgentEvent.none;
 	}
@@ -302,6 +307,7 @@ public class CustomerAgent extends Agent {
 		customerGui.setCarryText("");
 		customerGui.DoExitRestaurant();
 		assignedWaiter.ImDone(this);
+		orderAttempts = 0;
 		event = AgentEvent.doneLeaving;
 	}
 	
