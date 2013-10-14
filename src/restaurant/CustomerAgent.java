@@ -56,11 +56,11 @@ public class CustomerAgent extends Agent {
 		if (name.equals("reallycheap")){
 			money = 1.00; // Can't afford anything
 		} else if (name.equals("cheap")) {
-			money = 2.50;
+			money = 2.55;
 		} else if (name.equals("somemoney")) {
 			money = 7.00;
 		} else if (name.equals("lotsofmoney")) {
-			money = 15.00;
+			money = 17.00;
 		} else if (name.equals("tonsofmoney")) {
 			money = 25.00;
 		} else { // Default $15.00
