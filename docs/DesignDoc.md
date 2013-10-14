@@ -5,9 +5,9 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 ![Design Doc](designdocimg.png "Design Doc")
 
 Links to all agents on this page directly:
-[Market][]
+[Link to market](#MarketAgent)
 
-## Host Agent
+## HostAgent
 
 ### Data
 ```
@@ -122,7 +122,7 @@ Links to all agents on this page directly:
 	}
 ```
 
-## Waiter Agent
+## WaiterAgent
 
 ### Data
 ```
@@ -501,7 +501,7 @@ private void takeOrder(MyCustomer c, int tableNum){
 	}
 ```
 
-## Customer Agent
+## CustomerAgent
 
 ### Data
 ```
@@ -820,7 +820,7 @@ if (state == AgentState.DoingNothing && event == AgentEvent.gotHungry){
 	}
 ```
 
-## Cook Agent
+## CookAgent
 
 ### Data
 ```
@@ -911,8 +911,7 @@ public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
 	}
 ```
 
-<a id="market"></a>
-## Market Agent
+## MarketAgent
 
 ### Data
 ```
@@ -971,7 +970,7 @@ public void hereIsOrder(String choice, WaiterAgent waiter, int tableNum) {
 	}
 ```
 
-## Cashier Agent
+## CashierAgent
 
 ### Data
 ```
