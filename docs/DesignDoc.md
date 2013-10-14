@@ -5,9 +5,9 @@ This document outlines the crucial parts of each main agent in the restaurant: H
 ![Design Doc](designdocimg.png "Design Doc")
 
 Links to all agents on this page directly:
-[Link to market](#MarketAgent)
+[Link to market](#marketagent)
 
-## HostAgent
+## Host Agent
 
 ### Data
 ```
