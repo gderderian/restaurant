@@ -2,8 +2,7 @@
 
 This document outlines the crucial parts of each main agent in the restaurant: HostAgent, WaiterAgent, CookAgent, and CustomerAgent.
 
-### Table of Contents
-
+### Agent Table of Contents
 Here is a table of contents of the agents outlined in this document. Click in a respective agent title or piece of an agent to jump to that spot in the doc.
 
 + [Host Agent](#host-agent) - [data](#data), [scheduler](#scheduler), [messages](#messages), [actions](#actions)
@@ -13,11 +12,23 @@ Here is a table of contents of the agents outlined in this document. Click in a 
 + [Market Agent](#market-agent) - [data](#data-4), [scheduler](#scheduler-4), [messages](#messages-4), [actions](#actions-4)
 + [Cashier Agent](#cashier-agent) - [data](#data-5), [scheduler](#scheduler-5), [messages](#messages-5), [actions](#actions-5)
 
-## Interaction Diagrams
-![Design Doc](designdocimg.png "Design Doc")
+## Normative Interaction Diagrams
 
-Links to all agents on this page directly:
-[Link to market](#marketagent)
+### Interaction Diagram 1
+One of every type of agent, no market interactions, customer orders, pays, and leaves
+![Interaction Diagram 1](intdiag_norm_1.png "Interaction Diagram 1")
+
+### Interaction Diagram 2
+No customers, cook orders low items from market, when food arrives, then customers arrive
+![Interaction Diagram 2](intdiag_norm_2.png "Interaction Diagram 2")
+
+### Interaction Diagram 3
+Multiple customers, multiple waiters, cashier operating normally, no running out of food.
+![Interaction Diagram 3](intdiag_norm_3.png "Interaction Diagram 3")
+
+### Interaction Diagram 4
+Waiter wants to go on break, he's told it's ok, goes on break when he finished all his current customers; goes on break, then goes off break.
+![Interaction Diagram 4](intdiag_norm_4.png "Interaction Diagram 4")
 
 ## Host Agent
 
