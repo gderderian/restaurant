@@ -2,10 +2,13 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
+import restaurant.test.mock.LoggedEvent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+
 import javax.swing.Timer;
 
 /**
@@ -14,19 +17,21 @@ import javax.swing.Timer;
 public class WaiterAgent extends Agent {
 	
 	static final int DEFAULT_BREAK_TIME = 15000;
-	static final int HOMEPOS_X = 230;
-	static final int HOMEPOS_Y = 230;
 	
-	public List<MyCustomer> myCustomers;
+	public List<MyCustomer> myCustomers; // Uses try/catch
 	public HostAgent myHost;
 	public CookAgent myCook;
 	private String name;
 	public CashierAgent myCashier;
 	private boolean onBreak;
+	public int homeX = 230;
+	public int homeY = 230;
 	
 	private WaiterGui waiterGui;
 	private Semaphore isAnimating = new Semaphore(0,true);
 	Timer breakTimer;
+	
+	public ArrayList<LoggedEvent> log;
 	
 	public enum AgentState
 	{DoingNothing, wantBreak, onBreak};
@@ -36,11 +41,13 @@ public class WaiterAgent extends Agent {
 	{none, breakRequested, breakApproved, breakRejected};
 	AgentEvent event = AgentEvent.none;
 	
-	public WaiterAgent(String name) {
+	public WaiterAgent(String name, int startX, int startY) {
 		super();
 		this.name = name;
 		myCustomers = new ArrayList<MyCustomer>();
 		onBreak = false;
+		
+		log = new ArrayList<LoggedEvent>();
 		
 		breakTimer = new Timer(DEFAULT_BREAK_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {
@@ -54,26 +61,37 @@ public class WaiterAgent extends Agent {
 		      }
 		});
 		
+		homeX = startX;
+		homeY = startY;
+		
 	}
 	
 	// Messages
 	public void doneEating(CustomerAgent c) {
 		Do("Received message from customer " + c.getCustomerName() + " that they are done eating.");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.state = CustomerState.Done;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.state = CustomerState.Done;
+				}
 			}
+		} catch (ConcurrentModificationException doneEatingComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 
 	public void hereIsFood(int tableNum, String choice) {
 		Do("Received message from cook that " + choice + " is now ready for table #" + tableNum + ".");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.tableNum == tableNum){
-				cust.state = CustomerState.FoodReady;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.tableNum == tableNum){
+					cust.state = CustomerState.FoodReady;
+				}
 			}
-		}
+		} catch (ConcurrentModificationException hereIsFoodComod) {
+			stateChanged();
+		}	
 		stateChanged();
 	}
 
@@ -89,41 +107,57 @@ public class WaiterAgent extends Agent {
 	
 	public void readyToOrder(CustomerAgent c) {
 		Do("Customer " + c.getName() + " is now ready to order.");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.state = CustomerState.ReadyToOrder;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.state = CustomerState.ReadyToOrder;
+				}
 			}
+		} catch (ConcurrentModificationException readyToOrderComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 	
 	public void hereIsMyChoice(String choice, CustomerAgent c) {
 		Do("Received choice " + choice + " from customer " + c.getCustomerName() + ".");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.choice = choice;
-				cust.state = CustomerState.OrderedWaiting;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.choice = choice;
+					cust.state = CustomerState.OrderedWaiting;
+				}
 			}
+		} catch (ConcurrentModificationException hereIsMyChoiceComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 	
 	public void ImDone(CustomerAgent c) {
 		Do("Customer " + c.getCustomerName() + " has finished eating.");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.state = CustomerState.Done;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.state = CustomerState.Done;
+				}
 			}
+		} catch (ConcurrentModificationException ImDoneComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 	
 	public void needNewChoice(int tableNum, String choice) {
 		Do("Customer at table #" + tableNum + " has to make a new food choice other than " + choice + ".");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.tableNum == tableNum){
-				cust.state = CustomerState.NeedNewChoice;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.tableNum == tableNum){
+					cust.state = CustomerState.NeedNewChoice;
+				}
 			}
+		} catch (ConcurrentModificationException needNewChoiceComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
@@ -153,89 +187,99 @@ public class WaiterAgent extends Agent {
 	
 	public void hereIsCheck(CustomerAgent c, double checkAmount){
 		Do("Accepting check from customer " + c.getCustomerName() + " in the amount of $" + checkAmount + ".");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.payAmount = checkAmount;
-				cust.state = CustomerState.needCheckDelivered;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.payAmount = checkAmount;
+					cust.state = CustomerState.needCheckDelivered;
+				}
 			}
+		} catch (ConcurrentModificationException hereIsCheckComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 	
 	public void readyForCheck(CustomerAgent c){
 		Do("Customer " + c.getCustomerName() + " is ready for and wants their check.");
-		for (MyCustomer cust : myCustomers) {
-			if (cust.customer.equals(c)){
-				cust.state = CustomerState.wantCheck;
+		try {
+			for (MyCustomer cust : myCustomers) {
+				if (cust.customer.equals(c)){
+					cust.state = CustomerState.wantCheck;
+				}
 			}
+		} catch (ConcurrentModificationException readyForCheckComod) {
+			stateChanged();
 		}
 		stateChanged();
 	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		if (state == AgentState.wantBreak && event == AgentEvent.none){
-			requestBreakFromHost();
-			return true;
-		}
-		if (state == AgentState.wantBreak && event == AgentEvent.breakApproved){
-			state = AgentState.onBreak;
-			beginBreak();
-			return true;
-		}
-		
-		if (state == AgentState.wantBreak && event == AgentEvent.breakRejected){
-			processBreakRejection();
-			return true;
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.Waiting){
-				seatCustomer(c);
+		try {
+			if (state == AgentState.wantBreak && event == AgentEvent.none){
+				requestBreakFromHost();
 				return true;
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.ReadyToOrder){
-				takeOrder(c, c.tableNum);
+			if (state == AgentState.onBreak && event == AgentEvent.breakApproved){
+				beginBreak();
 				return true;
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.OrderedWaiting){
-				sendToKitchen(c, c.choice);
+			if (state == AgentState.wantBreak && event == AgentEvent.breakRejected){
+				processBreakRejection();
 				return true;
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.FoodReady){
-				deliverOrder(c, c.choice);
-				return true;
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.Waiting){
+					seatCustomer(c);
+					return true;
+				}
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.Done){
-				goodbyeCustomer(c);
-				return true;
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.ReadyToOrder){
+					takeOrder(c, c.tableNum);
+					return true;
+				}
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.NeedNewChoice){
-				repickFood(c);
-				return true;
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.OrderedWaiting){
+					sendToKitchen(c, c.choice);
+					return true;
+				}
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.wantCheck){
-				Do("About to call request check function");
-				requestCheckForCustomer(c);
-				return true;
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.FoodReady){
+					deliverOrder(c, c.choice);
+					return true;
+				}
 			}
-		}
-		for (MyCustomer c : myCustomers) {
-			if (c.state == CustomerState.needCheckDelivered){
-				deliverCheck(c);
-				return true;
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.Done){
+					goodbyeCustomer(c);
+					return true;
+				}
 			}
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.NeedNewChoice){
+					repickFood(c);
+					return true;
+				}
+			}
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.wantCheck){
+					Do("About to call request check function");
+					requestCheckForCustomer(c);
+					return true;
+				}
+			}
+			for (MyCustomer c : myCustomers) {
+				if (c.state == CustomerState.needCheckDelivered){
+					deliverCheck(c);
+					return true;
+				}
+			}
+		} catch (ConcurrentModificationException c) {
+			return false;
 		}
 		goHome();
 		return false;
@@ -258,7 +302,7 @@ public class WaiterAgent extends Agent {
 	private void sendToKitchen(MyCustomer c, String choice){
 		Do("Sending order " + choice + " from customer " + c.customer.getName() + " to kitchen.");
 		c.state = CustomerState.WaitingForFood;
-		waiterGui.setDestination(500, 230);
+		waiterGui.setDestination(225, 390);
 		waiterGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -272,7 +316,7 @@ public class WaiterAgent extends Agent {
 
 		Do("Seating customer " + c.customer.getName() + ".");
 		
-		waiterGui.setDestination(-20, -20);
+		waiterGui.setDestination(60, 60);
 		waiterGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -310,7 +354,7 @@ public class WaiterAgent extends Agent {
 
 		Do("Delivering order " + choice + " to customer " + c.customer.getName() + ".");
 		
-		waiterGui.setDestination(500, 230);
+		waiterGui.setDestination(225, 390);
 		waiterGui.beginAnimate();
 		
 		try {
@@ -367,7 +411,7 @@ public class WaiterAgent extends Agent {
 	
 	private void goHome(){
 		Do("Going back to home position as there are no tasks for me to do right now.");
-		waiterGui.setDestination(HOMEPOS_X, HOMEPOS_Y);
+		waiterGui.setDestination(homeX, homeY);
 	}
 	
 	private void repickFood(MyCustomer c){

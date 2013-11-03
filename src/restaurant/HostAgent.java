@@ -2,7 +2,6 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
-
 import java.util.*;
 
 /**
@@ -12,9 +11,14 @@ public class HostAgent extends Agent {
 	
 	static final int NTABLES = 4;
 	
-	public List<CustomerAgent> waitingCustomers;
-	public List<MyWaiter> myWaiters;
-	public Collection<Table> tables;
+	//public List<CustomerAgent> waitingCustomers;
+	public List<CustomerAgent> waitingCustomers = Collections.synchronizedList(new ArrayList<CustomerAgent>());
+	
+	//public List<MyWaiter> myWaiters;
+	public List<MyWaiter> myWaiters = Collections.synchronizedList(new ArrayList<MyWaiter>());
+	
+	// public Collection<Table> tables;
+	public List<Table> tables = Collections.synchronizedList(new ArrayList<Table>());
 
 	private String name;
 	public WaiterGui hostGui = null;
@@ -25,11 +29,11 @@ public class HostAgent extends Agent {
 		super();
 		this.name = name;
 		
-		myWaiters = new ArrayList<MyWaiter>();
-		waitingCustomers = new ArrayList<CustomerAgent>();
+		// myWaiters = new ArrayList<MyWaiter>();
+		// waitingCustomers = new ArrayList<CustomerAgent>();
 		
 		// Generate all new tables
-		tables = new ArrayList<Table>(NTABLES);
+		//tables = new ArrayList<Table>(NTABLES);
 		int tableRoot = (int)Math.sqrt(NTABLES);
 		int startingCoord = 150;
 		int tableDistance = 125;
@@ -54,19 +58,23 @@ public class HostAgent extends Agent {
 
 	public void msgLeavingTable(CustomerAgent cust) {
 		Do("Received message msgLeavingTable from customer " + cust.getCustomerName() + ".");
-		for (Table table : tables) {
-			if (table.getOccupant() == cust) {
-				table.setUnoccupied();
-				stateChanged();
+		synchronized(tables){
+			for (Table table : tables) {
+				if (table.getOccupant() == cust) {
+					table.setUnoccupied();
+					stateChanged();
+				}
 			}
 		}
 	}
 	
 	public void wantBreak(WaiterAgent w){
 		Do("Received request to go on break from waiter " + w.getName() + ".");
-		for (MyWaiter waiter : myWaiters) {
-			if (waiter.waiter.equals(w)){
-				waiter.state = WaiterState.wantBreak;
+		synchronized(myWaiters){
+			for (MyWaiter waiter : myWaiters) {
+				if (waiter.waiter.equals(w)){
+					waiter.state = WaiterState.wantBreak;
+				}
 			}
 		}
 		stateChanged();
@@ -74,9 +82,11 @@ public class HostAgent extends Agent {
 	
 	public void decrementCustomer(WaiterAgent w){
 		Do("Received notification one customer left the restaurant.");
-		for (MyWaiter waiter : myWaiters) {
-			if (waiter.waiter.equals(w)){
-				waiter.numCustomers--;
+		synchronized(myWaiters){
+			for (MyWaiter waiter : myWaiters) {
+				if (waiter.waiter.equals(w)){
+					waiter.numCustomers--;
+				}
 			}
 		}
 		stateChanged();
@@ -84,9 +94,11 @@ public class HostAgent extends Agent {
 	
 	public void returnedFromBreak(WaiterAgent w){
 		Do("Notified that waiter " + w.getName() + " has now returned from break.");
-		for (MyWaiter waiter : myWaiters) {
-			if (waiter.waiter.equals(w)){
-				waiter.state = WaiterState.none;
+		synchronized(myWaiters){
+			for (MyWaiter waiter : myWaiters) {
+				if (waiter.waiter.equals(w)){
+					waiter.state = WaiterState.none;
+				}
 			}
 		}
 		stateChanged();
@@ -99,18 +111,22 @@ public class HostAgent extends Agent {
 			waitingCustomers.remove(0);
 			return true;
 		}
-		for (Table table : tables) {
-			if (!table.isOccupied()) {
-				if (!waitingCustomers.isEmpty()) {
-					seatCustomer(waitingCustomers.get(0), table);
-					return true;
+		synchronized(tables){
+			for (Table table : tables) {
+				if (!table.isOccupied()) {
+					if (!waitingCustomers.isEmpty()) {
+						seatCustomer(waitingCustomers.get(0), table);
+						return true;
+					}
 				}
 			}
 		}
-		for (MyWaiter waiter : myWaiters) {
-			if (waiter.state == WaiterState.wantBreak){
-				processBreakRequest(waiter);
-				return true;
+		synchronized(myWaiters){
+			for (MyWaiter waiter : myWaiters) {
+				if (waiter.state == WaiterState.wantBreak){
+					processBreakRequest(waiter);
+					return true;
+				}
 			}
 		}
 		return false;
@@ -123,10 +139,12 @@ public class HostAgent extends Agent {
 		if (myWaiters.size() != 0) {
 			int init_cust = myWaiters.get(0).numCustomers;
 			MyWaiter w_selected = null;
-			for (MyWaiter w : myWaiters){
-				if (w.numCustomers <= init_cust && w.isOnBreak() == false){
-					init_cust = w.numCustomers;
-					w_selected = w;
+			synchronized(myWaiters){
+				for (MyWaiter w : myWaiters){
+					if (w.numCustomers <= init_cust && w.isOnBreak() == false){
+						init_cust = w.numCustomers;
+						w_selected = w;
+					}
 				}
 			}
 			w_selected.waiter.msgSeatCustomer(customer, table.tableNumber, this);
@@ -203,9 +221,11 @@ public class HostAgent extends Agent {
 	
 	public int getNumWaitersOnBreak() {
 		int onBreakNow = 0;
-		for (MyWaiter w : myWaiters){
-			if (w.state == WaiterState.onBreak){
-				onBreakNow++;
+		synchronized(myWaiters){
+			for (MyWaiter w : myWaiters){
+				if (w.state == WaiterState.onBreak){
+					onBreakNow++;
+				}
 			}
 		}
 		return onBreakNow;
@@ -213,9 +233,11 @@ public class HostAgent extends Agent {
 	
 	public boolean checkAllTablesOccupied() {
 		int totalOccupied = 0;
-		for (Table table : tables) {
-			if (table.isOccupied()) {
-				totalOccupied++;
+		synchronized(tables){
+			for (Table table : tables) {
+				if (table.isOccupied()) {
+					totalOccupied++;
+				}
 			}
 		}
 		if (totalOccupied == tables.size()){
