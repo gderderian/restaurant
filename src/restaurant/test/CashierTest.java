@@ -31,7 +31,7 @@ public class CashierTest extends TestCase
 	public void setUp() throws Exception{
 		super.setUp();		
 		cashier = new CashierAgent("cashier");		
-		customer = new CustomerAgent("mockcustomer");		
+		customer = new CustomerAgent("mockcustomer", 20, 20);		
 		waiter = new WaiterAgent("mockwaiter", 1, 2);
 	}	
 	/**
