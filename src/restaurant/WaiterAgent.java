@@ -95,10 +95,10 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSeatCustomer(CustomerAgent c, int tableNum, HostAgent h) {
+	public void msgSeatCustomer(CustomerAgent c, int tableNum, HostAgent h, int customerX, int customerY) {
 		Do("Received message to seat customer " + c.getCustomerName() + " at table #" + tableNum + ".");
 		myHost = h;
-		MyCustomer customer = new MyCustomer();
+		MyCustomer customer = new MyCustomer(customerX, customerY);
 		customer.customer = c;
 		customer.tableNum = tableNum;
 		myCustomers.add(customer);
@@ -316,7 +316,7 @@ public class WaiterAgent extends Agent {
 
 		Do("Seating customer " + c.customer.getName() + ".");
 		
-		waiterGui.setDestination(60, 60);
+		waiterGui.setDestination(c.pickupX + 20, c.pickupY + 20);
 		waiterGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -385,6 +385,8 @@ public class WaiterAgent extends Agent {
 			carryText = "CBL";
 			break;
 		}
+
+		myCook.pickedUpFood(carryText);
 		
 		waiterGui.setCarryText(carryText);
 		waiterGui.setDestination(c.customer.getGui().getX(), c.customer.getGui().getY());
@@ -470,10 +472,19 @@ public class WaiterAgent extends Agent {
 		String choice;
 		CustomerState state;
 		double payAmount;
+		int pickupX;
+		int pickupY;
 	
 		MyCustomer(){
 			state = CustomerState.Waiting;
 			payAmount = 0;
+		}
+		
+		MyCustomer(int X, int Y){
+			state = CustomerState.Waiting;
+			payAmount = 0;
+			pickupX = X;
+			pickupY = Y;
 		}
 		
 	}

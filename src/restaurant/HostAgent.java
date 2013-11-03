@@ -2,6 +2,7 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
+
 import java.util.*;
 
 /**
@@ -12,7 +13,7 @@ public class HostAgent extends Agent {
 	static final int NTABLES = 4;
 	
 	//public List<CustomerAgent> waitingCustomers;
-	public List<CustomerAgent> waitingCustomers = Collections.synchronizedList(new ArrayList<CustomerAgent>());
+	public List<MyCustomer> waitingCustomers;
 	
 	//public List<MyWaiter> myWaiters;
 	public List<MyWaiter> myWaiters = Collections.synchronizedList(new ArrayList<MyWaiter>());
@@ -30,7 +31,7 @@ public class HostAgent extends Agent {
 		this.name = name;
 		
 		// myWaiters = new ArrayList<MyWaiter>();
-		// waitingCustomers = new ArrayList<CustomerAgent>();
+		waitingCustomers = Collections.synchronizedList(new ArrayList<MyCustomer>());
 		
 		// Generate all new tables
 		//tables = new ArrayList<Table>(NTABLES);
@@ -50,9 +51,9 @@ public class HostAgent extends Agent {
 	}
 	
 	// Messages
-	public void msgIWantFood(CustomerAgent cust) {
+	public void msgIWantFood(CustomerAgent cust, int locX, int locY) {
 		Do("Received message msgIWantFood from customer " + cust.getCustomerName() + ".");
-		waitingCustomers.add(cust);
+		waitingCustomers.add(new MyCustomer(cust, locX, locY));
 		stateChanged();
 	}
 
@@ -103,19 +104,37 @@ public class HostAgent extends Agent {
 		}
 		stateChanged();
 	}
+	
+	public void imLeaving(CustomerAgent c){
+		synchronized(waitingCustomers){
+			for (MyCustomer customer : waitingCustomers) {
+				if (customer.customer.equals(c)){
+					waitingCustomers.remove(customer);
+				}
+			}
+		}
+		stateChanged();
+	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		if (!waitingCustomers.isEmpty() && checkAllTablesOccupied() == true) { // Ask customer if they want to stay
-			waitingCustomers.get(0).restaurantFull();
-			waitingCustomers.remove(0);
+		if (!waitingCustomers.isEmpty() && checkAllTablesOccupied() == true) { // Ask customer if they want to stay when full
+			if (waitingCustomers.get(0).state.equals(CustomerState.none)){ // If they haven't been notified restaurant is full, notify them
+				try {
+					waitingCustomers.get(0).customer.restaurantFull();
+					waitingCustomers.get(0).state = CustomerState.notifiedFull;
+				} catch(IndexOutOfBoundsException e){
+					return true;
+				}
+			}
+			//waitingCustomers.remove(0);
 			return true;
 		}
 		synchronized(tables){
 			for (Table table : tables) {
 				if (!table.isOccupied()) {
 					if (!waitingCustomers.isEmpty()) {
-						seatCustomer(waitingCustomers.get(0), table);
+						seatCustomer(waitingCustomers.get(0).customer, table, waitingCustomers.get(0).locX, waitingCustomers.get(0).locY);
 						return true;
 					}
 				}
@@ -133,7 +152,7 @@ public class HostAgent extends Agent {
 	}
 
 	// Actions
-	private void seatCustomer(CustomerAgent customer, Table table) {
+	private void seatCustomer(CustomerAgent customer, Table table, int X, int Y) {
 		// Find waiter and notify them
 		//Do("Seating customer " + customer.getCustomerName() + " at table #" + table.tableNumber + ".");
 		if (myWaiters.size() != 0) {
@@ -147,10 +166,20 @@ public class HostAgent extends Agent {
 					}
 				}
 			}
-			w_selected.waiter.msgSeatCustomer(customer, table.tableNumber, this);
+			w_selected.waiter.msgSeatCustomer(customer, table.tableNumber, this, X, Y);
 			w_selected.numCustomers++;
 			table.setOccupant(customer);
-			waitingCustomers.remove(customer);
+			
+			synchronized(waitingCustomers){
+				for (MyCustomer cust : waitingCustomers) {
+					if (cust.customer.equals(customer)){
+						waitingCustomers.remove(cust);
+						return;
+					}
+				}
+			}
+			
+			
 		}
 	}
 	
@@ -245,6 +274,24 @@ public class HostAgent extends Agent {
 		} else {
 			return false; // There are still free tables
 		}
+	}
+	
+	public enum CustomerState // Goes along with MyCustomer below
+	{none, notifiedFull};
+	
+	class MyCustomer {
+		CustomerAgent customer;
+		CustomerState state;
+		int locX;
+		int locY;
+		
+		MyCustomer(CustomerAgent c, int X, int Y){
+			customer = c;
+			state = CustomerState.none;
+			locX = X;
+			locY = Y;
+		}
+		
 	}
 	
 }
