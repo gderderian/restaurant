@@ -29,16 +29,18 @@ public class CustomerGui implements Gui{
 	boolean isAnimating = false;
 	boolean hasDestination = false;
 	String carryingOrderText = "";
+	int index;
 	
 	Color color = Color.GREEN;
 	
-	public CustomerGui(CustomerAgent c, RestaurantGui gui){
+	public CustomerGui(CustomerAgent c, RestaurantGui gui, int customerX, int customerY, int customerIndex){
 		agent = c;
 		xPos = HIDDEN_X;
 		yPos = HIDDEN_Y;
-		xDestination = HIDDEN_X;
-		yDestination = HIDDEN_Y;
+		xDestination = customerX;
+		yDestination = customerY;
 		this.gui = gui;
+		index = customerIndex;
 	}
 	
 	public void setDestination(int newX, int newY){
@@ -141,6 +143,7 @@ public class CustomerGui implements Gui{
     public void resetNotHungry() {
 		gui.setCustomerEnabled(agent);
     	isHungry = false;
+    	setDestination(-40, -40);
     }
     
 }

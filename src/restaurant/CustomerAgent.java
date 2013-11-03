@@ -165,7 +165,7 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void restaurantFull(){
-		//Do("The host says the restaurant is full. I need to decide whether to stay or leave.");
+		Do("The host says the restaurant is full. I need to decide whether to stay or leave.");
 		//if (madeStayDecision == false) {
 			state = AgentState.restaurantFull;
 		//}
@@ -320,7 +320,7 @@ public class CustomerAgent extends Agent {
 			e.printStackTrace();
 		}
 		
-		host.msgIWantFood(this);
+		host.msgIWantFood(this, homeX, homeY);
 	}
 
 	private void SitDown() {
