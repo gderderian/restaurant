@@ -40,8 +40,10 @@ public class CashierAgent extends Agent {
 		if (!myChecks.isEmpty()) {
 			synchronized(myChecks){
 				for (Check check : myChecks) {
-					if (check.customer.equals(c)){
-						processCustomerPayment(c, amountPaid, check); // Process this check with action below
+					if (!check.type.equals(checkType.marketCheck)) {
+						if (check.customer.equals(c)){
+							processCustomerPayment(c, amountPaid, check); // Process this check with action below
+						}
 					}
 				}
 			}
