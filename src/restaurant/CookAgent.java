@@ -113,7 +113,7 @@ public class CookAgent extends Agent {
 		Do("Beginning to prepare food " + o.getFoodName() + ".");
 		
 		// Get from fridge
-	    cookGui.setDestination(350, 435);
+	    cookGui.setDestination(350, 445);
 		cookGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -168,7 +168,7 @@ public class CookAgent extends Agent {
 		}
 		
 		// Go to cook home
-		cookGui.setDestination(230, 445);
+		cookGui.setDestination(225, 445);
 		cookGui.beginAnimate();
 		try {
 			isAnimating.acquire();
@@ -233,7 +233,7 @@ public class CookAgent extends Agent {
 		o.getWaiter().hereIsFood(o.recipTable, o.foodItem);
 			
 		// Go back home
-		cookGui.setDestination(230, 445);
+		cookGui.setDestination(225, 445);
 		cookGui.beginAnimate();
 		try {
 			isAnimating.acquire();
