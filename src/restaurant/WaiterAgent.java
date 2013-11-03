@@ -3,18 +3,18 @@ package restaurant;
 import agent.Agent;
 import restaurant.gui.WaiterGui;
 import restaurant.test.mock.LoggedEvent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
-
 import javax.swing.Timer;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Waiter;
 
 /**
  * Restaurant Waiter Agent
  */
-public class WaiterAgent extends Agent {
+public class WaiterAgent extends Agent implements Waiter {
 	
 	static final int DEFAULT_BREAK_TIME = 15000;
 	
@@ -67,7 +67,7 @@ public class WaiterAgent extends Agent {
 	}
 	
 	// Messages
-	public void doneEating(CustomerAgent c) {
+	public void doneEating(Customer c) {
 		Do("Received message from customer " + c.getCustomerName() + " that they are done eating.");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -95,7 +95,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSeatCustomer(CustomerAgent c, int tableNum, HostAgent h, int customerX, int customerY) {
+	public void msgSeatCustomer(Customer c, int tableNum, HostAgent h, int customerX, int customerY) {
 		Do("Received message to seat customer " + c.getCustomerName() + " at table #" + tableNum + ".");
 		myHost = h;
 		MyCustomer customer = new MyCustomer(customerX, customerY);
@@ -105,7 +105,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void readyToOrder(CustomerAgent c) {
+	public void readyToOrder(Customer c) {
 		Do("Customer " + c.getName() + " is now ready to order.");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -119,7 +119,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void hereIsMyChoice(String choice, CustomerAgent c) {
+	public void hereIsMyChoice(String choice, Customer c) {
 		Do("Received choice " + choice + " from customer " + c.getCustomerName() + ".");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -134,7 +134,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void ImDone(CustomerAgent c) {
+	public void ImDone(Customer c) {
 		Do("Customer " + c.getCustomerName() + " has finished eating.");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -185,7 +185,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void hereIsCheck(CustomerAgent c, double checkAmount){
+	public void hereIsCheck(Customer c, double checkAmount){
 		Do("Accepting check from customer " + c.getCustomerName() + " in the amount of $" + checkAmount + ".");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -200,7 +200,7 @@ public class WaiterAgent extends Agent {
 		stateChanged();
 	}
 	
-	public void readyForCheck(CustomerAgent c){
+	public void readyForCheck(Customer c){
 		Do("Customer " + c.getCustomerName() + " is ready for and wants their check.");
 		try {
 			for (MyCustomer cust : myCustomers) {
@@ -466,8 +466,8 @@ public class WaiterAgent extends Agent {
 	public enum CustomerState // Goes along with MyCustomer below
 	{Waiting, Seated, ReadyToOrder, Ordering, OrderedWaiting, WaitingForFood, FoodReady, Eating, Done, NeedNewChoice, wantCheck, waitingForCheck, payingCheck, needCheckDelivered};
 	
-	class MyCustomer {
-		CustomerAgent customer;
+	public class MyCustomer {
+		Customer customer;
 		int tableNum;
 		String choice;
 		CustomerState state;
@@ -493,7 +493,7 @@ public class WaiterAgent extends Agent {
 		isAnimating.release();
 	}
 	
-	public boolean hasCustomer(CustomerAgent c){
+	public boolean hasCustomer(Customer c){
 		for (MyCustomer cust : myCustomers) {
 			if (cust.customer.equals(c)){
 				return true;

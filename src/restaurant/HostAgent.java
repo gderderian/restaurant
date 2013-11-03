@@ -2,6 +2,7 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
+import restaurant.interfaces.Customer;
 
 import java.util.*;
 
@@ -57,11 +58,11 @@ public class HostAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgLeavingTable(CustomerAgent cust) {
-		Do("Received message msgLeavingTable from customer " + cust.getCustomerName() + ".");
+	public void msgLeavingTable(Customer customer) {
+		Do("Received message msgLeavingTable from customer " + customer.getCustomerName() + ".");
 		synchronized(tables){
 			for (Table table : tables) {
-				if (table.getOccupant() == cust) {
+				if (table.getOccupant() == customer) {
 					table.setUnoccupied();
 					stateChanged();
 				}
@@ -110,6 +111,7 @@ public class HostAgent extends Agent {
 			for (MyCustomer customer : waitingCustomers) {
 				if (customer.customer.equals(c)){
 					waitingCustomers.remove(customer);
+					return;
 				}
 			}
 		}
@@ -119,13 +121,13 @@ public class HostAgent extends Agent {
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!waitingCustomers.isEmpty() && checkAllTablesOccupied() == true) { // Ask customer if they want to stay when full
-			if (waitingCustomers.get(0).state.equals(CustomerState.none)){ // If they haven't been notified restaurant is full, notify them
-				try {
-					waitingCustomers.get(0).customer.restaurantFull();
-					waitingCustomers.get(0).state = CustomerState.notifiedFull;
-				} catch(IndexOutOfBoundsException e){
-					return true;
+			try {
+				if (waitingCustomers.get(0).state.equals(CustomerState.none)){ // If they haven't been notified restaurant is full, notify them
+						waitingCustomers.get(0).customer.restaurantFull();
+						waitingCustomers.get(0).state = CustomerState.notifiedFull;
 				}
+			} catch(IndexOutOfBoundsException e){
+				return true;
 			}
 			//waitingCustomers.remove(0);
 			return true;

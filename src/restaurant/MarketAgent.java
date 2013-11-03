@@ -5,11 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import javax.swing.Timer;
+import restaurant.interfaces.Market;
 
 /**
  * Restaurant Market Agent
  */
-public class MarketAgent extends Agent {
+public class MarketAgent extends Agent implements Market {
 	
 	// Variable Declarations
 	private String name;
