@@ -55,9 +55,9 @@ public class AnimationPanel extends JPanel implements ActionListener {
         
         // Customer Waiting Area
         g2.setColor(Color.WHITE);
-        g2.fillRect(5, 15, 100, 100);
+        g2.fillRect(5, 15, 105, 100);
         g2.setColor(Color.BLUE);
-        g2.drawString("Waiting Customer Area", 5, 127);
+        g2.drawString("Customer Area", 5, 127);
         
         // Waiter Waiting Area
         g2.setColor(Color.WHITE);
@@ -73,11 +73,15 @@ public class AnimationPanel extends JPanel implements ActionListener {
         
         // Finished Food Plating Area
         g2.setColor(Color.BLACK);
-        g2.fillRect(5, 390, 490, 30);
+        g2.fillRect(200, 390, 75, 30);
         
         // Stove Area
         g2.setColor(Color.BLACK);
-        g2.fillRect(5, 495, 490, 30);
+        g2.fillRect(200, 495, 75, 30);
+        
+        // Refrigerator
+        g2.setColor(Color.ORANGE);
+        g2.fillRect(350, 435, 45, 45);
 
         // Table 1
         g2.setColor(Color.ORANGE);
@@ -116,4 +120,9 @@ public class AnimationPanel extends JPanel implements ActionListener {
     public void addGui(WaiterGui gui) {
         guis.add(gui);
     }
+    
+    public void addGui(CookGui gui) {
+        guis.add(gui);
+    }
+    
 }

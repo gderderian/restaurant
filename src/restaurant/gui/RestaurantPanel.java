@@ -176,8 +176,14 @@ public class RestaurantPanel extends JPanel {
     	
     	if (type.equals("Customers")) {
     		
-    		CustomerAgent c = new CustomerAgent(name);	
-    		CustomerGui g = new CustomerGui(c, gui);
+    		int customerIndex = customers.size();
+    		int customerX = 10 + (customerIndex / 4) * 25;
+    		int customerY = 15 + (customerIndex % 4) * 25;
+    		
+    		System.out.println("Initial customer location-- x: " + customerX + " - y: " + customerY);
+    				
+    		CustomerAgent c = new CustomerAgent(name, customerX, customerY);	
+    		CustomerGui g = new CustomerGui(c, gui, customerX, customerY, customerIndex);
     		
     		gui.animationPanel.addGui(g);
     		c.setHost(host);

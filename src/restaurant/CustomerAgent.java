@@ -1,11 +1,16 @@
 package restaurant;
 
 import restaurant.gui.CustomerGui;
+import restaurant.test.mock.LoggedEvent;
 import agent.Agent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
+
 import java.util.concurrent.Semaphore;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -32,7 +37,12 @@ public class CustomerAgent extends Agent {
 	private WaiterAgent assignedWaiter;
 	private Menu myMenu;
 	private HostAgent host;
-	private CashierAgent cashier;
+	public CashierAgent cashier;
+	private boolean madeStayDecision = false;
+	int homeX;
+	int homeY;
+
+	public ArrayList<LoggedEvent> log;
 
 	public enum AgentState
 	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying, restaurantFull, CantPay};
@@ -44,13 +54,15 @@ public class CustomerAgent extends Agent {
 	
 	private Semaphore isAnimating = new Semaphore(0,true);
 
-	public CustomerAgent(String name){
+	public CustomerAgent(String name, int startX, int startY){
 		
 		super();
 		this.name = name;
 		choice = "";
 		needToPay = 0;
 		orderAttempts = 0;
+
+		log = new ArrayList<LoggedEvent>();
 		
 		// Hack to set amount of money based on customer's name
 		if (name.equals("reallycheap")){
@@ -81,6 +93,10 @@ public class CustomerAgent extends Agent {
 					stateChanged();
 		      }
 		});
+		
+		homeX = startX;
+		homeY = startY;
+		
 	}
 
 	// Messages
@@ -149,8 +165,11 @@ public class CustomerAgent extends Agent {
 	}
 	
 	public void restaurantFull(){
-		Do("The host says the restaurant is full. I need to decide whether to stay or leave.");
-		state = AgentState.restaurantFull;
+		//Do("The host says the restaurant is full. I need to decide whether to stay or leave.");
+		//if (madeStayDecision == false) {
+			state = AgentState.restaurantFull;
+		//}
+		//Do("State: " + state + " - Event: " + event);
 		stateChanged();
 	}
 	
@@ -218,7 +237,9 @@ public class CustomerAgent extends Agent {
 		}
 		if (state == AgentState.restaurantFull && event == AgentEvent.gotHungry){
 			determineIfStay();
-			event = AgentEvent.none;
+			if (madeStayDecision == true){
+				event = AgentEvent.none;
+			}
 			return true;
 		}
 		return false;
@@ -291,6 +312,14 @@ public class CustomerAgent extends Agent {
 	
 	private void goToRestaurant() {
 		Do("Going to restaurant and telling host that I'm hungry. I currently have $" + money + ".");
+		customerGui.setDestination(homeX, homeY);
+		customerGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		host.msgIWantFood(this);
 	}
 
@@ -361,18 +390,26 @@ public class CustomerAgent extends Agent {
 	
 	private void determineIfStay(){
 		Random random = new Random();
-	    boolean willStay = random.nextBoolean();
+		
+		boolean willStay = true;
+		
+		if (madeStayDecision == false){
+			willStay = random.nextBoolean();
+		}
 		
 	    if (willStay == true){
 	    	state = AgentState.DoingNothing;
 	    	event = AgentEvent.gotHungry;
-	    	host.msgIWantFood(this);
+	    	//host.msgIWantFood(this);
 	    	Do("The restaurant is currently full according to the host, but I'll continue to stay and wait.");
+	    	madeStayDecision = true;
 	    } else {
 	    	Do("The restaurant is currently full according to the host and I don't want to wait so I'm leaving.");
 	    	state = AgentState.DoingNothing;
 	    	event = AgentEvent.none;
 	    	customerGui.resetNotHungry();
+	    	host.imLeaving(this);
+	    	madeStayDecision = true;
 	    }
 		
 	}

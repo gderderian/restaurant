@@ -206,7 +206,7 @@ public class RestaurantGui extends JFrame implements ActionListener {
      */
     public static void main(String[] args) {
         RestaurantGui gui = new RestaurantGui();
-        gui.setTitle("Grant's csci201 Restaurant - v2.1");
+        gui.setTitle("Grant's csci201 Restaurant - v2.2");
         gui.setVisible(true);
         gui.setResizable(false);
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
