@@ -57,19 +57,27 @@ public class AnimationPanel extends JPanel implements ActionListener {
         g2.setColor(Color.WHITE);
         g2.fillRect(5, 15, 100, 100);
         g2.setColor(Color.BLUE);
-        g2.drawString("Waiting Customer Area", 5, 125);
+        g2.drawString("Waiting Customer Area", 5, 127);
         
         // Waiter Waiting Area
         g2.setColor(Color.WHITE);
         g2.fillRect(245, 15, 105, 105);
         g2.setColor(Color.BLUE);
-        g2.drawString("Waiter Area", 245, 130);
+        g2.drawString("Waiter Area", 245, 132);
         
         // Kitchen Area
         g2.setColor(Color.WHITE);
         g2.fillRect(5, 390, 490, 135);
         g2.setColor(Color.BLUE);
-        g2.drawString("Kitchen Area", 5, 380);
+        g2.drawString("Kitchen Area", 5, 385);
+        
+        // Finished Food Plating Area
+        g2.setColor(Color.BLACK);
+        g2.fillRect(5, 390, 490, 30);
+        
+        // Stove Area
+        g2.setColor(Color.BLACK);
+        g2.fillRect(5, 495, 490, 30);
 
         // Table 1
         g2.setColor(Color.ORANGE);
