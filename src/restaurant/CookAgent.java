@@ -1,12 +1,14 @@
 package restaurant;
 
 import agent.Agent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.concurrent.Semaphore;
+import restaurant.gui.CookGui;
 
 import javax.swing.Timer;
+import restaurant.gui.WaiterGui;
 
 /**
  * Restaurant Cook Agent
@@ -21,6 +23,9 @@ public class CookAgent extends Agent {
 	private static final int REORDER_THRESHOLD = 2; // Once a food item has this many of itself left, a reorder request will automatically be placed
 	private static final int MARKETS_NUM = 2;
 
+	private Semaphore isAnimating = new Semaphore(0,true);
+	private CookGui cookGui;
+	
 	public CookAgent(String name) {
 
 		super();
@@ -152,6 +157,10 @@ public class CookAgent extends Agent {
 		
 	}
 	
+	public void releaseSemaphore(){
+		isAnimating.release();
+	}
+	
 	public enum orderStatus {waiting, preparing, ready, bounceBack};
 	
 	public class Order {
@@ -212,6 +221,10 @@ public class CookAgent extends Agent {
 
 	public List<Order> getOrders() {
 		return currentOrders;
+	}
+	
+	public void setGui(CookGui cg) {
+		cookGui = cg;
 	}
 
 }
