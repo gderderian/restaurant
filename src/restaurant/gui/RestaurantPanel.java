@@ -24,10 +24,10 @@ public class RestaurantPanel extends JPanel {
     // Instantiate cook, host, and three markets
     private HostAgent host = new HostAgent("Sarah");
     private CookAgent cook = new CookAgent("Jeff");
-    private MarketAgent market1 = new MarketAgent("Ralphs");
-    private MarketAgent market2 = new MarketAgent("Vons");
-    private MarketAgent market3 = new MarketAgent("Albertsons");
     private CashierAgent cashier = new CashierAgent("Bob");
+    private MarketAgent market1 = new MarketAgent("Ralphs", cashier);
+    private MarketAgent market2 = new MarketAgent("Vons", cashier);
+    private MarketAgent market3 = new MarketAgent("Albertsons", cashier);
     
     private JPanel restLabel = new JPanel();
     private ListPanel customerPanel = new ListPanel(this, "Customers");
@@ -57,6 +57,10 @@ public class RestaurantPanel extends JPanel {
         cook.addMarket(market1);
         cook.addMarket(market2);
         cook.addMarket(market3);
+        
+        CookGui cg = new CookGui(cook, gui);
+        cook.setGui(cg);
+        gui.animationPanel.addGui(cg);
 
         setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
         group.setLayout(new GridLayout(REST_PANEL_ROWS, REST_PANEL_COLS, REST_PANEL_SPACE, REST_PANEL_SPACE));
@@ -189,8 +193,12 @@ public class RestaurantPanel extends JPanel {
     			
     	} else if (type.equals("Waiters")){
     		
-    		WaiterAgent w = new WaiterAgent(name);
-    		WaiterGui g = new WaiterGui(w, gui);
+    		int waiterIndex = waiterList.size();
+    		int waiterX = 250 + (waiterIndex / 4) * 25;
+    		int waiterY = 20 + (waiterIndex % 4) * 25;
+    		
+    		WaiterAgent w = new WaiterAgent(name, waiterX, waiterY);
+    		WaiterGui g = new WaiterGui(w, gui, waiterX, waiterY, waiterIndex);
     		
     		gui.animationPanel.addGui(g);
     		w.setHost(host);

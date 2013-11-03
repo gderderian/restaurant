@@ -1,14 +1,16 @@
 package restaurant;
 
 import agent.Agent;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+
 import restaurant.gui.CookGui;
 
 import javax.swing.Timer;
-import restaurant.gui.WaiterGui;
+
 
 /**
  * Restaurant Cook Agent
@@ -35,7 +37,7 @@ public class CookAgent extends Agent {
 		myMarkets = Collections.synchronizedList(new ArrayList<MarketAgent>());
 		
 		allFood = new Hashtable<String, FoodItem>();
-		allFood.put("Chicken", new FoodItem("Chicken", 3000, 1));
+		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
 		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
 		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
 		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
@@ -77,26 +79,30 @@ public class CookAgent extends Agent {
 		f.quantity = newFoodQuantity;
 		f.reorderSent = false;
 	}
-
+	
+	
+	public void pickedUpFood(String foodChoice){
+		cookGui.platingFood.remove(foodChoice);
+	}
+	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!currentOrders.isEmpty()) {
 			try {
 				for (Order order : currentOrders) {
-					if (order.getStatus() == orderStatus.ready) {
-						orderDone(order);
-						return true;
-					} else if (order.getStatus() == orderStatus.waiting){
+					if (order.getStatus() == orderStatus.waiting){
 						prepareFood(order);
+						return true;
+					} else if (order.getStatus() == orderStatus.ready) {
+						orderDone(order);
 						return true;
 					} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
 						orderOut(order);
-					} else {
 						return true;
 					}
 				}
 			} catch (ConcurrentModificationException schedulerComod) {
-				return true;
+				return false;
 			}
 		}
 		return false;
@@ -105,6 +111,53 @@ public class CookAgent extends Agent {
 	// Actions
 	private void prepareFood(Order o){ // Begins cooking the specified order and starts a timer based on the food item class' set cooking time
 		Do("Beginning to prepare food " + o.getFoodName() + ".");
+		
+		// Get from fridge
+	    cookGui.setDestination(350, 435);
+		cookGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		String carryText = "";
+		switch(o.getFoodName()){
+		case "Chicken":
+			carryText = "CHK";
+			break;
+		case "Mac & Cheese":
+			carryText = "M&C";
+			break;
+		case "French Fries":
+			carryText = "FRF";
+			break;
+		case "Pizza":
+			carryText = "PZA";
+			break;
+		case "Pasta":
+			carryText = "PST";
+			break;
+		case "Cobbler":
+			carryText = "CBL";
+			break;
+		}
+		cookGui.setCarryText(carryText);
+		
+		// Move to put food on grill
+		cookGui.setDestination(225, 495);
+		cookGui.beginAnimate();
+			try {
+				isAnimating.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+		}
+			
+		// Place food on grill
+		cookGui.cookingFood.add(carryText);
+		
+		cookGui.setCarryText("");
+		
 		o.status = orderStatus.preparing;
 		o.setCooking(allFood.get(o.getFoodName()).cookingTime);
 		allFood.get(o.foodItem).decrementQuantity(); // After preparing this order, there is one less of this item available
@@ -113,12 +166,83 @@ public class CookAgent extends Agent {
 			myMarkets.get(allFood.get(o.foodItem).searchMarket).orderFood(this, o.foodItem, orderQuantity);
 			allFood.get(o.foodItem).requestedQuantity = orderQuantity;
 		}
+		
+		// Go to cook home
+		cookGui.setDestination(230, 445);
+		cookGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void orderDone(Order o){ // Tells the specific waiter that their customer's order is done and removes that order from the cook's list of orders
-		Do("Notifying waiter that " + o.getFoodName() + " is done.");
+		Do("Notifying waiter that " + o.getFoodName() + " for table #" + o.recipTable + "is done.");
+		
+		// Go to grill to get order and remove it
+		cookGui.setDestination(225, 495);
+		cookGui.beginAnimate();
+			try {
+				isAnimating.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+		}
+			
+		String carryText = "";
+		switch(o.getFoodName()){
+		case "Chicken":
+			carryText = "CHK";
+			break;
+		case "Mac & Cheese":
+			carryText = "M&C";
+			break;
+		case "French Fries":
+			carryText = "FRF";
+			break;
+		case "Pizza":
+			carryText = "PZA";
+			break;
+		case "Pasta":
+			carryText = "PST";
+			break;
+		case "Cobbler":
+			carryText = "CBL";
+			break;
+		}
+		cookGui.setCarryText(carryText);
+		
+		// Pick up food from grilling area
+		cookGui.cookingFood.remove(carryText);
+		
+		// Go to plating area
+		cookGui.setDestination(225, 390);
+		cookGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		// Drop off food on plating area
+		cookGui.platingFood.add(carryText);
+		
+		cookGui.setCarryText("");
+		
 		o.getWaiter().hereIsFood(o.recipTable, o.foodItem);
+			
+		// Go back home
+		cookGui.setDestination(230, 445);
+		cookGui.beginAnimate();
+		try {
+			isAnimating.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		currentOrders.remove(o);
+		
 	}
 	
 	private void orderOut(Order o){ // Tells the specific waiter that their customer's order cannot be fulfilled

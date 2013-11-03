@@ -3,6 +3,7 @@ package restaurant.gui;
 import restaurant.CookAgent;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CookGui implements Gui {
 
@@ -20,16 +21,23 @@ public class CookGui implements Gui {
 	boolean hasDestination = false;
 	
 	String carryingOrderText = "";
-    
+	
+	public ArrayList<String> platingFood;
+	public ArrayList<String> cookingFood;
+	
     public CookGui(CookAgent a) {
     	agent = a;
     	carryingOrderText = "";
+		platingFood = new ArrayList<String>();
+		cookingFood = new ArrayList<String>();
     }
     
     public CookGui(CookAgent a, RestaurantGui g) {
     	agent = a;
     	gui = g;
     	carryingOrderText = "";
+		platingFood = new ArrayList<String>();
+		cookingFood = new ArrayList<String>();
     }
     
     public CookGui(CookAgent a, RestaurantGui g, int startX, int startY, int indexNum) {
@@ -41,6 +49,8 @@ public class CookGui implements Gui {
     	yDestination = startY;
     	carryingOrderText = "";
     	hasDestination = false;
+		platingFood = new ArrayList<String>();
+		cookingFood = new ArrayList<String>();
     }
 
 	public void setDestination(int newX, int newY){
@@ -71,6 +81,15 @@ public class CookGui implements Gui {
 		if (!carryingOrderText.equals("")){
 			g.drawString(carryingOrderText, xPos, yPos);
 		}
+		
+		for (int i = 0; i < platingFood.size(); i++){
+			g.drawString(platingFood.get(i), 225, 390 + (i * 10));
+		}
+		
+		for (int j = 0; j < cookingFood.size(); j++){
+			g.drawString(cookingFood.get(j), 225, 495 + (j * 10));
+		}
+		
     }
 
     public boolean isPresent() {
