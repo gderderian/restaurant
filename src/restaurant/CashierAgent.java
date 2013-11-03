@@ -1,8 +1,10 @@
 package restaurant;
 
 import agent.Agent;
+
 import java.util.*;
 
+import restaurant.interfaces.Customer;
 import restaurant.test.mock.LoggedEvent;
 
 /**
@@ -27,9 +29,9 @@ public class CashierAgent extends Agent {
 	}
 	
 	// Messages
-	public void calculateCheck(WaiterAgent w, CustomerAgent c, String choice){
-		Do("Calculating check for customer " + c.getCustomerName() + " who ordered " + choice + ".");
-		Check newCheck = new Check(w, c, choice); // Add in new check to be calculated for this customer
+	public void calculateCheck(WaiterAgent w, Customer customer, String choice){
+		Do("Calculating check for customer " + customer.getCustomerName() + " who ordered " + choice + ".");
+		Check newCheck = new Check(w, customer, choice); // Add in new check to be calculated for this customer
 		myChecks.add(newCheck);
 		stateChanged();
 	}
@@ -121,7 +123,7 @@ public class CashierAgent extends Agent {
 	
 	public class Check {
 		
-		public CustomerAgent customer;
+		public Customer customer;
 		WaiterAgent waiter;
 		MarketAgent market;
 		public double amount;
@@ -134,8 +136,8 @@ public class CashierAgent extends Agent {
 			type = checkType.customerCheck;
 		}
 		
-		public Check(WaiterAgent w, CustomerAgent c, String ch){
-			customer = c;
+		public Check(WaiterAgent w, Customer customer2, String ch){
+			customer = customer2;
 			waiter = w;
 			choice = ch;
 			status = checkStatus.pending;

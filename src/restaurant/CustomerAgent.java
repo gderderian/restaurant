@@ -1,6 +1,8 @@
 package restaurant;
 
 import restaurant.gui.CustomerGui;
+import restaurant.interfaces.Customer;
+import restaurant.interfaces.Waiter;
 import restaurant.test.mock.LoggedEvent;
 import agent.Agent;
 
@@ -17,7 +19,7 @@ import java.util.Random;
 /**
  * Restaurant customer agent.
  */
-public class CustomerAgent extends Agent {
+public class CustomerAgent extends Agent implements Customer {
 	
 	static final int DEFAULT_HUNGER_LEVEL = 3500;
 	static final int DEFAULT_SIT_TIME = 5000;
@@ -34,7 +36,7 @@ public class CustomerAgent extends Agent {
 	private double needToPay;
 	private int orderAttempts;
 	
-	private WaiterAgent assignedWaiter;
+	private Waiter assignedWaiter;
 	private Menu myMenu;
 	private HostAgent host;
 	public CashierAgent cashier;
@@ -106,7 +108,7 @@ public class CustomerAgent extends Agent {
 		stateChanged();
 	}
 
-	public void msgSitAtTable(Menu m, WaiterAgent w) {
+	public void msgSitAtTable(Menu m, Waiter w) {
 		print("Received msgSitAtTable.");
 		myMenu = m;
 		assignedWaiter = w;
