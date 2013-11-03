@@ -25,11 +25,12 @@ public class CookAgent extends Agent {
 
 		super();
 		this.name = name;
-		currentOrders = new ArrayList<Order>();
-		myMarkets = new ArrayList<MarketAgent>();
+		
+		currentOrders = Collections.synchronizedList(new ArrayList<Order>());
+		myMarkets = Collections.synchronizedList(new ArrayList<MarketAgent>());
 		
 		allFood = new Hashtable<String, FoodItem>();
-		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
+		allFood.put("Chicken", new FoodItem("Chicken", 3000, 1));
 		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
 		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
 		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
@@ -75,18 +76,22 @@ public class CookAgent extends Agent {
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!currentOrders.isEmpty()) {
-			for (Order order : currentOrders) {
-				if (order.getStatus() == orderStatus.ready) {
-					orderDone(order);
-					return true;
-				} else if (order.getStatus() == orderStatus.waiting){
-					prepareFood(order);
-					return true;
-				} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
-					orderOut(order);
-				} else {
-					return true;
+			try {
+				for (Order order : currentOrders) {
+					if (order.getStatus() == orderStatus.ready) {
+						orderDone(order);
+						return true;
+					} else if (order.getStatus() == orderStatus.waiting){
+						prepareFood(order);
+						return true;
+					} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
+						orderOut(order);
+					} else {
+						return true;
+					}
 				}
+			} catch (ConcurrentModificationException schedulerComod) {
+				return true;
 			}
 		}
 		return false;

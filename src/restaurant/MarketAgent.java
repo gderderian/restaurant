@@ -15,13 +15,19 @@ public class MarketAgent extends Agent {
 	private String name;
 	private List<MarketOrder> currentMarketOrders;
 	Hashtable<String, Integer> inventoryCount;
-	private static final int DEFAULT_ORDER_FULFILL_TIME = 5000; // All market orders take a default of five seconds to fulfill
+	private static final int DEFAULT_ORDER_FULFILL_TIME = 25000; // All market orders take a default of five seconds to fulfill
+	private double myMoney;
+	private CashierAgent cashier;
+	private Menu myMenu;
 
-	public MarketAgent(String name) {
+	public MarketAgent(String name, CashierAgent c) {
 
 		super();
 		this.name = name;
 		currentMarketOrders = new ArrayList<MarketOrder>();
+		myMoney = 5;
+		cashier = c;
+		myMenu = new Menu();
 		
 		// Initial inventory declarations for each menuItem
 		inventoryCount = new Hashtable<String, Integer>();
@@ -45,17 +51,25 @@ public class MarketAgent extends Agent {
 		currentMarketOrders.add(o);
 		stateChanged();
 	}
+	
+	public void acceptCashierPayment(CashierAgent c, double amountPaid) {
+		// Add what the cashier paid to my money
+		myMoney = myMoney + amountPaid;
+		stateChanged();
+	}
 
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
 		if (!currentMarketOrders.isEmpty()) {
-			for (MarketOrder order : currentMarketOrders) {
-				if (order.getStatus() == orderStatus.ready) {
-					orderDone(order); // Notify cook that their MarketOrder is done and deliver order back to them
-					return true;
-				} else if (order.getStatus() == orderStatus.waiting){
-					prepareOrder(order); // Prepare waiting MarketOrder
-					return true;
+			synchronized(currentMarketOrders) {
+				for (MarketOrder order : currentMarketOrders) {
+					if (order.getStatus() == orderStatus.ready) {
+						orderDone(order); // Notify cook that their MarketOrder is done and deliver order back to them
+						return true;
+					} else if (order.getStatus() == orderStatus.waiting){
+						prepareOrder(order); // Prepare waiting MarketOrder
+						return true;
+					}
 				}
 			}
 		}
@@ -79,6 +93,12 @@ public class MarketAgent extends Agent {
 	private void orderDone(MarketOrder o){
 		Do("marketOrder of " + o.foodItem + " is now done.");
 		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity); // Notify cook that their order is now done
+		
+		double singleItemPrice = myMenu.getPriceofItem(o.foodItem);
+		double totalCostToBill = singleItemPrice * o.deliverableQuantity; // Calculate total cost of order
+		Do("Billing cashier $" + totalCostToBill + "for the " + o.deliverableQuantity + " " + o.foodItem + "(s) that they ordered.");
+		cashier.acceptMarketBill(this, totalCostToBill); // Bill the cashier because an order was just delivered
+		
 		currentMarketOrders.remove(o);
 	}
 	

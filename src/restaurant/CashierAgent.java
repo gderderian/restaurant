@@ -3,6 +3,8 @@ package restaurant;
 import agent.Agent;
 import java.util.*;
 
+import restaurant.test.mock.LoggedEvent;
+
 /**
  * Restaurant Cashier Agent
  */
@@ -10,14 +12,18 @@ public class CashierAgent extends Agent {
 	
 	// Variable Declarations
 	private String name;
-	private List<Check> myChecks;
+	public List<Check> myChecks;
 	private double checkAmount;
+	public ArrayList<LoggedEvent> log;
+	double myMoney;
 	
 	public CashierAgent(String name) {
 		super();
 		this.name = name;
-		myChecks = new ArrayList<Check>();
+		myChecks = Collections.synchronizedList(new ArrayList<Check>());
 		checkAmount = 0;
+		myMoney = Double.MAX_VALUE;
+		log = new ArrayList<LoggedEvent>();
 	}
 	
 	// Messages
@@ -32,22 +38,42 @@ public class CashierAgent extends Agent {
 		Do("Accepting payment of $" + amountPaid + " from customer " + c.getCustomerName() + ".");
 		// Lookup check to mark it as paid
 		if (!myChecks.isEmpty()) {
-			for (Check check : myChecks) {
-				if (check.customer.equals(c)){
-					processCustomerPayment(c, amountPaid, check); // Process this check with action below
+			synchronized(myChecks){
+				for (Check check : myChecks) {
+					if (check.customer.equals(c)){
+						processCustomerPayment(c, amountPaid, check); // Process this check with action below
+					}
 				}
 			}
 		}
 		stateChanged();
 	}
+	
+	public void acceptMarketBill(MarketAgent m, double amountDue){
+		// Create new check that needs to be paid
+		Do("Creating check for market " + m.getName() + " based on incoming bill/message.");
+		Check newCheck = new Check(m, (float)amountDue); // Add in new check to be calculated for this market
+		myChecks.add(newCheck);
+		stateChanged();
+	}
 
 	// Scheduler
-	protected boolean pickAndExecuteAnAction() {
+	public boolean pickAndExecuteAnAction() {
 		if (!myChecks.isEmpty()) {
+			synchronized(myChecks){
 			for (Check check : myChecks) {
-				if (check.getStatus() == checkStatus.pending) {
-					processCheckToWaiter(check);
-					return true;
+					if (check.getStatus() == checkStatus.pending && check.getType() == checkType.customerCheck) {
+						processCheckToWaiter(check);
+						return true;
+					}
+				}
+			}
+			synchronized(myChecks){
+				for (Check check : myChecks) {
+					if (check.getStatus() == checkStatus.pending && check.getType() == checkType.marketCheck) {
+						payMarket(check);
+						return true;
+					}
 				}
 			}
 		}
@@ -69,27 +95,41 @@ public class CashierAgent extends Agent {
 		Do("Processing payment of $" + amountPaid + " from customer " + customer.getCustomerName() + ".");
 		if (amountPaid == c.amount){ // Customer paid exact amount
 			c.status = checkStatus.paid;
+			myMoney = myMoney + c.amount;
 		} else if (amountPaid > c.amount){ // Customer paid more than their order, dispense the difference to them in change
 			customer.dispenseChange(amountPaid - c.amount);
+			myMoney = myMoney + c.amount; // Double-test
 			c.status = checkStatus.paid;
 		} else if (amountPaid < c.amount){ // Customer cannot afford to pay for what they ordered! Send them a shame command.
 			customer.goToCorner();
+			myMoney = myMoney + amountPaid;
 		}
+	}
+	
+	public void payMarket(Check c){ // Complete processing of check
+		Do("Completing payment of marketCheck by sending money back to market.");
+		MarketAgent m = c.getMarket();
+		m.acceptCashierPayment(this, c.amount);
+		c.status = checkStatus.paid;
 	}
 	
 	// Misc. utilities
 	public enum checkStatus {pending, calculated, paid}; // Used in conjunction with Check class below
+	public enum checkType {customerCheck, marketCheck}; // Used in conjunction with Check class below
 	
 	public class Check {
 		
-		CustomerAgent customer;
+		public CustomerAgent customer;
 		WaiterAgent waiter;
-		double amount;
-		checkStatus status;
+		MarketAgent market;
+		public double amount;
+		public checkStatus status;
 		String choice;
+		public checkType type;
 		
 		public Check(float checkAmount){
 			amount = checkAmount;
+			type = checkType.customerCheck;
 		}
 		
 		public Check(WaiterAgent w, CustomerAgent c, String ch){
@@ -97,12 +137,30 @@ public class CashierAgent extends Agent {
 			waiter = w;
 			choice = ch;
 			status = checkStatus.pending;
+			type = checkType.customerCheck;
+		}
+		
+		public Check(WaiterAgent w, CustomerAgent c, String ch, float checkAmount){
+			customer = c;
+			waiter = w;
+			choice = ch;
+			status = checkStatus.pending;
+			amount = checkAmount;
+			type = checkType.customerCheck;
+		}
+		
+		public Check(MarketAgent m, float checkAmount){
+			market = m;
+			status = checkStatus.pending;
+			amount = checkAmount;
+			type = checkType.marketCheck;
 		}
 		
 		public Check(WaiterAgent w, CustomerAgent c){
 			customer = c;
 			waiter = w;
 			status = checkStatus.pending;
+			type = checkType.customerCheck;
 		}
 		
 		public void setCustomer(CustomerAgent c){
@@ -115,6 +173,14 @@ public class CashierAgent extends Agent {
 		
 		public checkStatus getStatus(){
 			return status;
+		}
+		
+		public checkType getType(){
+			return type;
+		}
+		
+		public MarketAgent getMarket(){
+			return market;
 		}
 		
 	}
