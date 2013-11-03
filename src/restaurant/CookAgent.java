@@ -87,16 +87,19 @@ public class CookAgent extends Agent {
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
+		Do("SIZE OF COOK CURRENT ORDERS: " + currentOrders.size());
 		if (!currentOrders.isEmpty()) {
 			try {
 				for (Order order : currentOrders) {
 					if (order.getStatus() == orderStatus.waiting){
 						prepareFood(order);
 						return true;
-					} else if (order.getStatus() == orderStatus.ready) {
+					}
+					if (order.getStatus() == orderStatus.ready) {
 						orderDone(order);
 						return true;
-					} else if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
+					}
+					if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
 						orderOut(order);
 						return true;
 					}
