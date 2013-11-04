@@ -23,7 +23,7 @@ public class MockMarket extends Mock implements Market {
 
 	@Override
 	public void orderFood(CookAgent c, String foodToMarketOrder, int quantity) {
-		log.add(new LoggedEvent("Received message orderFood"));
+		log.add(new LoggedEvent("Received message orderFood with quantity " + quantity + " of " + foodToMarketOrder + " from cook " + c.getName()));
 	}
 
 	@Override

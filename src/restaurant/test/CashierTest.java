@@ -35,6 +35,11 @@ public class CashierTest extends TestCase
 	
 	public void testOneNormalScenario(){ // Tests scenario: One order, fulfilled by the market, bill paid in full.
 		
+		// Begin first order step
+		market.orderFood(cook, "Pizza", 2);
+		assertTrue("Market 1 should have logged \"Received message orderFood with quantity 2 of Pizza from cook mockcook\" but didn't. The log instead reads: " 
+				+ market.log.getLastLoggedEvent().toString(), market.log.containsString("Received message orderFood with quantity 2 of Pizza from cook mockcook"));
+		
 		//check preconditions
 		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
 		assertEquals("CashierAgent should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "+ cashier.log.toString(), 0, cashier.log.size());
@@ -57,6 +62,14 @@ public class CashierTest extends TestCase
 	}
 	
 	public void testTwoNormalScenario(){ // Tests scenario: One order, fulfilled by TWO markets, 2 bills paid in full.
+		
+		// Begin first order step
+		market.orderFood(cook, "Chicken", 5);
+		market2.orderFood(cook, "Pasta", 6);
+		assertTrue("Market 1 should have logged \"Received message orderFood with quantity 5 of Chicken from cook mockcook\" but didn't. The log instead reads: " 
+				+ market.log.getLastLoggedEvent().toString(), market.log.containsString("Received message orderFood with quantity 5 of Chicken from cook mockcook"));
+		assertTrue("Market 2 should have logged \"Received message orderFood with quantity 6 of Pasta from cook mockcook\" but didn't. The log instead reads: " 
+				+ market2.log.getLastLoggedEvent().toString(), market2.log.containsString("Received message orderFood with quantity 6 of Pasta from cook mockcook"));
 		
 		//check preconditions
 		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
@@ -170,6 +183,35 @@ public class CashierTest extends TestCase
 		assertEquals("Cashier's money should be what they had plus $5.95.", cashier.myMoney, 10000 + 5.95);
 		assertTrue("Customer should have logged \"Received message dispenseChange. Change=1.0\" but didn't. The log instead reads: " 
 				+ customer.log.getLastLoggedEvent().toString(), customer.log.containsString("Received message dispenseChange. Change=1.0"));
+		
+	}
+	
+	public void testSixNormalScenario(){ // Tests scenario: Check gets created, waiter delivers to customer, customer less more than their order so customer is shamed.
+		
+		//check preconditions
+		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
+		assertEquals("CashierAgent should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "+ cashier.log.toString(), 0, cashier.log.size());
+		
+		cashier.calculateCheck(waiter, customer, "French Fries");
+		
+		// check postconditions of the check
+		assertEquals("Cashier should have 1 bill in it. It doesn't.",cashier.myChecks.size(), 1);	
+		assertEquals("Cashier's first check should be for french fries.", cashier.myChecks.get(0).choice, "French Fries");
+		assertEquals("Cashier's first check should be for our waiter.", cashier.myChecks.get(0).waiter, waiter);
+		assertEquals("Cashier's first check should be set to status pending.", cashier.myChecks.get(0).status, checkStatus.pending);
+		assertTrue("Cashier's scheduler should have returned true, but didn't.", 
+				cashier.pickAndExecuteAnAction());
+		
+		// check to see if waiter received message
+		assertTrue("Waiter should have logged \"Received message hereIsCheck in amount 2.50\" but didn't. The log instead reads: " 
+						+ waiter.log.getLastLoggedEvent().toString(), waiter.log.containsString("Received message hereIsCheck in amount 2.5"));
+				
+		// Move on to accept payment
+		cashier.acceptPayment(customer, 2.00); // Pay less than what we owe!
+		assertEquals("Cashier's first check should be set to status paid.", cashier.myChecks.get(0).status, checkStatus.calculated);
+		assertEquals("Cashier's money should be what they had plus $2.00.", cashier.myMoney, 10000 + 2.00);
+		assertTrue("Customer should have logged \"Received message goToCorner\" but didn't. The log instead reads: " 
+				+ customer.log.getLastLoggedEvent().toString(), customer.log.containsString("Received message goToCorner"));
 		
 	}
 	
