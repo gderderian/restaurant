@@ -20,14 +20,14 @@ public class CashierAgent extends Agent {
 	public List<Check> myChecks;
 	private double checkAmount;
 	public EventLog log;
-	double myMoney;
+	public double myMoney;
 	
 	public CashierAgent(String name) {
 		super();
 		this.name = name;
 		myChecks = Collections.synchronizedList(new ArrayList<Check>());
 		checkAmount = 0;
-		myMoney = Double.MAX_VALUE;
+		myMoney = 10000.0;
 		log = new EventLog();
 	}
 	
