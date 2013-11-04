@@ -21,7 +21,7 @@ public class CashierTest extends TestCase
 	MockCustomer customer;
 	CookAgent cook;
 	MockMarket market;
-	
+	MockMarket market2;
 	
 	public void setUp() throws Exception{
 		super.setUp();		
@@ -30,9 +30,10 @@ public class CashierTest extends TestCase
 		waiter = new MockWaiter("mockwaiter");
 		cook = new CookAgent("mockcook");
 		market = new MockMarket("mockmarket");
+		market2 = new MockMarket("mockmarket2");
 	}	
 	
-	public void testOneNormalScenario(){
+	public void testOneNormalScenario(){ // Tests scenario: One order, fulfilled by the market, bill paid in full.
 		
 		//check preconditions
 		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
@@ -55,7 +56,44 @@ public class CashierTest extends TestCase
 				
 	}
 	
+	public void testTwoNormalScenario(){ // Tests scenario: One order, fulfilled by TWO markets, 2 bills paid in full.
+		
+		//check preconditions
+		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
+		assertEquals("CashierAgent should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "+ cashier.log.toString(), 0, cashier.log.size());
+						
+		cashier.acceptMarketBill(market, 5.00);
+				
+		// check postconditions of the first check
+		assertEquals("Cashier should have 1 bill in it. It doesn't.",cashier.myChecks.size(), 1);	
+		assertEquals("Cashier's first bill to pay should be for chicken.", cashier.myChecks.get(0).amount, 5.00);
+		assertEquals("Cashier's first check should be for our market.", cashier.myChecks.get(0).market, market);
+		assertEquals("Cashier's first check should be set to status pending.", cashier.myChecks.get(0).status, checkStatus.pending);
+		assertEquals("Cashier's first check should be a marketCheck.", cashier.myChecks.get(0).type, checkType.marketCheck);
+		
+		// check to see if market received payment message
+		assertTrue("Cashier's scheduler should have returned true, but didn't.", 
+				cashier.pickAndExecuteAnAction());
+		assertTrue("Cashier should have logged \"Received message acceptCashierPayment of 5.0\" but didn't. The log instead reads: " 
+				+ market.log.getLastLoggedEvent().toString(), market.log.containsString("Received message acceptCashierPayment of 5.0"));
+		
+		cashier.acceptMarketBill(market2, 15.00);
+		
+		// Check postconditions of the second check
+		assertEquals("Cashier should have 2 bills in it. It doesn't.",cashier.myChecks.size(), 2);	
+		assertEquals("Cashier's first bill to pay should be for chicken.", cashier.myChecks.get(1).amount, 15.00);
+		assertEquals("Cashier's first check should be for our market.", cashier.myChecks.get(1).market, market2);
+		assertEquals("Cashier's first check should be set to status pending.", cashier.myChecks.get(1).status, checkStatus.pending);
+		assertEquals("Cashier's first check should be a marketCheck.", cashier.myChecks.get(1).type, checkType.marketCheck);
+		
+		assertTrue("Cashier's scheduler should have returned true, but didn't.", 
+			cashier.pickAndExecuteAnAction());
 
+		// check to see if market received payment message
+		assertTrue("Cashier should have logged \"Received message acceptCashierPayment of 5.0\" but didn't. The log instead reads: " 
+			+ market.log.getLastLoggedEvent().toString(), market.log.containsString("Received message acceptCashierPayment of 5.0"));				
+		
+	}
 	
 	
 }
