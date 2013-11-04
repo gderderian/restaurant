@@ -7,13 +7,16 @@
   + Lecture: Prof. Wilczynski - MW 4:00-5:20p
   + Lab: Tues. 6:00-7:50p
 
-### Compile Instructions
-To compile, clone this GitHub repo into a new directory on your local computer. Then, enter these commands into a new terminal/command line:
-```
-ant compile
-ant run.gui
-```
-The program will then begin to run. To exit, close the terminal/command line window you opened.
+### Compile Instructions (v2.2)
+To compile and run my restaurant program, clone this GitHub repo into a new directory on your local computer. Then, follow these instructios:
++ Open the Eclipse IDE on your computer.
++ Choose File -> New -> Other. Select the Java Project from Exisitng Ant Buildfile in the list of options
++ Click on Browse, navigate to the directory of the repo you cloned from my assignment on GitHub, and then select my build.xml file.
++ Click the Link to the buildfile in the file system checkbox and then click on finish.
+
+__To run the program__, navigate to the `RestaurantGui.java` file located within `agents/src/restaurant.gui/`. Then, click the small arrow next to the green play button in the Eclipse toolbar and select `RestaurantGui` from the dropdown list. The program will now run. To close it, click the red stop sign in Eclipse.
+
+__To test the program__, navigate to the `CashierTest.java` file located within `agents/src/restaurant.test/`. If you receive a message about JUnit not being in your build path, accept Eclipse's warning/suggestion to add it. If you don't see this, go to Project -> Properties in Eclipse's menu. Click on Java Build Path in the left menu, then on Libraries in the upper menu, and then on Add Library. Click JUnit, then select JUnit 3, and then click Finish. Click OK to exit the Project Settings dialog. With the `CashierText.java` file still open, click the small arrow next to the green play button in the Eclipse toolbar and select `CashierTest` from the dropdown list. The test will now run, showing you the results on the left.
 
 ### Resources
   + [Design Doc and Interaction Diagrams](https://github.com/usc-csci201-fall2013/restaurant_gderderi/blob/master/docs/DesignDoc.md)
