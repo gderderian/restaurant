@@ -2,7 +2,7 @@ package restaurant;
 
 import agent.Agent;
 import restaurant.gui.WaiterGui;
-import restaurant.test.mock.LoggedEvent;
+import restaurant.test.mock.EventLog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -31,7 +31,7 @@ public class WaiterAgent extends Agent implements Waiter {
 	private Semaphore isAnimating = new Semaphore(0,true);
 	Timer breakTimer;
 	
-	public ArrayList<LoggedEvent> log;
+	public EventLog log;
 	
 	public enum AgentState
 	{DoingNothing, wantBreak, onBreak};
@@ -47,7 +47,7 @@ public class WaiterAgent extends Agent implements Waiter {
 		myCustomers = new ArrayList<MyCustomer>();
 		onBreak = false;
 		
-		log = new ArrayList<LoggedEvent>();
+		log = new EventLog();
 		
 		breakTimer = new Timer(DEFAULT_BREAK_TIME,
 				new ActionListener() { public void actionPerformed(ActionEvent evt) {

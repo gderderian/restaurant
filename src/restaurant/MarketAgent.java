@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import javax.swing.Timer;
 import restaurant.interfaces.Market;
+import restaurant.test.mock.EventLog;
 
 /**
  * Restaurant Market Agent
@@ -14,13 +15,15 @@ public class MarketAgent extends Agent implements Market {
 	
 	// Variable Declarations
 	private String name;
-	private List<MarketOrder> currentMarketOrders;
-	Hashtable<String, Integer> inventoryCount;
+	public List<MarketOrder> currentMarketOrders;
+	public Hashtable<String, Integer> inventoryCount;
 	private static final int DEFAULT_ORDER_FULFILL_TIME = 25000; // All market orders take a default of five seconds to fulfill
 	private double myMoney;
 	private CashierAgent cashier;
 	private Menu myMenu;
 
+	public EventLog log;
+	
 	public MarketAgent(String name, CashierAgent c) {
 
 		super();
@@ -29,6 +32,8 @@ public class MarketAgent extends Agent implements Market {
 		myMoney = 5;
 		cashier = c;
 		myMenu = new Menu();
+		
+		log = new EventLog();
 		
 		// Initial inventory declarations for each menuItem
 		inventoryCount = new Hashtable<String, Integer>();
@@ -60,7 +65,7 @@ public class MarketAgent extends Agent implements Market {
 	}
 
 	// Scheduler
-	protected boolean pickAndExecuteAnAction() {
+	public boolean pickAndExecuteAnAction() {
 		if (!currentMarketOrders.isEmpty()) {
 			synchronized(currentMarketOrders) {
 				for (MarketOrder order : currentMarketOrders) {
@@ -117,11 +122,11 @@ public class MarketAgent extends Agent implements Market {
 	
 	public class MarketOrder {
 		
-		String foodItem;
-		int quantityRequested;
+		public String foodItem;
+		public int quantityRequested;
 		CookAgent requestingCook;
 		Timer foodTimer;
-		orderStatus status;
+		public orderStatus status;
 		int deliverableQuantity;
 		
 		public MarketOrder(CookAgent c){
