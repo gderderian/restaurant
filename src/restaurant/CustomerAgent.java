@@ -3,16 +3,12 @@ package restaurant;
 import restaurant.gui.CustomerGui;
 import restaurant.interfaces.Customer;
 import restaurant.interfaces.Waiter;
-import restaurant.test.mock.LoggedEvent;
+import restaurant.test.mock.EventLog;
 import agent.Agent;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.Timer;
-
 import java.util.concurrent.Semaphore;
-import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -44,7 +40,7 @@ public class CustomerAgent extends Agent implements Customer {
 	int homeX;
 	int homeY;
 
-	public ArrayList<LoggedEvent> log;
+	public EventLog log;
 
 	public enum AgentState
 	{DoingNothing, WaitingForSeat, BeingSeated, Seated, Ordering, WaitingForFood, Eating, Leaving, Choosing, CalledWaiter, RequestedCheck, Paying, restaurantFull, CantPay};
@@ -64,7 +60,7 @@ public class CustomerAgent extends Agent implements Customer {
 		needToPay = 0;
 		orderAttempts = 0;
 
-		log = new ArrayList<LoggedEvent>();
+		log = new EventLog();
 		
 		// Hack to set amount of money based on customer's name
 		if (name.equals("reallycheap")){

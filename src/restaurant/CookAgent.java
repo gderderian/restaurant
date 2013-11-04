@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 
 import restaurant.gui.CookGui;
+import restaurant.test.mock.EventLog;
 
 import javax.swing.Timer;
 
@@ -21,12 +22,14 @@ public class CookAgent extends Agent {
 	private String name;
 	private List<Order> currentOrders;
 	private List<MarketAgent> myMarkets;
-	Hashtable<String, FoodItem> allFood;
+	public Hashtable<String, FoodItem> allFood;
 	private static final int REORDER_THRESHOLD = 2; // Once a food item has this many of itself left, a reorder request will automatically be placed
 	private static final int MARKETS_NUM = 2;
 
 	private Semaphore isAnimating = new Semaphore(0,true);
 	private CookGui cookGui;
+	
+	public EventLog log;
 	
 	public CookAgent(String name) {
 
@@ -35,6 +38,8 @@ public class CookAgent extends Agent {
 		
 		currentOrders = Collections.synchronizedList(new ArrayList<Order>());
 		myMarkets = Collections.synchronizedList(new ArrayList<MarketAgent>());
+		
+		log = new EventLog();
 		
 		allFood = new Hashtable<String, FoodItem>();
 		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
@@ -262,7 +267,7 @@ public class CookAgent extends Agent {
 		
 		String foodItem;
 		int cookingTime;
-		int quantity;
+		public int quantity;
 		boolean reorderSent;
 		int searchMarket;
 		int requestedQuantity;
