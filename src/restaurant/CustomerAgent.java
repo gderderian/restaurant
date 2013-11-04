@@ -235,9 +235,7 @@ public class CustomerAgent extends Agent implements Customer {
 		}
 		if (state == AgentState.restaurantFull && event == AgentEvent.gotHungry){
 			determineIfStay();
-			if (madeStayDecision == true){
-				event = AgentEvent.none;
-			}
+			event = AgentEvent.none;
 			return true;
 		}
 		return false;
@@ -396,7 +394,7 @@ public class CustomerAgent extends Agent implements Customer {
 		}
 		
 	    if (willStay == true){
-	    	state = AgentState.DoingNothing;
+	    	state = AgentState.WaitingForSeat;
 	    	event = AgentEvent.gotHungry;
 	    	//host.msgIWantFood(this);
 	    	Do("The restaurant is currently full according to the host, but I'll continue to stay and wait.");

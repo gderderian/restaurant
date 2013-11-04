@@ -17,7 +17,7 @@ public class MarketAgent extends Agent implements Market {
 	private String name;
 	public List<MarketOrder> currentMarketOrders;
 	public Hashtable<String, Integer> inventoryCount;
-	private static final int DEFAULT_ORDER_FULFILL_TIME = 25000; // All market orders take a default of five seconds to fulfill
+	private static final int DEFAULT_ORDER_FULFILL_TIME = 25000; // All market orders take a default of twenty-five seconds to fulfill
 	private double myMoney;
 	private CashierAgent cashier;
 	private Menu myMenu;
@@ -99,12 +99,10 @@ public class MarketAgent extends Agent implements Market {
 	private void orderDone(MarketOrder o){
 		Do("marketOrder of " + o.foodItem + " is now done.");
 		o.getCook().deliverFood(o.foodItem, o.deliverableQuantity); // Notify cook that their order is now done
-		
 		double singleItemPrice = myMenu.getPriceofItem(o.foodItem);
 		double totalCostToBill = singleItemPrice * o.deliverableQuantity; // Calculate total cost of order
-		Do("Billing cashier $" + totalCostToBill + "for the " + o.deliverableQuantity + " " + o.foodItem + "(s) that they ordered.");
+		Do("Billing cashier $" + totalCostToBill + " for the " + o.deliverableQuantity + " " + o.foodItem + "(s) that they ordered.");
 		cashier.acceptMarketBill(this, totalCostToBill); // Bill the cashier because an order was just delivered
-		
 		currentMarketOrders.remove(o);
 	}
 	

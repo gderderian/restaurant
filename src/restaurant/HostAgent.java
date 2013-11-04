@@ -125,6 +125,7 @@ public class HostAgent extends Agent {
 				if (waitingCustomers.get(0).state.equals(CustomerState.none)){ // If they haven't been notified restaurant is full, notify them
 						waitingCustomers.get(0).customer.restaurantFull();
 						waitingCustomers.get(0).state = CustomerState.notifiedFull;
+						return true;
 				}
 			} catch(IndexOutOfBoundsException e){
 				return true;

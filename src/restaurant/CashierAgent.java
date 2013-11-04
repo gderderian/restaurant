@@ -1,14 +1,11 @@
 package restaurant;
 
 import agent.Agent;
-
 import java.util.*;
-
 import restaurant.interfaces.Customer;
 import restaurant.interfaces.Market;
 import restaurant.interfaces.Waiter;
 import restaurant.test.mock.EventLog;
-import restaurant.test.mock.MockMarket;
 
 /**
  * Restaurant Cashier Agent

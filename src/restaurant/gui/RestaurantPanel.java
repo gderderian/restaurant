@@ -180,8 +180,6 @@ public class RestaurantPanel extends JPanel {
     		int customerX = 10 + (customerIndex / 4) * 25;
     		int customerY = 15 + (customerIndex % 4) * 25;
     		
-    		System.out.println("Initial customer location-- x: " + customerX + " - y: " + customerY);
-    				
     		CustomerAgent c = new CustomerAgent(name, customerX, customerY);	
     		CustomerGui g = new CustomerGui(c, gui, customerX, customerY, customerIndex);
     		

@@ -42,7 +42,7 @@ public class CookAgent extends Agent {
 		log = new EventLog();
 		
 		allFood = new Hashtable<String, FoodItem>();
-		allFood.put("Chicken", new FoodItem("Chicken", 3000, 3));
+		allFood.put("Chicken", new FoodItem("Chicken", 3000, 2));
 		allFood.put("Mac & Cheese", new FoodItem("Mac & Cheese", 3000, 3));
 		allFood.put("French Fries", new FoodItem("French Fries", 4000, 3));
 		allFood.put("Pizza", new FoodItem("Pizza", 7000, 3));
@@ -83,16 +83,17 @@ public class CookAgent extends Agent {
 		int newFoodQuantity  = currentFoodQuantity + quantity;
 		f.quantity = newFoodQuantity;
 		f.reorderSent = false;
+		stateChanged();
 	}
 	
 	
 	public void pickedUpFood(String foodChoice){
 		cookGui.platingFood.remove(foodChoice);
+		stateChanged();
 	}
 	
 	// Scheduler
 	protected boolean pickAndExecuteAnAction() {
-		Do("SIZE OF COOK CURRENT ORDERS: " + currentOrders.size());
 		if (!currentOrders.isEmpty()) {
 			try {
 				for (Order order : currentOrders) {
@@ -100,17 +101,21 @@ public class CookAgent extends Agent {
 						prepareFood(order);
 						return true;
 					}
+				}
+				for (Order order : currentOrders) {
 					if (order.getStatus() == orderStatus.ready) {
 						orderDone(order);
 						return true;
 					}
+				}
+				for (Order order : currentOrders) {
 					if (order.getStatus() == orderStatus.bounceBack) { // Item is out, send choice back to waiter
 						orderOut(order);
 						return true;
 					}
 				}
 			} catch (ConcurrentModificationException schedulerComod) {
-				return false;
+				return true;
 			}
 		}
 		return false;
