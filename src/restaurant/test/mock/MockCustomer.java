@@ -59,7 +59,7 @@ public class MockCustomer extends Mock implements Customer {
 
 	@Override
 	public void goToCorner() {
-		log.add(new LoggedEvent("Received action goToCorner."));
+		log.add(new LoggedEvent("Received message goToCorner"));
 	}
 
 	@Override
