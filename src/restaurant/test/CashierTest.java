@@ -95,5 +95,26 @@ public class CashierTest extends TestCase
 		
 	}
 	
+	public void testThreeNormalScenario(){ // Tests scenario: Cashier told to calculate check and waiter receives notification that check is ready.
+		
+		//check preconditions
+		assertEquals("Cashier should have 0 bills in it. It doesn't.",cashier.myChecks.size(), 0);	
+		assertEquals("CashierAgent should have an empty event log before the Cashier's HereIsBill is called. Instead, the Cashier's event log reads: "+ cashier.log.toString(), 0, cashier.log.size());
+		
+		cashier.calculateCheck(waiter, customer, "Chicken");
+		
+		// check postconditions of the check
+		assertEquals("Cashier should have 1 bill in it. It doesn't.",cashier.myChecks.size(), 1);	
+		assertEquals("Cashier's first check should be for chicken.", cashier.myChecks.get(0).choice, "Chicken");
+		assertEquals("Cashier's first check should be for our waiter.", cashier.myChecks.get(0).waiter, waiter);
+		assertEquals("Cashier's first check should be set to status pending.", cashier.myChecks.get(0).status, checkStatus.pending);
+		assertTrue("Cashier's scheduler should have returned true, but didn't.", 
+				cashier.pickAndExecuteAnAction());
+		
+		// check to see if waiter received message
+		assertTrue("Waiter should have logged \"Received message hereIsCheck in amount 7.95\" but didn't. The log instead reads: " 
+				+ waiter.log.getLastLoggedEvent().toString(), waiter.log.containsString("Received message hereIsCheck in amount 7.95"));
+		
+	}
 	
 }
