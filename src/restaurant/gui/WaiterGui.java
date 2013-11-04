@@ -14,9 +14,6 @@ public class WaiterGui implements Gui {
     
     private int xPos = 230, yPos = 230;
     public int xDestination = 230, yDestination = 230, host_tableX, host_tableY;
-
-    public static final int xTable = 200;
-    public static final int yTable = 250;
     
     private static final int HOST_SIZE_X = 20;
     private static final int HOST_SIZE_Y = 20;
@@ -26,6 +23,7 @@ public class WaiterGui implements Gui {
 	
 	String carryingOrderText = "";
 	boolean isOnBreak;
+	int index = 0;
     
     public WaiterGui(WaiterAgent a) {
     	agent = a;
@@ -38,6 +36,19 @@ public class WaiterGui implements Gui {
     	gui = g;
     	carryingOrderText = "";
     	isOnBreak = false;
+    }
+    
+    public WaiterGui(WaiterAgent a, RestaurantGui g, int startX, int startY, int indexNum) {
+    	agent = a;
+    	gui = g;
+    	xPos = startX;
+    	yPos = startY;
+    	xDestination = startX;
+    	yDestination = startY;
+    	carryingOrderText = "";
+    	isOnBreak = false;
+    	index = indexNum;
+    	hasDestination = false;
     }
 
 	public void setDestination(int newX, int newY){
