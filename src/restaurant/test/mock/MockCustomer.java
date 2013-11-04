@@ -11,20 +11,8 @@ import restaurant.gui.CustomerGui;
 import restaurant.interfaces.Waiter;
 import restaurant.interfaces.Customer;
 
-/**
- * A sample MockCustomer built to unit test a CashierAgent.
- *
- * @author Monroe Ekilah
- *
- */
-public class MockCustomer extends Mock implements Customer {
 
-	/**
-	 * Reference to the Cashier under test that can be set by the unit test.
-	 */
-	public Customer customer;
-	public ArrayList<LoggedEvent> log = new ArrayList<LoggedEvent>();
-	public CashierAgent cashier;
+public class MockCustomer extends Mock implements Customer {
 
 	public MockCustomer(String name) {
 		super(name);

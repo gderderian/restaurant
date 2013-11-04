@@ -1,6 +1,5 @@
 package restaurant.test.mock;
 
-
 import restaurant.CashierAgent;
 import restaurant.CookAgent;
 import restaurant.HostAgent;
@@ -9,22 +8,13 @@ import restaurant.WaiterAgent.MyCustomer;
 import restaurant.gui.WaiterGui;
 import restaurant.interfaces.Customer;
 import restaurant.interfaces.Waiter;
-
 import java.util.*;
 
-/**
- * A sample MockCustomer built to unit test a CashierAgent.
- *
- * @author Monroe Ekilah
- *
- */
 public class MockWaiter extends Mock implements Waiter {
 
 	/**
 	 * Reference to the Cashier under test that can be set by the unit test.
 	 */
-	public Waiter waiter;
-	public ArrayList<LoggedEvent> log = new ArrayList<LoggedEvent>();
 
 	public MockWaiter(String name) {
 		super(name);

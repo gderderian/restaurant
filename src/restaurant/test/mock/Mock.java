@@ -8,6 +8,8 @@ package restaurant.test.mock;
  */
 public class Mock {
 	private String name;
+	
+	public EventLog log = new EventLog();
 
 	public Mock(String name) {
 		this.name = name;
